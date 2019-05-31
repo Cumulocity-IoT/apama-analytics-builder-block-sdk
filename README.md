@@ -14,3 +14,6 @@ This project is licensed under the Apache 2.0 license - see https://www.apache.o
 
 This excludes the Analytics Framework 'CDP' file, which is provided in binary form only for the purpose of testing.
 
+# Analytics Builder version
+
+This version of the SDK supports Analytics Builder 10.5.0.  To make use of this, you will require an installation of Apama. If you do not already have access, then you can download the 'community' edition from http://www.apamacommunity.com/downloads/
