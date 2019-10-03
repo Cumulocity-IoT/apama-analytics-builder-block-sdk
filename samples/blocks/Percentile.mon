@@ -1,0 +1,146 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using com.apama.exceptions.Exception;
+using apama.analyticsbuilder.L10N;
+using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.TimerHandle;
+using apama.analyticsbuilder.Partition_Broadcast;
+
+
+/**
+ * Parameters for Percentile block.
+ */
+event Percentile_$Parameters {
+	/**
+	 * Percentile.
+	 *
+	 * The percentile as a percentage (0-100).
+	 *
+	 * What percentile to calculate from the input. The default of 50 will generate a median value.
+	 */
+	float percentile;
+	constant float $DEFAULT_percentile := 50.0; // default is 50th percentile, also known as the median.
+	/** 
+	 * This action is called by the framework to validate the parameters of the block. 
+	 * Here the action checks the value of <tt>percentile</tt> is in the correct range.
+	 */
+	action $validate() {
+		if (percentile < 0.0  or percentile > 100.0 or not percentile.isFinite()) {
+			throw L10N.getLocalizedException("sample_blk_apamax.analyticsbuilder.samples.Percentile_invalidValue", [BlockBase.getL10N_param("percentile",self), percentile]);
+		}		
+	}
+	
+}
+
+/**
+ * A value and duration pair.
+ *
+ * Used as an intermediate value by the Percentile block.
+ * (Note the framework will not treat this event type specially - it does not end with a $-prefixed word.)
+ */
+event ValueDuration {
+	any value;
+	float duration;
+}
+
+
+/**
+ * Percentile.
+ *
+ * Calculates a percentile based on the duration a value has been the current input to the Time Window block. 
+ * The input of this block must be connected to a Time Window block output.
+ *
+ * The Percentile block provides the value that the time window's output was at or below for at least the 
+ * specified percentage of the time.  Thus, a percentile of 0 is equivalent to the minimum, a percentile of 100 
+ * is equivalent to the maximum.  A percentile of 50 will give the value which the input (to the time window block)
+ * was at or below for 50% of the time.
+ *
+ * A median (percentile 50) is typically a more stable average than the mean, where it is unaffected by the magnitude of 
+ * spike values, and a 95th or 99th percentile may be useful in determining service level agreements (SLAs) thresholds.
+ *
+ * @$blockCategory Aggregates
+ */
+event Percentile {
+	
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when the block is required for a model.
+	 */
+	BlockBase $base;
+
+	/** Block parameters, filled in by the framework. */
+	Percentile_$Parameters $parameters;
+	
+	/**
+	 * This action receives the input values and contains the logic of the block. 
+	 *
+	 * It accumulates the window contents.
+	 *  
+	 * @param $input_window Time Window input.
+	 * @$inputName window Time Window
+	 */
+	action $process(Activation $activation, Value $input_window) {
+		// the input is a Value, as we must extract the windowContents property.  While typically used with 
+		// numbers (that is, the float type), there's no reason you could not use this with strings - you just
+		// need a sortable type. So we don't specify a type, thus it will be 'any' type.
+		
+		// note -  if the input is not connected to a TimeWindow block, the model will fail (due to 
+		// this throwing) on the first input to this block.
+		sequence<WindowContents> seq := <sequence<WindowContents> > $input_window.properties[WindowContents.WINDOW_PROPERTY_NAME];
+
+		if(seq.size() = 0) { return; } // cannot give percentile of an empty window, so just ignore it - in practice the TimeWindow block would not even generate an output.
+		
+		float totalDuration := $activation.timestamp - seq[0].timestamp; // total duration of the window.
+		float timeThroughWindow := ($parameters.percentile / 100.0) * totalDuration; // at what point (in relative time) through the window's duration is the percentile.
+		sequence<ValueDuration> valDurations := [];
+		WindowContents entry;
+		integer i:=0;
+
+		// convert to sequence of value-duration, where duration is difference between timestamp of entry and the next windowcontents, or activation.timestmap for the last value.
+		while(i < seq.size()) {
+			entry := seq[i];
+			float nextTime;
+			if i < seq.size()-1 {
+				nextTime := seq[i+1].timestamp;
+			} else {
+				nextTime := $activation.timestamp;
+			}
+			valDurations.append(ValueDuration(entry.value, nextTime - entry.timestamp));
+			i:=i+1;
+		}
+		valDurations.sort();  // will sort on value and then duration.
+		
+		ValueDuration v;
+		float cumulativeDuration := 0.0;
+		// walk through the ordered value-durations, until we have walked past sufficient duration to reach timeThroughWindow:
+		for v in valDurations {
+			if cumulativeDuration + v.duration > timeThroughWindow { // have found it.
+				$setOutput_output($activation, v.value);
+				return;
+			}
+			cumulativeDuration := cumulativeDuration + v.duration;
+		}
+	}
+	
+	/**
+	 * Percentile value.
+	 *
+	 * The nth percentile based on the window input.
+	 */
+	action<Activation,any> $setOutput_output;		// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	constant string $OUTPUT_TYPE_output := "input(window)";  // typically float, but any sortable type would work.
+}

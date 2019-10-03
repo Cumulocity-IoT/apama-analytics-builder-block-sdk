@@ -1,0 +1,167 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.L10N;
+using com.apama.cumulocity.ManagedObject;
+using com.apama.exceptions.Exception;
+
+using apama.analyticsbuilder.Promise;
+using apama.analyticsbuilder.cumulocity.inventory.InventoryLookup;
+using apama.analyticsbuilder.cumulocity.inventory.InputHelper;
+using apama.analyticsbuilder.Partition_Broadcast;
+
+/**
+ * Event definition of the parameters for the Device Location Input block.
+ */
+event DeviceLocationInput_$Parameters {
+
+	/**
+	 * Device or Device Group.
+	 *
+	 * The device or device group from which the location has been received.
+	 *
+	 * The model editor uses the current device or group name. This is mapped internally to the inventory identifier.
+	 * @$semanticType c8y_deviceOrGroupId
+	 */
+	string deviceId;
+
+	/** Validate that a value for deviceId has been provided. */
+	action $validate() {
+		BlockBase.throwsOnEmpty(deviceId, "deviceId", self);
+	}
+}
+
+/**
+ * Device or Device Group Location Input.
+ *
+ * Receives <tt>ManagedObject</tt> events from Cumulocity and extracts device location information.
+ *
+ * The output is a pulse that is triggered on every update of the managed object.  This will contain
+ * properties such as 'alt', 'lng' and 'lat' - see https://cumulocity.com/guides/concepts/domain-model/
+ *
+ * @$blockCategory Input
+ * @$blockType c8y_Input
+ */
+event DeviceLocationInput {
+	
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when block is required for a model.
+	 */
+	BlockBase $base;
+	
+	/** The parameters for the block. */
+	DeviceLocationInput_$Parameters $parameters;
+
+	/** Latest timestamp assigned to input events. */
+	float timeValue;
+
+	/**All the devices for which block will be listening. Set by reflection by InputHelper.*/
+	sequence<string> devices;
+	
+	/**Flag to identify given device identifier is a group or not. Set by reflection by InputHelper.*/
+	boolean isGroup;
+	
+	/**Flag to identify given device identifier is a broadcast device or not. Set by reflection by InputHelper.*/
+	boolean isBroadcastDevice;
+
+	/**
+	 * Validates that the device exists in the inventory.
+	 *
+	 * See - Asynchronous validations in the block-sdk guide for more details.
+	 *
+	 * @param $modelScopeParameters  Dictionary containing information about the model.
+	 * @return a <tt>Promise</tt> object, validation of the model will be suspended until the Promise is fulfilled.
+	*/
+	action $validate(dictionary<string, any> $modelScopeParameters) returns Promise {
+		// Declaring input streams, (See - Input and Output blocks in the block-sdk guide for more details).
+		InputHelper ihelper := InputHelper.forBlock(self, $modelScopeParameters);
+		ihelper.setInput($parameters.deviceId, ManagedObject.getName(), new dictionary<string, any>);
+
+		// Look for the device in the c8y inventory, (See - Cumulocity specific helpers in the block-sdk guide for more details).
+		return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput);
+	}
+	/**Called by reflection from InputHelper.*/
+	action throwNoDevices(string nameOrId) {
+		throw L10N.getLocalizedException("sample_blk_apamax.analyticsbuilder.samples.DeviceLocationInput_no_devices", [<any> nameOrId]);
+	}
+
+	
+	/**
+	 * Method starts listening for the events from Cumulocity.
+	 */
+	action $init() {
+		string id;
+		for id in devices {
+			on all ManagedObject(id = id) as managedObject{
+				extractLocation(managedObject);
+			}
+		}
+	}
+	
+	/**
+	 * Extracts the location information from the incoming <tt>ManagedObject</tt>.
+	 * 
+	 * @param managedObject The incoming <tt>ManagedObject</tt> from Cumulocity.
+	 */
+	action extractLocation(ManagedObject managedObject) {
+		try {
+			if managedObject.position.size() > 0 {
+				// individual updates to ManagedObjects do not have a timestamp, so use the next time after either now or the previous update:
+				timeValue := float.max(timeValue, $base.getModelTime()).nextAfter(float.INFINITY);
+				TimerParams tp := TimerParams.absolute(timeValue).withPayload(managedObject.position);
+				if(isGroup) {
+					tp := tp.withPartition(managedObject.id);	// Creating timer with partition, (See - Partition values in the block-sdk guide for more details).
+				}
+				else if(isBroadcastDevice) {
+					tp := tp.withPartition(Partition_Broadcast(managedObject.id));
+				} // else is a single device, and use the 'default' partition, which allows different devices to be used in the same model.
+				any _ := $base.createTimerWith(tp);	// Creates timer with the specified parameters.
+			}
+		} catch (Exception e) {
+			log $base.getModelTime().toString() + ": Ignoring event: " + managedObject.toString() + ", exception: " + e.toString() at DEBUG;
+		}
+	}
+	
+	
+	/**
+	 * This action is called by the framework when the timer is triggered. The framework provides the value of the payload which was passed while creating the timer.
+	 * 
+	 * Here it is setting the output after the timer has been triggered.
+	
+	 * @param $activation The current activation.
+	 * @param $payload The payload value.
+	 */
+	action $timerTriggered(Activation $activation, any $payload) {
+		dictionary<string, any> valueProperties := {};
+		any k;
+		for k in $payload.getKeys() {
+			valueProperties[k.valueToString()] := $payload.getEntry(k);
+		}
+		$setOutput_location($activation, Value(true, $base.getModelTime(), valueProperties));
+	}
+	
+	/**
+	 * Location.
+	 *
+	 * The location from the <tt>ManagedObject</tt>.
+	 */
+	action<Activation,Value> $setOutput_location;	// This is initialized and called by the framework. It sets the output of the block which is sent to the block connected to the output.
+	
+	/** The basic type of the location output. */
+	constant string  $OUTPUT_TYPE_location := "pulse";
+}

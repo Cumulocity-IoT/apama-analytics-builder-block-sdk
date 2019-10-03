@@ -1,0 +1,103 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block supports only English. There may be incompatible changes in future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.BlockBase;
+using com.apama.exceptions.Exception;
+using apama.analyticsbuilder.L10N;
+
+/**
+ * Event definition of the parameters for the Time Delay block.
+ */
+event TimeDelay_$Parameters{
+	
+	/**Delay (secs).
+	 *
+	 * The amount of time (in seconds) by which the input will be delayed.
+	 *
+	 * This must be a finite and positive number.
+	 */
+	float delaySecs;
+	
+	/** 
+	 * This action is called by the framework to validate the parameters of the block. 
+	 * Here the action checks the value of <tt>delaySecs</tt> provided is a finite and a valid number. 
+	 * An exception is thrown if value of <tt>delaySecs</tt> is not valid.
+	 */
+	action $validate() {
+		if (delaySecs < 0.0  or not delaySecs.isFinite()) {
+			throw L10N.getLocalizedException("fwk_param_finite_non-negative_value", [BlockBase.getL10N_param("delaySecs",self),delaySecs]);
+		}		
+	}
+}
+
+/**
+ * Time Delay.
+ *
+ * Delays the input by the specified amount of time.
+ *
+ * @$blockCategory Flow Manipulation
+ * @$derivedName Delay $delaySecs secs
+ */
+event TimeDelay {
+
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when the block is required for a model.
+	 */
+	BlockBase $base;
+	
+	/** The parameters for the block.*/
+	TimeDelay_$Parameters $parameters;
+	
+	/**
+	 * This action is called by the framework, it receives the input values and contains the logic of the block.
+	 *
+	 * It delays the input by the specified amount of time.
+	 *
+	 * @param $activation The current activation, contextual information required when generating a block output. Blocks should only use the
+	 * <tt>Activation</tt> object passed to them from the framework, never creating their own or holding on to an <tt>Activation</tt> object.
+	 * @param $input_value The input value to be delayed.
+	 * 
+	 * @$inputName value Value
+	 */
+	action $process(Activation $activation, any $input_value) {
+		if ($parameters.delaySecs = 0.0) {
+			$setOutput_delayedValue($activation,$input_value);  // it's not legal to create a timer with 0 delay, but we can just pass-through the value.
+		}
+		else {
+			$base.createTimer($parameters.delaySecs,$input_value);	// Creates a timer with the specified duration.
+		}
+	}
+	
+	/**
+	 * This action is called by the framework when the timer is triggered. The framework provides the value of the payload which was passed while creating the timer.
+	 * 
+	 * Here it is setting the output after the timer has been triggered.
+	 */
+	action $timerTriggered(Activation $activation, any $payload) {
+		$setOutput_delayedValue($activation, $payload);
+	}
+	
+	/**
+	 * Delayed Value.
+	 *
+	 * The delayed output value.
+	 */
+	action<Activation,any> $setOutput_delayedValue;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	
+	/**
+	 * The type of the value in the <tt>Value</tt> object output is same as the type of the <tt>value</tt> input.  This is also the type of the values in the <tt>timeWindow</tt> output.
+	*/
+	constant string $OUTPUT_TYPE_delayedValue := "input(value)";
+}

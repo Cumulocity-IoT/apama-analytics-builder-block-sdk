@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pysysproject>
+	<requires-pysys>1.3.0</requires-pysys>
+	<requires-python>3</requires-python>
+
+
+	<property name="ANALYTICS_BUILDER_SDK"                 value="${env.ANALYTICS_BUILDER_SDK}"/>
+
+
+	<property name="SOURCE"                  value="${root}"/>
+	<property root="testRootDir"/>
+	<property environment="env"/>
+	<property osfamily="osfamily"/>
+
+	<property name="APAMA_HOME"              value="${env.APAMA_HOME}"/>
+	<property name="APAMA_WORK"              value="${env.APAMA_WORK}"/>
+
+	<property name="defaultAbortOnError" value="true"/>
+	<property name="defaultIgnoreExitStatus" value="false"/>
+	<property name="defaultEnvironsTempDir" value="self.output"/>
+	<property name="redirectPrintToLogger" value="false"/>
+	<property name="verboseWaitForSignal" value="true"/>
+
+	<property name="shutdownApamaComponentsAfterTest" value="true"/>
+
+
+
+	<runner classname="ApamaRunner" module="apama.runner"/>
+
+	<path value="${ANALYTICS_BUILDER_SDK}/testframework"/>
+
+
+</pysysproject>
