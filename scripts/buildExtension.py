@@ -3,7 +3,7 @@
 # $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
 # Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
 import shutil, json, os, subprocess, urllib
-import blockMetadataGenerator
+import blockMetadataGenerator, buildVersions
 from pathlib import Path
 import ssl, urllib.parse, urllib.request, base64
 
@@ -30,6 +30,8 @@ def add_arguments(parser):
 	remote.add_argument('--name', help='the extension name in the inventory')
 	remote.add_argument('--delete', action='store_true', default=False, help='delete the extension from the inventory')
 	remote.add_argument('--restart', action='store_true', default=False, help='restart the apama-ctrl after upload or delete operation')
+	remote.add_argument('--ignoreVersion', action='store_true', default=False, required=False,
+						help='ignore the analytics builder script version check')
 
 def write_evt_file(ext_files_dir, name, event):
 	"""
@@ -283,8 +285,7 @@ def replace_extension_content(connection, f, moId):
 	except Exception as ex:
 		raise Exception(f'Unable to replace extension content using PUT on /inventory/binaries/{moId}: {ex}')
 
-
-def upload_or_delete_extension(extension_zip, url, username, password, name, delete=False, restart=False, printMsg=False):
+def upload_or_delete_extension(extension_zip, url, username, password, name, delete=False, restart=False, ignoreVersion=False, printMsg=False):
 	"""
 	Upload the extension to the Cumulocity inventory or delete the extension from the inventory.
 	:param extension_zip: The extension zip to upload.
@@ -294,18 +295,24 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 	:param name: The name of the extension.
 	:param delete: Delete the extension instead of uploading it.
 	:param restart: Restart the apama-ctrl after uploading the extension.
+	:param ignoreVersion: Ignores block sdk version.
 	:param printMsg: Print the success message.
 	:return:
 	"""
 	connection = C8yConnection(url, username, password)
+	
+	# checks Analytics builder version with Apama-ctrl version
+	checkVersions(connection, ignoreVersion)
+	
 	# Get existing ManagedObject for PAS extension.
 	try:
 		extension_mos = connection.do_get('/inventory/managedObjects', {'query': f"pas_extension eq '{name}'"})
 	except urllib.error.HTTPError as err:
 		if err.code == 404:
-			raise Exception(f'Failed to perform REST request for resource /inventory/managedObjects on url {connection.base_url}. Verify that the base Cumulocity URL is correct.')
+			raise Exception(
+				f'Failed to perform REST request for resource /inventory/managedObjects on url {connection.base_url}. Verify that the base Cumulocity URL is correct.')
 		raise err
-
+	
 	extension_mo = None
 	if extension_mos:
 		extension_mos = extension_mos.get('managedObjects', [])
@@ -349,6 +356,29 @@ def isAllRemoteOptions(args, remote):
 			if v and getattr(args, k, None) is None:
 				raise Exception(f'Argument --{k} is required for the remote operation.')
 
+def checkVersions(connection, ignoreVersion):
+	
+	apamactrl_version = None
+	try:
+		resp = connection.request('GET', f'/service/cep/diagnostics/componentVersion')
+		apamactrl_version = json.loads(resp).get('releaseTrainVersion')
+	except urllib.error.HTTPError as err:
+		if err.code == 404:
+			if ignoreVersion:
+				print(f'WARNING: It is recommended to use Analytics builder script only against Apama-ctrl with same version.')
+			else:
+				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url}. Verify that the base Cumulocity URL is correct.')
+		else:
+			raise err
+	
+	sdk_version = buildVersions.RELEASE_TRAIN_VERSION
+	
+	if apamactrl_version is not None and apamactrl_version != sdk_version:
+		if ignoreVersion:
+			print(f'WARNING: It is recommended to use Analytics builder script only against Apama-ctrl with same version. Version of Analytics Builder script is {sdk_version} but version of Apama-ctrl is {apamactrl_version}.')
+		else:
+			raise Exception(f'Analytics builder script version ({sdk_version}) is different from Apama-ctrl version ({apamactrl_version}). Ignore the check using --ignoreVersion but it is not recommended.')
+
 def run(args):
 	# Support remote operations and whether they are mandatory.
 	remote = {'cumulocity_url':True, 'username':True, 'password':True, 'name':True, 'delete':False, 'restart':False}
@@ -380,4 +410,4 @@ def run(args):
 			output = args.output + ('' if args.output.endswith('.zip') else '.zip')
 			shutil.copy2(zip_path, output)
 		return upload_or_delete_extension(zip_path, args.cumulocity_url, args.username,
-		                                  args.password, args.name, args.delete, args.restart, printMsg=True)
+		                                  args.password, args.name, args.delete, args.restart, args.ignoreVersion, printMsg=True)

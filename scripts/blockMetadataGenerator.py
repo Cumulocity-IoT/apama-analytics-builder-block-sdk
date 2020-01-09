@@ -11,14 +11,13 @@ import sys
 import subprocess
 import json
 import xml.etree.cElementTree as ElementTree
+import buildVersions
 from subprocess import CalledProcessError
 from logging import Formatter
 
 FORMAT = '%(asctime)-15s %(levelname)s : %(message)s'
 
 
-##This variables will be replaced during the build phase
-version = '10.5.0.1'
 
 
 class Block(object):
@@ -874,7 +873,7 @@ def run_metadata_generator(input, output, tmpDir, printMsg=False):
 		output += '.json'
 
 	scriptRunner = ScriptRunner(apama_home, java_home, output,
-	                            inputDir, tmpDir, version)
+	                            inputDir, tmpDir, buildVersions.FULL_VERSION)
 	f = scriptRunner.generateBlockMetaData()
 	if printMsg:
 		if f[0]:
@@ -889,8 +888,6 @@ def run(args):
 
 ## Main method
 if __name__ == '__main__':
-	assert not (version.startswith('@') and version.endswith(
-		'@')), 'Project not built. Please build the project before running this script'
 	assert 'APAMA_JRE' in os.environ, 'APAMA_JRE variable is not set.'
 	
 	## Parse Command line arguments
