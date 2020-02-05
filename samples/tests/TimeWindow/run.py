@@ -42,6 +42,10 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		                      self.timestamp(14.9),
 							  self.inputEvent('value', 6, id = self.modelId),
 		                      self.timestamp(22),
+							  self.inputEvent('reset', True, id = self.modelId),
+							  self.timestamp(23.4),
+							  self.inputEvent('value', 7, id = self.modelId),
+							  self.timestamp(34),
 							  )
 
 	def validate(self):
@@ -50,4 +54,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,1.,1.,.*WindowContents.any.float,2.,5.,.*WindowContents.any.float,3.,6.,.*WindowContents.any.float,4.,7.*'), contains=True)
 		
 		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,4.,9.,.*WindowContents.any.float,5.,11.,.*WindowContents.any.float,6.,14.*'), contains=True)
+		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,4.,9.,.*WindowContents.any.float,5.,11.,.*WindowContents.any.float,6.,14.*'), contains=True)
+		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,7.,22.*'))
+		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*sequence.apamax.analyticsbuilder.samples.WindowContents.*apamax.analyticsbuilder.samples.WindowContents.*apamax.analyticsbuilder.samples.WindowContents'), contains=False) # verify only one windowContents object in the output.
 		

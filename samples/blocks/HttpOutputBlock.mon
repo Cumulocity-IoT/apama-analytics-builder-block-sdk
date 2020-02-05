@@ -107,7 +107,7 @@ event HTTPOutput {
 	
 	/**
 	 * Handle to the connectivity chain that will handle the requests. It is created in the <tt>$init</tt> method and not in the <tt>$validate</tt> method so it only gets created if the model will become active. 
-	 * This is just a function of the parameters, so can safely live on this object rather than the <tt>$state</tt> object.
+	 * This is just a function of the parameters, so can safely live on this object rather than the <tt>$blockState</tt> object.
 	 */
 	HttpTransport transport;
 	

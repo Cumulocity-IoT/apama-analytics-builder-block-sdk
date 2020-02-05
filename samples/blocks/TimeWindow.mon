@@ -130,17 +130,25 @@ event TimeWindow {
 			$setOutput_windowContents($activation, v);
 		}
 	}
+	/** Declare the reset input to be pulse type */
+	constant string $INPUT_TYPE_reset := "pulse";
 	/**
 	 * This action receives the input. 
 	 *
 	 * This simply adds it to the window contents - the bulk of the work is in <tt>$timerTriggered</tt>.
 	 *  
 	 * @param $input_value Value to accumulate.
+	 * @param $input_reset Reset the window.
 	 * @$inputName value Value
+	 * @$inputName reset Reset
 	 */
-	action $process(Activation $activation, any $input_value, TimeWindow_$State $blockState) {
-		ifpresent $input_value {
-			$blockState.contents.append(WindowContents($input_value, $activation.timestamp));
+	action $process(Activation $activation, any $input_value, TimeWindow_$State $blockState, boolean $input_reset) {
+		if($input_reset) {
+			$blockState.contents.clear();
+		} else {
+			ifpresent $input_value {
+				$blockState.contents.append(WindowContents($input_value, $activation.timestamp));
+			}
 		}
 	}
 	

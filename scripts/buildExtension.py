@@ -5,7 +5,7 @@
 import shutil, json, os, subprocess, urllib
 import blockMetadataGenerator, buildVersions
 from pathlib import Path
-import ssl, urllib.parse, urllib.request, base64
+import ssl, urllib.parse, urllib.request, base64, sys
 
 ENCODING = 'UTF8'
 BLOCK_METADATA_EVENT = 'apama.analyticsbuilder.BlockMetadata'
@@ -365,11 +365,17 @@ def checkVersions(connection, ignoreVersion):
 	except urllib.error.HTTPError as err:
 		if err.code == 404:
 			if ignoreVersion:
-				print(f'WARNING: It is recommended to use Analytics builder script only against Apama-ctrl with same version.')
+				print(f'WARNING: It is recommended to use Analytics builder script only against Apama-ctrl with same version.', file=sys.stderr)
 			else:
 				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url}. Verify that the base Cumulocity URL is correct.')
 		else:
-			raise err
+			if err.code == 502:
+				if not ignoreVersion:
+					ignoreVersion= True
+					print(f'WARNING: apama-ctrl may not be running, skipping version check.', file=sys.stderr)
+					apamactrl_version = 'Unknown'
+			else:
+				raise err
 	
 	sdk_version = buildVersions.RELEASE_TRAIN_VERSION
 	

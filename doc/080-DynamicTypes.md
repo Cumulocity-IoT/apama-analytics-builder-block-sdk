@@ -8,6 +8,10 @@ Blocks may use one of the following static types for inputs and outputs:
 
 Blocks may also support different types for inputs and outputs. The exact type for outputs should be provided by the block, possibly as a result of parameters or what inputs it has connected to it. Blocks can support different input types and inspect these; in which case, an `any` or `Value` type can be used as the `$process` parameter's type. What types of inputs are connected to a block are available from `BlockBase.getInputTypeName` when the `$validate` method is called. The `$validate` should throw an exception if the input types connected are incorrect.
 
+## Providing input types
+
+Blocks typically declare what type an input is by specifying the parameter type of the `$input_<name>` parameter of the `$process` action, including the `any` type.  However, as `boolean` is used for both `boolean` and `pulse` types, a block may also have a `string constant $INPUT_TYPE_<inputId>` constant which can be the value "string". 
+
 ## Providing output types
 
 Blocks can declare what type an output is in the following ways:

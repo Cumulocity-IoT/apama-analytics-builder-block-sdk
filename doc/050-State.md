@@ -1,6 +1,6 @@
 # Blocks with state
 
-While a block can contain fields on the event type for the block, these fields should not be used to store state that changes as the model executes.  For this "runtime state", use a separate event type, named `<block>_$State`. This can be supplied as a `$state` parameter to the `$process` method of the block. It can contain whatever values that are required by the block to execute.
+While a block can contain fields on the event type for the block, these fields should not be used to store state that changes as the model executes.  For this "runtime state", use a separate event type, named `<block>_$State`. This can be supplied as a `$blockState` parameter to the `$process` method of the block. It can contain whatever values that are required by the block to execute.
 
 The following is an example block that produces a running sum of input values:
 
@@ -11,9 +11,9 @@ event Sum_$State {
 
 event Sum {
     BlockBase $base;
-    action $process(Activation $activation, float $input_value, Sum_$State $state) {
-        $state.sum := $state.sum + $input_value;
-        $setOutput_sum($activation, $state.sum);
+    action $process(Activation $activation, float $input_value, Sum_$State $blockState) {
+        $blockState.sum := $blockState.sum + $input_value;
+        $setOutput_sum($activation, $blockState.sum);
     }
     action<Activation, float> $setOutput_sum;
 }

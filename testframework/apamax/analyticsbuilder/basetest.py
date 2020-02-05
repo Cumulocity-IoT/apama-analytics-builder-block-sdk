@@ -173,7 +173,9 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:param id: The model to test, or model_0 by default.
 		"""
 		if isinstance(value, float) or isinstance(value, int): eplType = 'float'
-		if isinstance(value, bool): eplType = 'boolean'
+		if isinstance(value, bool): 
+			eplType = 'boolean'
+			value = str(value).lower()
 		if eplType == 'string':
 			value = json.dumps(value)
 		return f'apamax.analyticsbuilder.test.Input("{name}", "{id}", "{partition}", any({eplType}, {value}))'
