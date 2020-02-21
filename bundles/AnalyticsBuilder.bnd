@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bundle name="Analytics Builder" type="monitorscript" singleton="true">
 	<version>
-		<id>10.5.7.1</id>
+		<id>10.5.7.2</id>
 		<date>2019-06-07</date>
 		<author>Software AG</author>
 		<comments/>

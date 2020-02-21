@@ -197,7 +197,8 @@ class C8yConnection(object):
 		headers['Authorization'] = self.auth_header
 		if isinstance(body, str):
 			body = bytes(body, encoding=ENCODING)
-		req = urllib.request.Request(self.base_url + path, data=body, headers=headers, method=method)
+		url = self.base_url[:-1] if self.base_url.endswith('/') else self.base_url
+		req = urllib.request.Request(url + path, data=body, headers=headers, method=method)
 		resp = self.urlopener.open(req)
 		if resp.getheader('Content-Type', '') == 'text/html': # we never ask for HTML, if we got it, this is probably the wrong URL (or we're very confused)
 			raise Exception(f'Failed to perform REST request for resource {path} on url {self.base_url}. Verify that the base Cumulocity URL is correct.')

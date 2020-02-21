@@ -535,7 +535,8 @@ class BlockGenerator:
 								enumVal.setName(enumId)
 								print('No apamadoc found for the name of enum : %s' % member.attrib.get('name').strip('\t '), file=sys.stderr)
 
-							enumVal.setValue(member.attrib.get('typeValue').strip('" '))
+							enumVal.setValue(json.loads(member.attrib.get('typeValue')))
+
 							memberToEnumVals[parentMember].append(
 								enumVal.getUnderlyingDataMap())  # chain it to corresponding list
 							break
