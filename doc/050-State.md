@@ -37,6 +37,6 @@ The state may contain any fields, but these fields should be serializable. This 
 
 This restriction to serializable-only values is not currently enforced.
 
-Refer to the **Windowing.mon** sample for an example of a block that uses state.
+Refer to the **TimeWindow.mon** sample for an example of a block that uses state.
 
 [< Prev: Parameters, block startup and error handling](040-Parameters.md) | [Contents](000-contents.md) | [Next: Timers >](060-Timers.md) 

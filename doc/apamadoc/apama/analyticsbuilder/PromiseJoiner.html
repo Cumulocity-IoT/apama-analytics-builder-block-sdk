@@ -3,12 +3,12 @@
 
 <HEAD>
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Partition_Alias</TITLE>
-<META NAME="keywords" CONTENT="Partition_Alias&nbsp;event">
+<TITLE>PromiseJoiner</TITLE>
+<META NAME="keywords" CONTENT="PromiseJoiner&nbsp;event">
 <LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
 <SCRIPT type="text/javascript">function windowTitle()
           {
-          parent.document.title="Partition_Alias";
+          parent.document.title="PromiseJoiner";
           }
           </SCRIPT>
 <NOSCRIPT></NOSCRIPT>
@@ -16,9 +16,9 @@
 <BODY BGCOLOR="white" onload="windowTitle();">
 <TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
 <TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/Partition_Alias.html"><B>FRAMES</B></A>  &nbsp;
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/PromiseJoiner.html"><B>FRAMES</B></A>  &nbsp;
 
-            &nbsp;<A target="_top" HREF="Partition_Alias.html"><B>NO FRAMES</B></A>  &nbsp;
+            &nbsp;<A target="_top" HREF="PromiseJoiner.html"><B>NO FRAMES</B></A>  &nbsp;
             &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
 <NOSCRIPT>
 <A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
@@ -38,51 +38,65 @@
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
 </TR>
 <TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;ACTION</FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;ACTION</FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
 </TR>
 </TABLE>
 <HR>
 <H2>
 <FONT SIZE="-1">apama.analyticsbuilder</FONT>
-<BR>Event Partition_Alias</H2>
-<HR>Denotes an alias device.<br>
-<br> This is used in simulation mode and test mode to declare the real and virtual devices. In terms of checking for cycles and what model-to-model interactions are used, the <tt>realDevice</tt> member is used, but the block actually listens to events identified by the <tt>virtualDevice</tt> field.<br>
-<br> Can be passed to <tt>BlockBase.sendsSyncOutput</tt>, <tt>BlockBase.sendsAsyncOutput</tt> or <tt>BlockBase.listensForInput</tt> to denote sending to a virtual device.<HR>
-<A NAME="member_summary"></A>
+<BR>Event PromiseJoiner</H2>
+<HR>Helper object for joining promises.<HR>
+<A NAME="action_summary"></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Member summary</B></FONT></TH>
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE><B><A HREF="Partition_Alias.html#realDevice">realDevice</A></B></CODE>
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/Promise.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Promise</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="PromiseJoiner.html#joinAll()">joinAll</A></B>(sequence&lt;<A HREF="../../apama/analyticsbuilder/Promise.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Promise</A>&gt;&nbsp;promises)</CODE>
 <br>
-<br>Partition value of the real device. This is the partition that the model should be treated as consuming/sending for purposes of model-to-model interactions.</TD>
+<br>Waits for all promises,</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE><B><A HREF="Partition_Alias.html#virtualDevice">virtualDevice</A></B></CODE>
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="PromiseJoiner.html#pickFirst()">pickFirst</A></B>(any&nbsp;v)</CODE>
 <br>
-<br>Partition value of the virtual device, which is present or that will be present in events.</TD>
+<br>Promise-chainable action to return the first result of a sequence.</TD>
 </TR>
-</TABLE>&nbsp;<A NAME="member_detail"></A>
+</TABLE>&nbsp;<A NAME="action_detail"></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Member detail</B></FONT></TH>
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
 </TR>
 </TABLE>
-<A NAME="realDevice"></A>
-<H3>realDevice</H3>
-<PRE>any&nbsp;<B>realDevice</B>
-</PRE>Partition value of the real device. This is the partition that the model should be treated as consuming/sending for purposes of model-to-model interactions.<HR>
-<A NAME="virtualDevice"></A>
-<H3>virtualDevice</H3>
-<PRE>any&nbsp;<B>virtualDevice</B>
-</PRE>Partition value of the virtual device, which is present or that will be present in events.<HR>
+<A NAME="joinAll()"></A>
+<H3>joinAll</H3>
+<PRE>
+<A HREF="../../apama/analyticsbuilder/Promise.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Promise</A>&nbsp;static <B>joinAll</B>(sequence&lt;<A HREF="../../apama/analyticsbuilder/Promise.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Promise</A>&gt;&nbsp;promises)</PRE>Waits for all promises,<br>
+<br> Yields a promise which will yield a result of a sequence of all of the promise results once they are completed. If any throw, the returned promise will throw.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>promises</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="pickFirst()"></A>
+<H3>pickFirst</H3>
+<PRE>any&nbsp;static <B>pickFirst</B>(any&nbsp;v)</PRE>Promise-chainable action to return the first result of a sequence.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>v</tt>
+</DD>
+</DL>
+<HR>
 <HR>
 <TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
 <TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/Partition_Alias.html"><B>FRAMES</B></A>  &nbsp;
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/PromiseJoiner.html"><B>FRAMES</B></A>  &nbsp;
 
-            &nbsp;<A target="_top" HREF="Partition_Alias.html"><B>NO FRAMES</B></A>  &nbsp;
+            &nbsp;<A target="_top" HREF="PromiseJoiner.html"><B>NO FRAMES</B></A>  &nbsp;
             &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
 <NOSCRIPT>
 <A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
@@ -102,7 +116,7 @@
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
 </TR>
 <TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;ACTION</FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;ACTION</FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
 </TR>
 </TABLE>
 <HR>

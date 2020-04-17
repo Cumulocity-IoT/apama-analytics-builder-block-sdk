@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+# $Copyright (c) 2019-20 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
 # Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
 
 import argparse
@@ -598,7 +598,8 @@ class BlockGenerator:
 			for element in eventTypeList:
 				# check if Event type contains DollarField blockCategory
 				if element.find(blockIdentifierCategoryXPath) is not None:
-
+					if package.attrib['name'].strip() == '':
+						raise RuntimeError('Event definition for block should be defined inside a package. Package name is missing for event %s' % element.attrib['name'].strip())
 					blockId = package.attrib['name'].strip() + '.' + element.attrib['name'].strip()
 
 					blockObj = self._createBlock(blockId, element, xmlRootElement)

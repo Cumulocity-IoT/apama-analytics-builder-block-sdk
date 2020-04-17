@@ -48,7 +48,7 @@ To aid the framework in profiling (providing a count of block inputs and outputs
 
 ## Semantic types
 
-For input and output blocks that have a parameter that refers to a Cumulocity device or device group, a block can declare that the parameter is selecting a Cumulocity device identifier by adding an ApamaDoc `@$semantictype` tag. Values following the tag can be:
+For input and output blocks that have a parameter that refers to a Cumulocity device or device group, a block must declare that the parameter is selecting a Cumulocity device identifier by adding an ApamaDoc `@$semantictype` tag. Values following the tag can be:
 
 * `c8y_deviceId` - to select a single device.
 * `c8y_deviceOrGroupId` - to select a device or a device group.
@@ -69,6 +69,27 @@ any deviceId;
 ```
 
 For `c8y_deviceOrCurrentDevice`, the parameter (`deviceId` in the above) should be of the `any` type and will be either a `string` for a device or a dictionary with a `currentDevice` entry for the "current device" case.
+
+Input and output blocks that are handling a Cumulocity device or device group, must declare the type of the block by adding an ApamaDoc `@$blockType` tag. Values following the tag can be:
+
+* `c8y_Input` - receives data from a Cumulocity device or device group.
+* `c8y_Output` - sends data to a Cumulocity device.
+
+For example:
+```Java
+/**
+ * Device or Device Group Location Input.
+ *
+ * Receives <tt>ManagedObject</tt> events from Cumulocity and extracts device location information.
+ *
+ * @$blockCategory Input
+ * @$blockType c8y_Input
+ */
+event DeviceLocationInput { 
+    ... 
+}
+```
+
 
 **Note:** Avoid using common id with different type between two input or two output blocks.
 

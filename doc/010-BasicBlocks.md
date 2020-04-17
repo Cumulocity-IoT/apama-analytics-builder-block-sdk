@@ -29,6 +29,7 @@ event Offset {
     action<Activation, float> $setOutput_output;
 }
 ```
+**Note:** A block must be defined inside a package.
 
 This block simply adds 100 to every input value. The `$process` action has parameters for the inputs, and the output is sent by calling the `$setOutput_output` action field. The framework takes care of creating an instance of the block when it is required for a model, initializing the `$base` and `$setOutput_output` fields and calling the `$process` action when the block receives input.
 

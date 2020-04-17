@@ -10,14 +10,14 @@ Blocks may also support different types for inputs and outputs. The exact type f
 
 ## Providing input types
 
-Blocks typically declare what type an input is by specifying the parameter type of the `$input_<name>` parameter of the `$process` action, including the `any` type.  However, as `boolean` is used for both `boolean` and `pulse` types, a block may also have a `string constant $INPUT_TYPE_<inputId>` constant which can be the value "string". 
+Blocks typically declare what type an input is by specifying the parameter type of the `$input_<name>` parameter of the `$process` action, including the `any` type.  However, as `boolean` is used for both `boolean` and `pulse` types, a block may also have a `constant string $INPUT_TYPE_<inputId>` constant which can be the value "pulse". 
 
 ## Providing output types
 
 Blocks can declare what type an output is in the following ways:
 
 * parameter type of the `$setOutput` action
-* a `string constant $OUTPUT_TYPE_<outputId>`
+* a `constant string $OUTPUT_TYPE_<outputId>`
 * an action `$outputType_<outputId>() returns string`
 
 At most, one of the string constant or action may be present on a block.

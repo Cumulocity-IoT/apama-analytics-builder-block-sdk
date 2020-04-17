@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+# $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
 # Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
 import shutil, json, os, subprocess, urllib
 import blockMetadataGenerator, buildVersions
@@ -128,7 +128,7 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 	# Define priority of the extension if specified
 	if priority is not None:
 		ext_dir.joinpath('priority.txt').write_text(str(priority), encoding=ENCODING)
-
+		
 	files_to_copy = list(input.rglob('*.evt'))
 
 	# Create CPD or copy mon files to extension directory while maintaining structure
@@ -137,6 +137,10 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 		createCDP(name, mons, ext_files_dir)
 	else:
 		files_to_copy.extend(mons)
+	
+	files_to_copy.extend(list(input.rglob('*.so*')))
+	files_to_copy.extend(list(input.rglob('*.yaml')))
+	files_to_copy.extend(list(input.rglob('*.jar')))
 
 	for p in files_to_copy:
 		target_file = ext_files_dir / p.relative_to(input)
@@ -304,6 +308,7 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 	
 	# checks Analytics builder version with Apama-ctrl version
 	checkVersions(connection, ignoreVersion)
+	checkIfStarter(connection)
 	
 	# Get existing ManagedObject for PAS extension.
 	try:
@@ -356,6 +361,16 @@ def isAllRemoteOptions(args, remote):
 		for k, v in remote.items():
 			if v and getattr(args, k, None) is None:
 				raise Exception(f'Argument --{k} is required for the remote operation.')
+
+def checkIfStarter(connection):
+	is_starter = None
+	try:
+		resp = connection.request('GET',f'/service/cep/diagnostics/apamaCtrlStatus')
+		is_starter = (json.loads(resp).get('is_starter_mode'))		
+	except urllib.error.HTTPError as err:
+		print(f'Could not identify Apama-ctrl Edition : {err}')	
+	if is_starter == True:
+		raise Exception(f'Uploading extensions is not supported on Apama Starter Edition')	
 
 def checkVersions(connection, ignoreVersion):
 	
