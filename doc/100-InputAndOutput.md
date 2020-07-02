@@ -1,5 +1,7 @@
 # Input and output blocks
 
+> **Note:** This API for custom input and output blocks is expected to change in the future. Existing input and output blocks may require changes to continue to work.
+
 ## Input blocks
 
 ### Timestamp handling
@@ -90,6 +92,7 @@ event DeviceLocationInput {
 }
 ```
 
+**Note:** A block which receives data from an external source and also sends data to an external source must not be tagged with either `c8y_Input` or `c8y_Output`. Test mode deployment is not supported for a model which contains such blocks.
 
 **Note:** Avoid using common id with different type between two input or two output blocks.
 

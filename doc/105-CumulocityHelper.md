@@ -1,5 +1,7 @@
 # Cumulocity-specific helpers
 
+> **Note:** This API for custom input and output blocks is expected to change in the future. Existing input and output blocks may require changes to continue to work.
+
 There are a number of functions specific to blocks that input or output data associated with a Cumulocity device or device group. To avoid repeating this functionality, a set of helper events is provided to use in Cumulocity input and output blocks.
 
 These helper events handle the following functionality:

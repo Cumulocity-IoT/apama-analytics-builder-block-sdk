@@ -1,5 +1,5 @@
 /*
- * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
  * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
  */
 //*****************************************************************************
@@ -173,6 +173,10 @@ event ModelCreator {
 	}
 }
 
+event CreateFailed{
+	string reason;
+}
+
 /** Test helper.
  *
  * Creates models from Test requests, to test a block under test and connect to TestInput/ TestOutput blocks.
@@ -205,6 +209,7 @@ monitor TestHelper {
 					if not found {
 						// failed to find block:
 						log "Could not find block "+blockId at ERROR;
+						send CreateFailed("Could not find block "+blockId) to "output";
 						if blockId.find(".") = -1 {
 							log "Hint: have you remembered the package name of the block?" at INFO;
 						}

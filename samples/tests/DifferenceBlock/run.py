@@ -16,9 +16,9 @@ class PySysTest(AnalyticsBuilderBaseTest):
 							  self.timestamp(1),
 							  self.inputEvent('value1', 12.25, id = self.modelId),
 							  self.timestamp(2),
-							  self.inputEvent('value2', 7.75, id = self.modelId),		#absolute Output at this point would be 4.5 (12.25-7.75)
+							  self.inputEvent('value2', 7.75, id = self.modelId),  #absolute Output at this point would be 4.5 (12.25-7.75)
 							  self.timestamp(2.1),
-							  self.inputEvent('value2', 17.25, id=self.modelId),		#signed Output at this point would be -5 (12.25-17.25)
+							  self.inputEvent('value2', 17.25, id=self.modelId),  #signed Output at this point would be -5 (12.25-17.25)
 							  self.timestamp(2.5),
 							  )
 
@@ -31,5 +31,5 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		self.assertGrep(self.analyticsBuilderCorrelator.logfile, expr='Model \"' + self.modelId + '\" with PRODUCTION mode has started')
 		
 		# Verifying the result - output from the block.
-		self.assertGrep('output.evt', expr=self.outputExpr('absoluteDifference', 4.5))
-		self.assertGrep('output.evt', expr=self.outputExpr('signedDifference', -5))
+		self.assertGrep('output.evt', expr=self.outputExpr('absoluteDifference', 4.50))
+		self.assertGrep('output.evt', expr=self.outputExpr('signedDifference', -5.00))

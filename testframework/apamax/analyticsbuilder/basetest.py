@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## License
-# Copyright (c) 2017-2019 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2017-2020 Software AG, Darmstadt, Germany and/or its licensors
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
 # file except in compliance with the License. You may obtain a copy of the License at
@@ -17,6 +17,7 @@ from apama.correlator import CorrelatorHelper
 from apama.basetest import ApamaBaseTest
 import os, zipfile, json
 from pathlib import Path
+import math
 
 class Waiter:
 	def __init__(self, parent, corr, channels=[]):
@@ -25,9 +26,13 @@ class Waiter:
 		self.stdouterr = self.parent.allocateUniqueStdOutErr('waiter')
 
 		corr.receive(self.stdouterr[0], channels=channels)
-	def waitFor(self, expr, count=5):
+	def waitFor(self, expr, count=5, errorExpr=None):
 		self.corr.flush(count=count)
-		self.parent.waitForSignal(self.stdouterr[0], expr=expr)
+		if errorExpr==None:
+			self.parent.waitForSignal(self.stdouterr[0], expr=expr)
+		else:
+			self.parent.waitForSignal(self.stdouterr[0], expr=f'({expr})|({errorExpr})')
+			self.parent.assertGrep(self.stdouterr[0], expr=errorExpr, contains=False)
 
 class AnalyticsBuilderBaseTest(ApamaBaseTest):
 	"""
@@ -143,7 +148,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			blockUnderTest=[blockUnderTest]
 		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(wiring), '{}'])
 		corr.sendEventStrings(f'apamax.analyticsbuilder.test.Test({testParams})')
-		waiter.waitFor('com.apama.scenario.Created')
+		waiter.waitFor(expr='com.apama.scenario.Created', errorExpr='CreateFailed')
 		return id
 
 
@@ -193,6 +198,9 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			value=json.dumps(value)
 		if value == None:
 			value = '.*'
+		if isinstance(value, float):
+			value = self.formatFloat(value)
+
 		return f'apamax.analyticsbuilder.test.Output\("{name}","{id}","{partition}",{time},any\(.*,{value}\),{open}{properties}{end}\)'
 
 	def sendEventStrings(self, corr, *events, **kwargs):
@@ -216,3 +224,42 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			logfile = self.analyticsBuilderCorrelator.logfile
 		self.assertGrep(logfile, expr=' ERROR .*', contains=False)
 		self.assertGrep(logfile, expr=' WARN .*', contains=False, ignores=['RLIMIT.* is not unlimited'])
+
+	def formatFloatExponent(self, num):
+		e = math.floor(math.log10(abs(num)))
+		normalized = num * math.pow(10, -e)
+		return f'{self.formatFloatSimple(normalized)}e{e:+03}'
+
+	def formatFloatSimple(self, num):
+		# always in straightforward non-exponent form:
+		parts = list(map(lambda x: '' if int(x) == 0 else x, f'{num}'.split('.')))
+		if (len(parts) == 1 or parts[1] == ''): return f'{parts[0]}'
+		return f'{parts[0]}.{parts[1]}'
+
+	def formatFloat(self, num):
+		"""
+		Normalises decimal number to match what Apama does
+
+		This will be used for verifying output expression.
+		:param num: the float value passed to outputExpr in test
+		:return:
+		"""
+		if not math.isfinite(num):  # Infinite, NaN
+			if num == math.inf: return 'Infinity'
+			if num == -math.inf: return '-Infinity'
+			return 'NaN'  # note: NaN != NaN
+		if (num == 0): return '0'
+		e = math.floor(math.log10(abs(num)))
+		normalized = num * math.pow(10, -e)
+		if (e < -4):
+			return self.formatFloatExponent(num)
+		if (e < 7):
+			return self.formatFloatSimple(num)
+		if (e < 16):
+			simple = self.formatFloatSimple(num)
+			# use exponent form iff shorter:
+			if len(str(normalized)) + 4 < len(simple):
+				return self.formatFloatExponent(num)
+			else:
+				return simple
+		return self.formatFloatExponent(num)

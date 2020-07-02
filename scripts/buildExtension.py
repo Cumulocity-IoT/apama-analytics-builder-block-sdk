@@ -205,7 +205,7 @@ class C8yConnection(object):
 		req = urllib.request.Request(url + path, data=body, headers=headers, method=method)
 		resp = self.urlopener.open(req)
 		if resp.getheader('Content-Type', '') == 'text/html': # we never ask for HTML, if we got it, this is probably the wrong URL (or we're very confused)
-			raise Exception(f'Failed to perform REST request for resource {path} on url {self.base_url}. Verify that the base Cumulocity URL is correct.')
+			raise urllib.error.HTTPError(url, 404, resp.getheaders(), f'Failed to perform REST request for resource {path} on url {self.base_url}. Verify that the base Cumulocity URL is correct.', None)
 
 
 		# return the object id if POST
@@ -308,7 +308,7 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 	
 	# checks Analytics builder version with Apama-ctrl version
 	checkVersions(connection, ignoreVersion)
-	checkIfStarter(connection)
+	checkIfStarter(connection, ignoreVersion)
 	
 	# Get existing ManagedObject for PAS extension.
 	try:
@@ -362,30 +362,39 @@ def isAllRemoteOptions(args, remote):
 			if v and getattr(args, k, None) is None:
 				raise Exception(f'Argument --{k} is required for the remote operation.')
 
-def checkIfStarter(connection):
+def checkIfStarter(connection,ignoreVersion):
 	is_starter = None
 	try:
 		resp = connection.request('GET',f'/service/cep/diagnostics/apamaCtrlStatus')
 		is_starter = (json.loads(resp).get('is_starter_mode'))		
 	except urllib.error.HTTPError as err:
-		print(f'Could not identify Apama-ctrl Edition : {err}')	
+		print(f'Could not identify Apama-ctrl : {err}')	
 	if is_starter == True:
-		raise Exception(f'Uploading extensions is not supported on Apama Starter Edition')	
+		if ignoreVersion:
+			print(f'WARNING: Uploaded extensions are not supported in Apama Starter so they will not be available in the model editor.')
+		else:
+			print(f'FAILED: Extensions are not supported in Apama Starter. Ignore the check using --ignoreVersion')
+			exit()
 
 def checkVersions(connection, ignoreVersion):
 	
 	apamactrl_version = None
+	git_url = 'https://github.com/SoftwareAG/apama-analytics-builder-block-sdk/releases'
+
 	try:
 		resp = connection.request('GET', f'/service/cep/diagnostics/componentVersion')
 		apamactrl_version = json.loads(resp).get('releaseTrainVersion')
+		
 	except urllib.error.HTTPError as err:
 		if err.code == 404:
 			if ignoreVersion:
-				print(f'WARNING: It is recommended to use Analytics builder script only against Apama-ctrl with same version.', file=sys.stderr)
+				print(f'WARNING: It is recommended to use the Analytics Builder script only against Apama-ctrl with the same version.', file=sys.stderr)
 			else:
-				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url}. Verify that the base Cumulocity URL is correct.')
+				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url}. A user using a Cumulocity tenant version ({apamactrl_version}) has to checkout the latest and compatible version of the branch, for example if using the cloned github repository, switch to the 10.5.0.x branch using git checkout rel/10.5.0.x. Else download the latest release of 10.5.0.x from {git_url}.')
+
+
 		else:
-			if err.code == 502:
+			if err.code >= 400:
 				if not ignoreVersion:
 					ignoreVersion= True
 					print(f'WARNING: apama-ctrl may not be running, skipping version check.', file=sys.stderr)
@@ -396,10 +405,11 @@ def checkVersions(connection, ignoreVersion):
 	sdk_version = buildVersions.RELEASE_TRAIN_VERSION
 	
 	if apamactrl_version is not None and apamactrl_version != sdk_version:
+		
 		if ignoreVersion:
-			print(f'WARNING: It is recommended to use Analytics builder script only against Apama-ctrl with same version. Version of Analytics Builder script is {sdk_version} but version of Apama-ctrl is {apamactrl_version}.')
+			print(f'WARNING: It is recommended to use the Analytics Builder script only against Apama-ctrl with the same version. The version of the Analytics Builder script is {sdk_version} but the version of Apama-ctrl is {apamactrl_version}.')
 		else:
-			raise Exception(f'Analytics builder script version ({sdk_version}) is different from Apama-ctrl version ({apamactrl_version}). Ignore the check using --ignoreVersion but it is not recommended.')
+			raise Exception(f'The apama analytics builder block sdk version has to be compatible with the apama-ctrl microservice version. Please download the latest block sdk release for v{apamactrl_version} from https://github.com/SoftwareAG/apama-analytics-builder-block-sdk/releases. If you have cloned the git repository then checkout/switch to the branch that\'s compatible with the version of the apama-ctrl microservice. For example, if the apama-ctrl microservice release train version is {apamactrl_version} switch to {apamactrl_version}.x branch using \'git checkout rel/{apamactrl_version}.x\'. You can also provide the --ignoreVersion command line option if you want to ignore the version compatibility check.')
 
 def run(args):
 	# Support remote operations and whether they are mandatory.

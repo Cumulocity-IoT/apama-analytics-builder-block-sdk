@@ -14,7 +14,7 @@ This excludes the Analytics Framework 'CDP' file, which is provided in binary fo
 
 ## Analytics Builder version
 
-This version of the SDK supports Analytics Builder 10.5.0 (October 2019).  To make use of this, you will require an installation of Apama 10.5.0. If you do not already have access, then you can download the 'community' edition from <http://www.apamacommunity.com/downloads/> (shortly after the official Software AG release date)
+This version of the SDK supports Analytics Builder 10.6.6.  To make use of this, you will require an installation of Apama 10.5.3. If you do not already have access, then you can download the 'community' edition from <http://www.apamacommunity.com/downloads/> (shortly after the official Software AG release date)
 
 ## Documentation
 
