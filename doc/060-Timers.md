@@ -50,4 +50,5 @@ The `createTimerWith` action returns a `TimerHandle` object (and this can also b
 
 `TimerParams` allows adding a payload via the `withPayload` action, and a [partition](070-Partitions.md) can be specified.
 
+For absolute timers, if the specified time is in the past, the Analytics Builder framework will call the `$timerRejected` method defined on the block. This method can take the following parameters: `TimerHandle $timerHandle` and `string $reason` (the reason for the timer rejection). If the method is not defined on the block, the Analytics Builder framework will throw an exception.
 [< Prev: Blocks with state](050-State.md) | [Contents](000-contents.md) | [Next: Partition values >](070-Partitions.md) 

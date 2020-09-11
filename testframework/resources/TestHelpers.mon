@@ -23,7 +23,8 @@ using apama.analyticsbuilder.Wire;
 using apama.analyticsbuilder.TimerParams;
 using apama.analyticsbuilder.TimerHandle;
 using apama.analyticsbuilder.Value;
-
+using apama.analyticsbuilder.InputParams;
+using apama.analyticsbuilder.Partition_Wildcard;
 
 
 using apama.analyticsbuilder.BlockInfoRequest;
@@ -61,7 +62,7 @@ event Input {
 /**
  * Test Output.
  *
- * Sent by TestOutput and matches expressions from AnalyticsBuilderBaseTest.outputExpr pysys method.
+ * Sent by TestOutput and logged by the testEventLogger helper.
  */
 event Output {
 	string outputId;
@@ -89,6 +90,13 @@ event TestInput {
 	BlockBase $base;
 	TestInput_$Parameters $parameters;
 	string modelId;
+
+	action $validate(){
+	    RequestForwarding.byKey(new Input, "partitionId");
+	    InputParams inputParams := InputParams.forEventType(Input.getName()).withPartition("");
+		any _ := $base.consumesInput(inputParams);
+	}
+
 	action $init(dictionary<string, any> $modelScopeParameters) {
 		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
 		on all Input(inputId = $parameters.inputId, modelId = modelId) as i {
@@ -100,6 +108,14 @@ event TestInput {
 		log "TEST: Input "+modelId+"."+$parameters.inputId+" = "+$payload.valueToString() at INFO;
 		$setOutput_output($activation, $payload);
 	}
+
+	/**
+	* This action is called by the framework when the absolute timer is too old.
+	*/
+	action $timerRejected(TimerHandle $timerHandle, string $reason) {
+		log "TimerRejected: " + $timerHandle.toString() + " reason: "+ $reason + " for blockId: " + $base.getBlockId() + " of type: " + self.getName();
+	}
+
 	action $outputType_output() returns string {
 		return $parameters.type;
 	}
@@ -131,7 +147,7 @@ event TestOutput {
 			}
 		}
 		log "TEST: Output "+modelId+"."+$parameters.outputId+" = "+$input_input.value.valueToString() at INFO;
-		emit Output($parameters.outputId, modelId, $activation.partition.valueToString(), currentTime, $input_input.value, $input_input.properties) to "TestOutput";
+		send Output($parameters.outputId, modelId, $activation.partition.valueToString(), currentTime, $input_input.value, $input_input.properties) to "TestOutput";
 	}
 }
 

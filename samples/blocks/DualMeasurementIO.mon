@@ -1,5 +1,5 @@
 ﻿/*
- * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
  * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0.
  *
  */
@@ -15,6 +15,7 @@ using apama.analyticsbuilder.BlockBase;
 using apama.analyticsbuilder.Activation;
 using apama.analyticsbuilder.Value;
 using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.TimerHandle;
 using apama.analyticsbuilder.L10N;
 using apama.analyticsbuilder.ABConstants;
 using com.apama.cumulocity.Measurement;
@@ -22,10 +23,13 @@ using com.apama.cumulocity.MeasurementValue;
 using com.apama.exceptions.Exception;
 
 using apama.analyticsbuilder.Promise;
-using apama.analyticsbuilder.cumulocity.inventory.InventoryLookup;
-using apama.analyticsbuilder.cumulocity.inventory.InputHelper;
-using apama.analyticsbuilder.cumulocity.inventory.OutputHelper;
+using apama.analyticsbuilder.PromiseJoiner;
 using apama.analyticsbuilder.Partition_Broadcast;
+using apama.analyticsbuilder.cumulocity.CumulocityInputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityInputParams; 
+
+using apama.analyticsbuilder.cumulocity.CumulocityOutputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityOutputParams;
 
 /*
  * This block is equivalent to two normal Measurement input blocks and an Expression block performing a division
@@ -85,27 +89,7 @@ event DualMeasurementIO_$Parameters{
 	action $validate() {
 		BlockBase.throwsOnEmpty(deviceId, "deviceId", self);
 	}
-}
-
-
-/** This is a per-input object passed to InputHelper for each of the two inputs that the block has.
-*/
-event DualMeasurementIO_SubInput {
-	BlockBase base; // required by InputHelper; it will use a 'base' member iff there is no '$base' member.
-	/**All the devices for which block will be listening. @private */
-	sequence<string> devices; // set by reflection in InputHelper
-	boolean isGroup; // set by reflection in InputHelper
-	boolean isBroadcastDevice; // set by reflection in InputHelper
-	string inputId; // set by reflection in InputHelper
-}
-
-event DualMeasurementIO_SubOutput {
-	BlockBase base; // required by InputHelper; it will use a 'base' member iff there is no '$base' member.
-	boolean currentDevice;
-	boolean isBroadcastDevice; // set by reflection in OutputHelper
-	/** The current deviceId, if currentDevice is false */
-	string deviceId;
-}
+} 
 
 
 /** Dual measurement state.
@@ -131,80 +115,61 @@ event DualMeasurementIO_$State {
  * @$blockType c8y_Input
  */
 event DualMeasurementIO{
-	
 	BlockBase $base;
-	
+
 	/**The parameters for the block. */
 	DualMeasurementIO_$Parameters $parameters;
-	
 
-	boolean ignoreTimestamp; // always false in simulation mode, else $parameters.ignoreTimestamp
+	/** The input handler to schedule the numerator input events for processing at the specified time. */
+	CumulocityInputHandler numeratorInputHandler;
+	/** The input handler to schedule the denominator input events for processing at the specified time. */
+	CumulocityInputHandler denominatorInputHandler;
 
-	// latest timestamp assigned to input events - iff ignoreTimestamp set. While this is state, we only use it as a tiebreaker
-	// if we receive events at the same model time.  We don't care about it being independent across different partitions,
-	// nor persisted across correlator instances.
-	float timeValue;
-	
+	/** The output handler to send the ratio output events. */
+	CumulocityOutputHandler ratioOutputHandler;
+	/** The output handler to send the inverse output events. */
+	CumulocityOutputHandler inverseOutputHandler;
 
-	/** SubInput for the Numerator */
-	DualMeasurementIO_SubInput numeratorInput;
-	/** SubInput for the Denominator */
-	DualMeasurementIO_SubInput denominatorInput;
-	/** SubOutput for the ratio */
-	DualMeasurementIO_SubOutput ratioOutput;
-	/** SubOutput for the inverse ratio output */
-	DualMeasurementIO_SubOutput inverseOutput;
-
-	string modelId;
 	// names of the fragment, series:
 	constant string SERIES := "V";
-	dictionary<string, any> modelScopeParameters;
 
-	action $validate(dictionary<string, any> $modelScopeParameters) returns Promise {
-		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
-
-		numeratorInput.base := $base;
-		denominatorInput.base := $base;
-		ratioOutput.base := $base;
-		inverseOutput.base := $base;
-		modelScopeParameters := $modelScopeParameters;
-
-		return Promise.resolve(new any).andThen(declareNumeratorInput); // chain a call to declareNumerator to make it uniform across the inputs and outputs
+	/**
+	 * Asynchronously validates that the device exists in the inventory and creates all input and output handlers for scheduling the input events for processing and sending output events.
+	 *
+	 * See - Asynchronous validations in the block-sdk guide for more details.
+	 *
+	 * @return a <tt>Promise</tt> object, validation of the model will be suspended until the Promise is fulfilled.
+	*/
+	action $validate() returns Promise {
+		// Create parameters for all input and outputs (See Input and Output blocks and Cumulocity specific helpers in the block-sdk guide for more details)
+		CumulocityInputParams numeratorInput := CumulocityInputParams.create($parameters.deviceId, self, Measurement.getName()).withFields({"fragment":<any>$parameters.numeratorFragment, "series":SERIES});
+		CumulocityInputParams denominatorInput := CumulocityInputParams.create($parameters.deviceId, self, Measurement.getName()).withFields({"fragment":<any>$parameters.denominatorFragment, "series":SERIES});
+		CumulocityOutputParams ratioOutput := CumulocityOutputParams.forSyncEventType($parameters.deviceId, self, Measurement.getName(), {"fragment":<any>$parameters.ratioFragment, "series":SERIES} );
+		CumulocityOutputParams inverseOutput := CumulocityOutputParams.forSyncEventType($parameters.deviceId, self, Measurement.getName(), {"fragment":<any>$parameters.inverseFragment, "series":SERIES} );
+		
+		// Declare all input and outputs, and combine all Promise objects into a single Promise object and return.
+		return PromiseJoiner.joinAll([
+		                              numeratorInput.declare(saveNumeratorInputHandler), 
+		                              denominatorInput.declare(saveDenominatorInputHandler), 
+		                              ratioOutput.declare(saveRatioOutputHandler), 
+		                              inverseOutput.declare(saveInverseOutputHandler)]);
 	}
-
-	action declareNumeratorInput(any _) returns any {
-		InputHelper ihelper := InputHelper.forBlock(numeratorInput, modelScopeParameters);
-		ihelper.setInput($parameters.deviceId, Measurement.getName(), {"fragment":<any>$parameters.numeratorFragment, "series":SERIES});
-
-		return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput).andThen(declareDenominatorInput); // returning a promise from a promise-chained callback will wait on that promise.
+	
+	/** Save the input handler for the numerator inputs. */
+	action saveNumeratorInputHandler(CumulocityInputHandler inputHandler) {
+		numeratorInputHandler := inputHandler;
 	}
-
-	action declareDenominatorInput(any _) returns any {
-		InputHelper ihelper := InputHelper.forBlock(denominatorInput, modelScopeParameters);
-		ihelper.setInput($parameters.deviceId, Measurement.getName(), {"fragment":<any>$parameters.denominatorFragment, "series":SERIES});
-
-		return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput).andThen(declareRatioOutput);
+	/** Save the input handler for the denominator inputs. */
+	action saveDenominatorInputHandler(CumulocityInputHandler inputHandler) {
+		denominatorInputHandler := inputHandler;
 	}
-
-	action declareRatioOutput(any _) returns any {
-
-		OutputHelper helper := OutputHelper.forBlock(ratioOutput);
-		helper.setSyncOutput($parameters.deviceId, Measurement.getName(), {"fragment":<any>$parameters.ratioFragment, "series":SERIES});
-
-		return InventoryLookup.lookup($parameters.deviceId).andThen(helper.declareOutput).andThen(declareInverseOutput);
+	/** Save the output handler for the ratio outputs. */
+	action saveRatioOutputHandler(CumulocityOutputHandler cumOuputHandler) {
+		ratioOutputHandler := cumOuputHandler;
 	}
-
-	action declareInverseOutput(any _) returns any {
-
-		OutputHelper helper := OutputHelper.forBlock(inverseOutput);
-		helper.setSyncOutput($parameters.deviceId, Measurement.getName(), {"fragment":<any>$parameters.inverseFragment, "series":SERIES});
-
-		return InventoryLookup.lookup($parameters.deviceId).andThen(helper.declareOutput);
-	}
-
-
-	action throwNoDevices(string nameOrId) {
-		throw L10N.getLocalizedException("blk_apamax.analyticskit.samples.DualMeasurementIO_no_devices", [<any> nameOrId]);
+	/** Save the output handler for the inverse outputs. */
+	action saveInverseOutputHandler(CumulocityOutputHandler cumOuputHandler) {
+		inverseOutputHandler := cumOuputHandler;
 	}
 
 	/**
@@ -213,12 +178,12 @@ event DualMeasurementIO{
 	 */
 	action $init() {
 		string id;
-		for id in numeratorInput.devices {  // will be the same for both inputs
+		for id in numeratorInputHandler.getDevices() {  // will be the same for both inputs
 			on all Measurement(source = id) as msmnt {
 				// may be both together or separately...
 				if hasFrag(msmnt, $parameters.numeratorFragment) or
 				   hasFrag(msmnt, $parameters.denominatorFragment) {
-					extractMeasurement(msmnt);
+					handleMeasurement(msmnt);
 				}
 			}
 		}
@@ -230,50 +195,33 @@ event DualMeasurementIO{
 	}
 
 	/**
-	 * Extracts the measurement value from event if it is not too old 
-	 * and creates the timer according to the timestamp of the event.
+	 * Schedule the measurement value to be processed at the timestamp of the event.
 	 * @param measurement The incoming Measurement event from Cumulocity.
 	 * @private
 	 */
-	action extractMeasurement(Measurement measurement) {
+	action handleMeasurement(Measurement measurement) {
 		// this param indicates it was sent to Cumulocity from Apama - in which case we ignore it; for model-to-model communications, the CreateMeasurement block routes the event, and we process that immediately.  The measurement will also go to Cumulocity and come back, but that may come 'too late'.
-		if not (measurement.params.hasKey(ABConstants.MODEL_NAME_IDENTIFIER)) { 
-			try {
-				if measurement.time  < $base.getModelTime()  {
-					$base.droppedEvent(measurement, measurement.time);
-					return;
-				}
-
-				float timerDelay;
-				timerDelay := measurement.time;
-
-				DualMeasurementIO_SubInput subInput;
-				if hasFrag(measurement, $parameters.numeratorFragment) {
-					subInput := numeratorInput;
-				} else {
-					subInput := denominatorInput;
-				}
-
-
-				TimerParams tp := TimerParams.absolute(timerDelay).withPayload(measurement).withInputId(subInput.inputId);
-				if(subInput.isGroup) {
-					tp := tp.withPartition(measurement.source);
-				}
-				else if(subInput.isBroadcastDevice) {
-					tp := tp.withPartition(Partition_Broadcast(measurement.source));
-				}
-				any discard := $base.createTimerWith(tp);
-			} catch (Exception e) {
-				log $base.getModelTime().toString()+": Dropping event:"+measurement.toString()+", exception:"+e.toString() at DEBUG;
-				$base.droppedEvent(measurement, measurement.time);
+		if not (measurement.params.hasKey(ABConstants.MODEL_NAME_IDENTIFIER)) {
+			// Find the input handler for the event and schedule the event
+			CumulocityInputHandler inputHandler;
+			if hasFrag(measurement, $parameters.numeratorFragment) {
+				inputHandler := numeratorInputHandler;
+			} else {
+				inputHandler := denominatorInputHandler;
 			}
+			
+			optional<float> timeValue := measurement.time;
+			// Schedule the event to be processed at the timestamp of the event. This creates a timer which when triggered, 
+			// calls the $timerTriggered action providing the measurement event as payload.
+			any discard := inputHandler.schedule(measurement, timeValue);
 		}
 	}
 
 	/**
 	 * Sets output on the current activation.
 	 * @param $activation The current activation.
-	 * @param value value to be put on the wire.
+	 * @param value The input measurement event passed to the schedule action of the input handlers.
+	 * @param $blockState The current state of the block.
 	 */
 	action $timerTriggered(Activation $activation, any $payload, DualMeasurementIO_$State $blockState) {
 		Measurement mInput := <Measurement> $payload;
@@ -295,23 +243,33 @@ event DualMeasurementIO{
 			ifpresent $blockState.latestNumerator as num, $blockState.latestDenominator as den {
 				// only create a single measurement output for each device for 
 				if $blockState.lastOutputTime < modelTime {
-					sendMeasurement(mInput.source, modelTime, $parameters.ratioFragment, num / den);
-					sendMeasurement(mInput.source, modelTime, $parameters.inverseFragment, den / num);
+					sendMeasurement(modelTime, $parameters.ratioFragment, num / den, ratioOutputHandler, $activation);
+					sendMeasurement(modelTime, $parameters.inverseFragment, den / num, inverseOutputHandler , $activation);
 					$blockState.lastOutputTime := modelTime;
 				}
 			}
 		}
 	}
 
-	action sendMeasurement(string source, float time, string fragment, float value) {
-		Measurement m := new Measurement;
-		m.source := source;
-		m.type := fragment;
-		m.time := time;
-		m.measurements[fragment] := {SERIES: MeasurementValue(value, "", new dictionary<string, any>)};
-		route m;
-		m.params[ABConstants.MODEL_NAME_IDENTIFIER] := modelId;
-		send m to m.CREATE_CHANNEL;
+	/**
+	* This action is called by the framework if an input event scheduled for the processing is too old.
+	*/
+	action $timerRejected(TimerHandle $timerHandle, string $reason) {
+		log "TimerRejected: " + $timerHandle.toString() + " reason: "+ $reason + " for blockId: " + $base.getBlockId() + " of type: " + self.getName();
+	}
+
+	/** Send a Measurement output event to Cumulocity. */
+	action sendMeasurement(float time, string fragment, float value, CumulocityOutputHandler outputhandler, Activation $activation) {
+		// Get the output device for which output should be produced. It returns the current device which caused the model execution 
+		// if the source device is a device group. It returns the empty value if output should not be generated for the current activation.
+		ifpresent outputhandler.deviceToOutput($activation) as device {
+			Measurement m := new Measurement;
+			m.source := device; // set the device returned as source
+			m.type := fragment;
+			m.time := time;
+			m.measurements[fragment] := {SERIES: MeasurementValue(value, "", new dictionary<string, any>)};
+			outputhandler.sendOutput(m, m.SEND_CHANNEL, $activation);
+		}
 	}
 
 	/**

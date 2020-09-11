@@ -24,7 +24,7 @@
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"><FONT CLASS="NavBarFont1Rev"><B>Package</B></FONT>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.6.6.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
@@ -50,6 +50,9 @@
 <TD WIDTH="15%"><B><A HREF="ABConstants.html" title="Event in apama.analyticsbuilder">ABConstants</A></B></TD><TD>Constants for entries in <tt>$modelScopeParameters</tt>.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="ActivateModel.html" title="Event in apama.analyticsbuilder">ActivateModel</A></B></TD><TD>Sent by the eval manager to activate a newly deployed model.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="Activation.html" title="Event in apama.analyticsbuilder">Activation</A></B></TD><TD>Representation of a model activation.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
@@ -59,10 +62,25 @@
 <TD WIDTH="15%"><B><A HREF="ConfigurationProperty.html" title="Event in apama.analyticsbuilder">ConfigurationProperty</A></B></TD><TD>Values from configurable properties which are passed to blocks as one of the action parameters.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="EventPartition.html" title="Event in apama.analyticsbuilder">EventPartition</A></B></TD><TD>Partition of an event type.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="InputHandler.html" title="Event in apama.analyticsbuilder">InputHandler</A></B></TD><TD>A handler which is used for scheduling input events to be processed at the earliest possible time or at the provided timestamp.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="InputParams.html" title="Event in apama.analyticsbuilder">InputParams</A></B></TD><TD>Parameters for describing a stream of events consumed by an input block.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="L10N.html" title="Event in apama.analyticsbuilder">L10N</A></B></TD><TD>API for the localization of an error message.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="NameValue.html" title="Event in apama.analyticsbuilder">NameValue</A></B></TD><TD>The event for a dynamic property.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="OutputHandler.html" title="Event in apama.analyticsbuilder">OutputHandler</A></B></TD><TD>A handler which is used for sending output events outside of the model.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="OutputParams.html" title="Event in apama.analyticsbuilder">OutputParams</A></B></TD><TD>Parameters for describing a stream of events produced by an output block.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="Partition_Alias.html" title="Event in apama.analyticsbuilder">Partition_Alias</A></B></TD><TD>Denotes an alias device.</TD>
@@ -89,10 +107,19 @@
 <TD WIDTH="15%"><B><A HREF="RequestForwarding.html" title="Event in apama.analyticsbuilder">RequestForwarding</A></B></TD><TD>Request forwarding of an event type to workers.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="TemplateParameterDefinition.html" title="Event in apama.analyticsbuilder">TemplateParameterDefinition</A></B></TD><TD>A template parameter on a model.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="TemplateReference.html" title="Event in apama.analyticsbuilder">TemplateReference</A></B></TD><TD>The event for Template Reference</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="TimerHandle.html" title="Event in apama.analyticsbuilder">TimerHandle</A></B></TD><TD>A handle to a created timer.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="TimerParams.html" title="Event in apama.analyticsbuilder">TimerParams</A></B></TD><TD>Parameters for creating a timer.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="UpdateForeignInputs.html" title="Event in apama.analyticsbuilder">UpdateForeignInputs</A></B></TD><TD>Used to notify forwarders about foreign inputs.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="Value.html" title="Event in apama.analyticsbuilder">Value</A></B></TD><TD>The value with extra properties.</TD>
@@ -119,7 +146,7 @@
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"><FONT CLASS="NavBarFont1Rev"><B>Package</B></FONT>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.6.6.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>

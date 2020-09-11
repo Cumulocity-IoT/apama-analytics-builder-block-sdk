@@ -86,5 +86,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		# Verifying that we received all the values that were sent in and in same order.
 		self.assertOrderedGrep('test-http-server.out', exprList=list(map(str, self.values)))
 		
-		self.assertOrderedGrep('output.evt', exprList=list(map(lambda x: self.outputExpr('responseBody', properties='.*.any.string,"value".:.*'+str(2 * x)+'.*'), self.values)))
+		self.assertThat('props == expected', 
+			props=[evt['properties']['value']['value'] for evt in self.allOutputFromBlock() if evt['outputId'] == 'responseBody'],
+			expected = [x * 2 for x in self.values])
 		

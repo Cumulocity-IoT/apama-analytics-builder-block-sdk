@@ -78,7 +78,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:param corrHelper: The CorrelatorHelper object.
 		:return: None.
 		"""
-		corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity/10.5")
+		corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-forward-events.cdp')
 		
 	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, **kwargs):
@@ -122,6 +122,8 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		corr.flush(10)
 		self.analyticsBuilderCorrelator = corr
 		corr.receive('output.evt', channels=['TestOutput'])
+		corr.injectTestEventLogger(channels=['TestOutput'])
+
 		return corr
 
 
@@ -185,9 +187,34 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			value = json.dumps(value)
 		return f'apamax.analyticsbuilder.test.Input("{name}", "{id}", "{partition}", any({eplType}, {value}))'
 	
+	def outputFromBlock(self, outputId, modelId='model_0', partitionId=None):
+		"""
+		Get all of the outputs of a block
+		:param outputId: The identifier of the output
+		:param modelId: The model to test, or model_0 by default
+		:param partitionId: which partition, or None by default to not filter by partition.
+		:return: list of the values.
+		"""
+		self.log.info(self.apama.extractEventLoggerOutput(self.analyticsBuilderCorrelator.logfile))
+		return [evt['value'] for evt in self.apama.extractEventLoggerOutput(self.analyticsBuilderCorrelator.logfile)
+			if evt['modelId'] == modelId and evt['outputId'] == outputId and (partitionId == None or evt['partitionId'] == partitionId )]
+
+	def allOutputFromBlock(self, modelId='model_0'):
+		"""
+		Get all of the outputs of a block - a list of dictionaries
+		:param modelId: The model to test, or model_0 by default
+		:return: list of dictionaries with keys including value, partitionId, time, outputId and properties
+		"""
+		return [evt for evt in self.apama.extractEventLoggerOutput(self.analyticsBuilderCorrelator.logfile)
+			if evt['modelId'] == modelId]
+
+	def assertBlockOutput(self, outputId, expected, modelId='model_0', partitionId = None, **kwargs):
+		self.assertThat('output == expected', output=self.outputFromBlock(outputId, modelId = modelId, partitionId = partitionId), expected=expected, **kwargs)
+
 	def outputExpr(self, name='.*', value=None, id='.*', partition='.*', time='.*', properties='.*'):
 		"""
 		Expression for assertGrep for an output event to look for.
+		Deprecated: use assertBlockOutput, outputFromBlock or allOutputFromBlock
 		:param name: The identifier of the output
 		:param value: The value to look for
 		:param id: The model to test, or model_0 by default

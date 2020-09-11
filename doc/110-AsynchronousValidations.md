@@ -50,4 +50,4 @@ action validateLookup(any arg) returns any {
 
 For examples, see the **DeviceLocationInput.mon** sample.
 
-[< Prev: Cumulocity-specific helpers](105-CumulocityHelper.md) | [Contents](000-contents.md)
+[< Prev: Cumulocity-specific helpers](105-CumulocityHelper.md) | [Contents](000-contents.md) | [Next: Migrating input and output blocks to the version 2 API >](150-MigrateInputOutputBlocks.md) 

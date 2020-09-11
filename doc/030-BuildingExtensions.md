@@ -26,7 +26,8 @@ The `analytics_builder` script takes a two-word command, followed by any argumen
 
 * `upload extension --cumulocity_url <url> --username <user> --password <password> --input <path to zip file>`
 
-  Upload an extension to a Cumulocity IoT instance.
+  Upload an extension to a Cumulocity IoT instance.  Note that the 'apama-ctrl-starter' version of Apama in Cumulocity IoT does not support extensions and thus you cannot use it for custom blocks.
+  Ask your support contact to upgrade to a fully-featured version of apama-ctrl.
 
 
 * `build metadata --output <json file>`

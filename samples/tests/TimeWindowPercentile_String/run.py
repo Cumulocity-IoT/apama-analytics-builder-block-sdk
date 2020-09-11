@@ -45,9 +45,9 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		                      self.timestamp(16.9),
 							  self.inputEvent('0:value', "foxtrot"),
 							  )
-		self.assertGrep('output.evt', expr=self.outputExpr('1:output', "beta")) # percentile 15
-		self.assertGrep('output.evt', expr=self.outputExpr('2:output', "beta")) # percentile 50
-		self.assertGrep('output.evt', expr=self.outputExpr('3:output', "charlie")) # percentile 80
+		self.assertBlockOutput('1:output', ['beta']) # percentile 15
+		self.assertBlockOutput('2:output', ['beta']) # percentile 50
+		self.assertBlockOutput('3:output', ['charlie']) # percentile 80
 		self.sendEventStrings(correlator,
 		                      self.timestamp(22),
 							  )
@@ -58,6 +58,6 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		# Verifying that there are no errors in log file.
 		self.checkLogs()
 		
-		self.assertGrep('output.evt', expr=self.outputExpr('1:output', "charlie")) # percentile 15
-		self.assertGrep('output.evt', expr=self.outputExpr('2:output', "echo")) # percentile 50
-		self.assertGrep('output.evt', expr=self.outputExpr('3:output', "foxtrot")) # percentile 80
+		self.assertBlockOutput('1:output', ['beta', 'charlie']) # percentile 15
+		self.assertBlockOutput('2:output', ['beta', 'echo']) # percentile 50
+		self.assertBlockOutput('3:output', ['charlie', 'foxtrot']) # percentile 80

@@ -386,11 +386,21 @@ def checkVersions(connection, ignoreVersion):
 		apamactrl_version = json.loads(resp).get('releaseTrainVersion')
 		
 	except urllib.error.HTTPError as err:
+		microserviceNotSubscribed=False
 		if err.code == 404:
+			if 'Content-Type' in err.headers and 'application/json' in err.headers['Content-Type']:
+				try:
+					errMsg = json.load(err)
+					if 'error' in errMsg and 'microservice/' in errMsg['error']:
+						microserviceNotSubscribed=True
+				except:
+					pass # mal-formed error response, suggests it's something else.
+		if err.code == 404 and not microserviceNotSubscribed:
+			# if it's a 404 and not a microservice not subscribed error, this is a 404 from the microservice itself.
 			if ignoreVersion:
 				print(f'WARNING: It is recommended to use the Analytics Builder script only against Apama-ctrl with the same version.', file=sys.stderr)
 			else:
-				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url}. A user using a Cumulocity tenant version ({apamactrl_version}) has to checkout the latest and compatible version of the branch, for example if using the cloned github repository, switch to the 10.5.0.x branch using git checkout rel/10.5.0.x. Else download the latest release of 10.5.0.x from {git_url}.')
+				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url} (HTTP status {err.code}). A user using a Cumulocity tenant version ({apamactrl_version}) has to checkout the latest and compatible version of the branch, for example if using the cloned github repository, switch to the 10.5.0.x branch using git checkout rel/10.5.0.x. Else download the latest release of 10.5.0.x from {git_url}.')
 
 
 		else:

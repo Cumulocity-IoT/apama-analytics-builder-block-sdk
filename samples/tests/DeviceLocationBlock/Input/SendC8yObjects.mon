@@ -61,7 +61,7 @@ monitor SendC8YObjects {
 			ManagedObject m := ManagedObject(obj.id, obj.type, obj.name, obj.supportedOperations, obj.supportedMeasurements, obj.childDeviceIds,
 			obj.childAssetIds, obj.deviceParentIds, obj.assetParentIds, pos, param);
 			
-			send m to m.CHANNEL;
+			send m to m.SUBSCRIBE_CHANNEL;
 		}
 	}
 	/**
@@ -81,7 +81,7 @@ monitor SendC8YObjects {
 	 * Mocks c8y inventory, listens for FindManaged object and sends out a response for that.
 	 */
 	action mockInventory() {
-		monitor.subscribe(FindManagedObject.CHANNEL);
+		monitor.subscribe(FindManagedObject.SEND_CHANNEL);
 
 		on all FindManagedObject() as fmo {
 			log "Request:"+fmo.toString();
@@ -105,8 +105,8 @@ monitor SendC8YObjects {
 			FindManagedObjectResponseAck fmorAck := new FindManagedObjectResponseAck;
 			fmorAck.reqId := fmo.reqId;
 
-			send fmor to FindManagedObjectResponse.CHANNEL;
-			send fmorAck to FindManagedObjectResponse.CHANNEL;
+			send fmor to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
+			send fmorAck to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
 		}
 	}
 }

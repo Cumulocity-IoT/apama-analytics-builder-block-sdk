@@ -31,5 +31,5 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		self.assertGrep(self.analyticsBuilderCorrelator.logfile, expr='Model \"' + self.modelId + '\" with PRODUCTION mode has started')
 		
 		# Verifying the result - output from the block.
-		self.assertGrep('output.evt', expr=self.outputExpr('absoluteDifference', 4.50))
-		self.assertGrep('output.evt', expr=self.outputExpr('signedDifference', -5.00))
+		self.assertBlockOutput('absoluteDifference', [4.5, 5])
+		self.assertBlockOutput('signedDifference', [4.5, -5])

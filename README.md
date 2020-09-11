@@ -4,7 +4,7 @@ This is a Software Development Kit (SDK) for producing blocks for the Apama Anal
 
 ## Disclaimer
 
-These tools are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite. Users are free to use, fork and modify them, subject to the license agreement. While Software AG welcomes contributions, we cannot guarantee to include every contribution in the master project.
+These tools are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite. Users are free to use, fork and modify them, subject to the license agreement. While Software AG welcomes contributions, we cannot guarantee to include every contribution in the main project.
 
 ## Licensing
 
@@ -14,7 +14,9 @@ This excludes the Analytics Framework 'CDP' file, which is provided in binary fo
 
 ## Analytics Builder version
 
-This version of the SDK supports Analytics Builder 10.6.6.  To make use of this, you will require an installation of Apama 10.5.3. If you do not already have access, then you can download the 'community' edition from <http://www.apamacommunity.com/downloads/> (shortly after the official Software AG release date)
+This version of the SDK supports Analytics Builder 10.7.0.  To make use of this, you will require an installation of Apama 10.7.0. If you do not already have access, then you can download the 'community' edition from <http://www.apamacommunity.com/downloads/> (shortly after the official Software AG release date).
+
+Note that Analytics Builder requires your Cumulocity IoT tenant to be subscribed to an 'apama-ctrl' microservice.  The 'apama-ctrl-starter' microservice offers only restricted functionality and does not support custom blocks.
 
 ## Documentation
 
@@ -44,3 +46,11 @@ pysys run
 ```bash
 analytics_builder build extension --input samples/blocks --cumulocity_url <URL> --username <tenantID>/<username> --password <password> --name sample-blocks
 ```
+
+## Change Log
+
+See [Change Log](CHANGELOG.md) for changes.
+
+## Migration of input and output blocks to the version 2 API
+
+See [Migrating input and output blocks to the version 2 API](doc/150-MigrateInputOutputBlocks.md) for details on migrating custom input and output blocks to the version 2 API.

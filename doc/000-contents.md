@@ -14,5 +14,6 @@
 13. [Input and output blocks](100-InputAndOutput.md)
 14. [Cumulocity-specific helpers](105-CumulocityHelper.md)
 15. [Asynchronous validations](110-AsynchronousValidations.md)
+16. [Migrating input and output blocks to the version 2 API](150-MigrateInputOutputBlocks.md)
 
 [Next: Introduction >](005-Intro.md) 

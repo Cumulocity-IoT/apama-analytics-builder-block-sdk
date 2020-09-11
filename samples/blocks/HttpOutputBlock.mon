@@ -95,7 +95,7 @@ event HTTPOutput_$Parameters {
  * @$blockCategory Output
  */
 event HTTPOutput {
-	
+
 	/**BlockBase object.
 	 *
 	 * This is initialized by the framework when the block is required for a model.
@@ -190,4 +190,7 @@ event HTTPOutput {
 	 * The HTTP response status code.
 	 */
 	action<Activation,float> $setOutput_statusCode;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+
+	/**To let framework know block is using latest APIs.*/
+	constant integer BLOCK_API_VERSION := 2;
 }

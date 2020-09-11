@@ -32,7 +32,7 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../../..//apama/analyticsbuilder/cumulocity/inventory/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.6.6.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
@@ -45,9 +45,24 @@
 <H2>
 <FONT SIZE="-1">apama.analyticsbuilder.cumulocity.inventory</FONT>
 <BR>Event InputHelper</H2>
-<HR>Helper methods for input blocks.<br>
+<HR>
+<DL>
+<DT>
+<B>Deprecated:</B>
+</DT>
+<DD>
+<I>This helper event has been deprecated, use the CumulocityInputParams and CumulocityInputHandler events instead.</I>
+</DD>
+</DL>Helper methods for input blocks.<br>
 <br> Helpers for input blocks to process <tt>InventoryLookupResults</tt>, calling <tt>listensForInput</tt> and recording the <tt>c8y_inputs</tt> on the model scope parameters. This is typically used as so: <pre><br>InputHelper ihelper := InputHelper.forBlock(self, $modelScopeParameters);<br>ihelper.setInput($parameters.deviceId, Measurement.getName(), {"type":<any>$parameters.measurementType, "fragment":fragment, "series":series});<br>
-<br>return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput);<br></pre> (with other callbacks before <tt>ihelper.declareInput</tt> if needed). The block should have a <tt>throwNoDevices</tt> action which throws a suitable exception for no devices found (without this, a less useful exception will be reported).<HR>
+<br>return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput);<br></pre> (with other callbacks before <tt>ihelper.declareInput</tt> if needed). The block should have a <tt>throwNoDevices</tt> action which throws a suitable exception for no devices found (without this, a less useful exception will be reported).<DL>
+<DT>
+<B>See Also:</B>
+</DT>
+<DD>CumulocityInputParams&nbsp;-&nbsp;To declare an input block.</DD>
+<DD>CumulocityInputHandler&nbsp;-&nbsp;To schedule an input event for processing.</DD>
+</DL>
+<HR>
 <A NAME="action_summary"></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
@@ -56,7 +71,15 @@
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="InputHelper.html#declareInput()">declareInput</A></B>(any&nbsp;a_lookupResult)</CODE>
 <br>
-<br>Promise callback for declaring input.</TD>
+<br>Promise callback for declaring input.<DL>
+<DT>
+<B>Deprecated:</B>
+</DT>
+<DD>
+<I>This action has been deprecated, use the apama.analyticsbuilder.cumulocity.CumulocityInputParams.declare action instead.</I>
+</DD>
+</DL>
+</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../../../apama/analyticsbuilder/cumulocity/inventory/InputHelper.html" title="type in apama.analyticsbuilder.cumulocity.inventory">apama.analyticsbuilder.cumulocity.inventory.InputHelper</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="InputHelper.html#forBlock()">forBlock</A></B>(any&nbsp;block,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;modelScopeParameters)</CODE>
@@ -76,13 +99,27 @@
 </TABLE>
 <A NAME="declareInput()"></A>
 <H3>declareInput</H3>
-<PRE>any&nbsp;<B>declareInput</B>(any&nbsp;a_lookupResult)</PRE>Promise callback for declaring input.<br>
+<PRE>any&nbsp;<B>declareInput</B>(any&nbsp;a_lookupResult)</PRE>
+<DL>
+<DT>
+<B>Deprecated:</B>
+</DT>
+<DD>
+<I>This action has been deprecated, use the apama.analyticsbuilder.cumulocity.CumulocityInputParams.declare action instead.</I>
+</DD>
+</DL>Promise callback for declaring input.<br>
 <br> This will call <tt>BlockBase.listensForInput</tt> and set the <tt>c8y_inputs</tt> in <tt>modelScopeParameters</tt>. If the block has <tt>isGroup</tt> or <tt>devices</tt> members, they are set from the <tt>InventoryLookupResult</tt>.<DL>
 <DT>
 <B>Parameters:</B>
 </DT>
 <DD>
 <tt>a_lookupResult</tt>&nbsp;-&nbsp;The promised result, which should be an <tt>InventoryLookupResult</tt>.</DD>
+</DL>
+<DL>
+<DT>
+<B>See Also:</B>
+</DT>
+<DD>CumulocityInputParams#declare&nbsp;-&nbsp;</DD>
 </DL>
 <HR>
 <A NAME="forBlock()"></A>
@@ -138,7 +175,7 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../../..//apama/analyticsbuilder/cumulocity/inventory/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.6.6.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>

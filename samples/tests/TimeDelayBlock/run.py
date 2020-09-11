@@ -28,13 +28,13 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		                      self.timestamp(2))
 		
 		# As delay is 1.9 seconds and it's only 1 second since we sent in the input, so block should not generate the output.
-		self.assertGrep('output.evt', expr=self.outputExpr('delayedValue', 12.25), contains=False)
+		self.assertThat('12.25 not in output', output = self.outputFromBlock('delayedValue', modelId = self.modelId))
 		
 		# Setting the time to 3.
 		self.sendEventStrings(correlator, self.timestamp(3))
 		
 		# As it's been 2 seconds since we sent the input, now the output should be generated.
-		self.assertGrep('output.evt', expr=self.outputExpr('delayedValue', 12.25), contains=True)
+		self.assertThat('12.25 in output', output = self.outputFromBlock('delayedValue', modelId = self.modelId))
 		
 		self.sendEventStrings(correlator,
 		                      self.inputEvent('value', 7.75, id = self.modelId),
@@ -43,5 +43,5 @@ class PySysTest(AnalyticsBuilderBaseTest):
 	def validate(self):
 		# Verifying that the model is deployed successfully.
 		self.assertGrep(self.analyticsBuilderCorrelator.logfile, expr='Model \"' + self.modelId + '\" with PRODUCTION mode has started')
-		self.assertGrep('output.evt', expr=self.outputExpr('delayedValue', 7.75))
+		self.assertBlockOutput('delayedValue', [12.25, 7.75], modelId = self.modelId)
 		# Do not check logs, we expect some ERRORs from trying to activate a model with no parameters for the block.

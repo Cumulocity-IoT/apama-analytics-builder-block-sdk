@@ -21,5 +21,4 @@ class PySysTest(AnalyticsBuilderBaseTest):
                               )
 
     def validate(self):
-        self.assertGrep('output.evt', expr=self.outputExpr('output', 200.75))
-        self.assertGrep('output.evt', expr=self.outputExpr('output', 110.50))
+        self.assertBlockOutput('output', [200.75, 110.50])

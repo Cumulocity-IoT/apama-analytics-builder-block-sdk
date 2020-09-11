@@ -76,6 +76,8 @@ class PySysTest(AnalyticsBuilderBaseTest):
 			self.assertGrep(self.analyticsBuilderCorrelator.logfile, expr='Model \"'+modelId +'\" with PRODUCTION mode has started')
 		
 		# Verifying the outputs from the block.
-		self.assertGrep('output.evt', expr=self.outputExpr('location', properties='.*"alt":any.float,93.5.*,"lat":any.float,17.426479.,"lng":any.float,78.33123.*', id=self.models[0]))
-		self.assertGrep('output.evt', expr=self.outputExpr('location', properties='.*"alt":any.float,98.4.*,"lat":any.float,3.1428.,"lng":any.float,6.2857.*', id=self.models[1]))
-		self.assertGrep('output.evt', expr=self.outputExpr('location', properties='.*"alt":any.float,94.4.*,"lat":any.float,2.7182.,"lng":any.float,.3678.*', id=self.models[1]))
+		self.assertThat('outputs == expected', outputs = [value['properties'] for value in self.allOutputFromBlock(modelId = self.models[0])], expected = [
+			{'alt':93.5, 'lat':17.426479, 'lng':78.33123 }])
+		self.assertThat('outputs == expected', outputs = [value['properties'] for value in self.allOutputFromBlock(modelId = self.models[1])], expected = [
+			{'alt':98.4, 'lat':3.1428, 'lng':6.2857 },
+			{'alt':94.4, 'lat':2.7182, 'lng':.3678  }])

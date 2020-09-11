@@ -1,8 +1,14 @@
 # Testing blocks
 
-Blocks can be tested using the PySys testing framework. This is included in the Apama installation, along with extensions for using Apama with PySys. Built on top of the Apama extensions is a framework to test blocks. Refer to the [Apama Python API documentation](http://www.apamacommunity.com/documents/10.5.3.0/apama_10.5.3.0_webhelp/pydoc/).
+Blocks can be tested using the PySys testing framework. This is included in the Apama installation, along with extensions for using Apama with PySys. Built on top of the Apama extensions is a framework to test blocks. Refer to the [Apama Python API documentation](http://www.apamacommunity.com/documents/10.7.0.0/apama_10.7.0.0_webhelp/pydoc/).
 
 The samples include tests. The `pysystestproject.xml` configuration relies on the environment variable `ANALYTICS_BUILDER_SDK` being set to the location of the block SDK using an absolute path. PySys tests should contain a `run.py` with a class that extends `apama.analyticsbuilder.basetest:AnalyticsBuilderBaseTest`. In the `execute` method of the test, start a correlator with the `self.startAnalyticsBuilderCorrelator()` method. This starts a correlator, injects the Analytics Builder framework into it, and returns a `CorrelatorHelper` object. Provide a `blockSourceDir` parameter with the path to the source of the blocks, typically within the project tree (use `self.project.SOURCE` from the supplied `pysysproject.xml` file). Then, create a model to test the block with the `self.createTestModel('<blockname>')` method where `<blockname>` is the fully qualified name of the block (this method defaults to using the last correlator started by `startAnalyticsBuilderCorrelator`, or this can be supplied). This results in a model being activated in the correlator with an input and output connected to every input and output of the block, and an identifier of the model is returned. The block can be exercised by sending events created by the `self.inputEvent` method, for a given block input identifier.
+
+The following methods can be used to check the output of the block is as expected:
+
+* `assertBlockOutput` checks that the series of outputs generated from a given outputId are as supplied in a list of values.  (optional parameters for partitionId and modelId)
+* `outputFromBlock` returns a list of the values sent to the named outputId (optional parameter for partitionId and modelId)
+* `allOutputFromBlock` returns a list of all of the outputs from a block, a list of dictionaries where each dictionary has `outputId`, `partitionId`, `time`, `properties` and `value` entries.
 
 Both `createTestModel` and `inputEvent` take an optional argument: `modelId` - an identifier of the model. If an identifier is not specified, `createModel` will use the identifiers `model_0` and upwards, and `inputEvent` will use `model_0` (that is, the first created model). 
 
@@ -32,8 +38,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
                               )
 
     def validate(self):
-        self.assertGrep('output.evt', expr=self.outputExpr('output', 200.75))
-        self.assertGrep('output.evt', expr=self.outputExpr('output', 110.50))
+        self.assertBlockOutput('output', [200.75, 110.50])
 
 ```
 

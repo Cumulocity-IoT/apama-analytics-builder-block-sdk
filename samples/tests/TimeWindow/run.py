@@ -28,7 +28,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		                      self.timestamp(3))
 		
 		# No output yet:
-		self.assertGrep('output.evt', expr=self.outputExpr('windowContents'), contains=False)
+		self.assertBlockOutput('windowContents', [])
 		
 		self.sendEventStrings(correlator,
 		                      self.timestamp(5.9),
@@ -49,12 +49,11 @@ class PySysTest(AnalyticsBuilderBaseTest):
 							  )
 
 	def validate(self):
-
+		windowContents = [evt['properties']['timeWindow'] for evt in self.allOutputFromBlock(modelId = self.modelId) if evt['outputId'] == 'windowContents']
+		def point(value, timestamp):
+			return {'value': value, 'timestamp': timestamp}
 		# As it's been 2 seconds since we sent the input, now the output should be generated.
-		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,1.,1.,.*WindowContents.any.float,2.,5.,.*WindowContents.any.float,3.,6.,.*WindowContents.any.float,4.,7.*'), contains=True)
-		
-		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,4.,9.,.*WindowContents.any.float,5.,11.,.*WindowContents.any.float,6.,14.*'), contains=True)
-		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,4.,9.,.*WindowContents.any.float,5.,11.,.*WindowContents.any.float,6.,14.*'), contains=True)
-		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*"timeWindow":.*WindowContents.any.float,7.,22.*'))
-		self.assertGrep('output.evt', expr=self.outputExpr('windowContents', properties='.*sequence.apamax.analyticsbuilder.samples.WindowContents.*apamax.analyticsbuilder.samples.WindowContents.*apamax.analyticsbuilder.samples.WindowContents'), contains=False) # verify only one windowContents object in the output.
-		
+		self.assertThat('outputLen == 3', outputLen = len(windowContents))
+		self.assertThat('output == expected', output = windowContents[0], expected = [point(1,1), point(2, 5), point(3, 6), point(4, 7)])
+		self.assertThat('output == expected', output = windowContents[1], expected = [point(4, 9), point(5, 11), point(6, 14)])
+		self.assertThat('output == expected', output = windowContents[2], expected = [point(7, 22.5)])

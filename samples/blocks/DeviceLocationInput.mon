@@ -1,5 +1,5 @@
 /*
- * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
  * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0.
  *
  */
@@ -15,13 +15,14 @@ using apama.analyticsbuilder.BlockBase;
 using apama.analyticsbuilder.Activation;
 using apama.analyticsbuilder.Value;
 using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.TimerHandle;
 using apama.analyticsbuilder.L10N;
 using com.apama.cumulocity.ManagedObject;
 using com.apama.exceptions.Exception;
 
 using apama.analyticsbuilder.Promise;
-using apama.analyticsbuilder.cumulocity.inventory.InventoryLookup;
-using apama.analyticsbuilder.cumulocity.inventory.InputHelper;
+using apama.analyticsbuilder.cumulocity.CumulocityInputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityInputParams; 
 using apama.analyticsbuilder.Partition_Broadcast;
 
 /**
@@ -66,47 +67,40 @@ event DeviceLocationInput {
 	
 	/** The parameters for the block. */
 	DeviceLocationInput_$Parameters $parameters;
-
-	/** Latest timestamp assigned to input events. */
-	float timeValue;
-
-	/**All the devices for which block will be listening. Set by reflection by InputHelper.*/
-	sequence<string> devices;
 	
-	/**Flag to identify given device identifier is a group or not. Set by reflection by InputHelper.*/
-	boolean isGroup;
+	/** The input handler to schedule input events for processing at the specified time. */
+	CumulocityInputHandler inputHandler;
 	
-	/**Flag to identify given device identifier is a broadcast device or not. Set by reflection by InputHelper.*/
-	boolean isBroadcastDevice;
-
 	/**
-	 * Validates that the device exists in the inventory.
+	 * Asynchronously validates that the device exists in the inventory and create an input handler for getting the device information and scheduling the input events for processing.
 	 *
 	 * See - Asynchronous validations in the block-sdk guide for more details.
 	 *
-	 * @param $modelScopeParameters  Dictionary containing information about the model.
 	 * @return a <tt>Promise</tt> object, validation of the model will be suspended until the Promise is fulfilled.
 	*/
-	action $validate(dictionary<string, any> $modelScopeParameters) returns Promise {
-		// Declaring input streams, (See - Input and Output blocks in the block-sdk guide for more details).
-		InputHelper ihelper := InputHelper.forBlock(self, $modelScopeParameters);
-		ihelper.setInput($parameters.deviceId, ManagedObject.getName(), new dictionary<string, any>);
-
-		// Look for the device in the c8y inventory, (See - Cumulocity specific helpers in the block-sdk guide for more details).
-		return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput);
+	action $validate() returns Promise {		
+		// Create input parameters describing the Cumulocity input stream being consumed (See - Input and Output blocks and 
+		// Cumulocity specific helpers in the block-sdk guide for more details).
+		CumulocityInputParams c8yInputParams := CumulocityInputParams.create($parameters.deviceId, self, ManagedObject.getName());
+		
+		// Look for the device and declare the input stream being consumed, specifying the callback action to save 
+		// the input handler created.
+		return c8yInputParams.declare(saveInputHandler);
 	}
-	/**Called by reflection from InputHelper.*/
-	action throwNoDevices(string nameOrId) {
-		throw L10N.getLocalizedException("sample_blk_apamax.analyticsbuilder.samples.DeviceLocationInput_no_devices", [<any> nameOrId]);
+	
+	/** Callback action with the created input handler. @private */
+	action saveInputHandler(CumulocityInputHandler inputHandler) {
+		self.inputHandler := inputHandler;
 	}
-
 	
 	/**
 	 * Method starts listening for the events from Cumulocity.
 	 */
 	action $init() {
 		string id;
-		for id in devices {
+		// Start listening for ManagedObject events for all the devices (multiple devices if the deviceId parameter 
+		// is a device group otherwise a single device).
+		for id in inputHandler.getDevices() {
 			on all ManagedObject(id = id) as managedObject{
 				extractLocation(managedObject);
 			}
@@ -114,45 +108,47 @@ event DeviceLocationInput {
 	}
 	
 	/**
-	 * Extracts the location information from the incoming <tt>ManagedObject</tt>.
+	 * Schedule the event to be processed as soon as possible.
 	 * 
 	 * @param managedObject The incoming <tt>ManagedObject</tt> from Cumulocity.
 	 */
 	action extractLocation(ManagedObject managedObject) {
-		try {
-			if managedObject.position.size() > 0 {
-				// individual updates to ManagedObjects do not have a timestamp, so use the next time after either now or the previous update:
-				timeValue := float.max(timeValue, $base.getModelTime()).nextAfter(float.INFINITY);
-				TimerParams tp := TimerParams.absolute(timeValue).withPayload(managedObject.position);
-				if(isGroup) {
-					tp := tp.withPartition(managedObject.id);	// Creating timer with partition, (See - Partition values in the block-sdk guide for more details).
-				}
-				else if(isBroadcastDevice) {
-					tp := tp.withPartition(Partition_Broadcast(managedObject.id));
-				} // else is a single device, and use the 'default' partition, which allows different devices to be used in the same model.
-				any _ := $base.createTimerWith(tp);	// Creates timer with the specified parameters.
-			}
-		} catch (Exception e) {
-			log $base.getModelTime().toString() + ": Ignoring event: " + managedObject.toString() + ", exception: " + e.toString() at DEBUG;
+		if managedObject.position.size() > 0 {
+			// Individual updates to ManagedObjects do not have a timestamp, so schedule 
+			// them to be processed as soon as possible. 
+			// This creates a timer which when triggered, calls the $timerTriggered action providing the managed object as payload.
+			any discard := inputHandler.scheduleNow(managedObject);
 		}
 	}
 	
 	
 	/**
-	 * This action is called by the framework when the timer is triggered. The framework provides the value of the payload which was passed while creating the timer.
+	 * This action is called by the framework when a timer is triggered. The framework provides the value of the payload 
+	 * which was passed while creating the timer (i.e. the input managed object in this case).
 	 * 
-	 * Here it is setting the output after the timer has been triggered.
-	
+	 * Extracts the location information from payload value <tt>$payload</tt>, and sets the output.
 	 * @param $activation The current activation.
 	 * @param $payload The payload value.
 	 */
 	action $timerTriggered(Activation $activation, any $payload) {
+		ManagedObject mo := <ManagedObject>$payload;
+		any positionValue := mo.position;
+		
+		// Collect position values in a dictionary to set them as properties of the Value object.
 		dictionary<string, any> valueProperties := {};
 		any k;
-		for k in $payload.getKeys() {
-			valueProperties[k.valueToString()] := $payload.getEntry(k);
+		for k in positionValue.getKeys() {
+			valueProperties[k.valueToString()] := positionValue.getEntry(k);
 		}
+		// Call the $setOutput_location action to set the output.
 		$setOutput_location($activation, Value(true, $base.getModelTime(), valueProperties));
+	}
+
+	/**
+	* This action is called by the framework when the timer is too old.
+	*/
+	action $timerRejected(TimerHandle $timerHandle, string $reason) {
+		log "TimerRejected: " + $timerHandle.toString() + " reason: "+ $reason + " for blockId: " + $base.getBlockId() + " of type: " + self.getName();
 	}
 	
 	/**

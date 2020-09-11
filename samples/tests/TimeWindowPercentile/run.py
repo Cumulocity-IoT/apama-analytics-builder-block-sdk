@@ -45,9 +45,9 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		                      self.timestamp(16.9),
 							  self.inputEvent('0:value', 6),
 							  )
-		self.assertGrep('output.evt', expr=self.outputExpr('1:output', 2)) # percentile 15
-		self.assertGrep('output.evt', expr=self.outputExpr('2:output', 2)) # percentile 50
-		self.assertGrep('output.evt', expr=self.outputExpr('3:output', 3)) # percentile 80
+		self.assertBlockOutput('1:output', [2]) # percentile 15
+		self.assertBlockOutput('2:output', [2]) # percentile 50
+		self.assertBlockOutput('3:output', [3]) # percentile 80
 		self.sendEventStrings(correlator,
 		                      self.timestamp(22),
 							  )
@@ -58,6 +58,6 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		# Verifying that there are no errors in log file.
 		self.checkLogs()
 		
-		self.assertGrep('output.evt', expr=self.outputExpr('1:output', 3)) # percentile 15
-		self.assertGrep('output.evt', expr=self.outputExpr('2:output', 5)) # percentile 50
-		self.assertGrep('output.evt', expr=self.outputExpr('3:output', 6)) # percentile 80
+		self.assertBlockOutput('1:output', [2, 3]) # percentile 15
+		self.assertBlockOutput('2:output', [2, 5]) # percentile 50
+		self.assertBlockOutput('3:output', [3, 6]) # percentile 80

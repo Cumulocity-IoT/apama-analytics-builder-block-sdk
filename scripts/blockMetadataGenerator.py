@@ -142,7 +142,6 @@ class Parameter:
 		return self
 
 	def setType(self, type):
-		if type == 'any': type = 'string'  # Fudge for PAB-267
 		self.data['type'] = type
 		return self
 
@@ -864,8 +863,13 @@ def add_arguments(parser):
 def run_metadata_generator(input, output, tmpDir, printMsg=False):
 	apama_home = os.getenv('APAMA_HOME', None)
 	# assumes we're running with apama_env sourced
-	java_home = os.environ['APAMA_JRE']
-	java_home = os.path.join(java_home, '..')
+	if 'APAMA_JRE' in os.environ:
+		java_home = os.environ['APAMA_JRE']
+		java_home = os.path.join(java_home, '..')
+	else:
+		# else in the docker image
+		java_home = os.path.join(apama_home,'..', 'jvm', 'jvm')
+
 
 	inputDir = os.path.abspath(os.path.normpath(input))
 	if not os.path.isdir(inputDir): raise Exception('The input directory does not exist: %s' % inputDir)

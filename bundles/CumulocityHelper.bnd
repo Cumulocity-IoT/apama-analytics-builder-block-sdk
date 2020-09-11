@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bundle name="Cumulocity Block Helpers" type="monitorscript" singleton="true">
 	<version>
-		<id>10.6.6.1</id>
-		<date>2019-07-15</date>
+		<id>10.7.0.1</id>
+		<date>2020-06-29</date>
 		<author>Software AG</author>
 		<comments/>
 		<!--
-			Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+			Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
 			Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG Progress Software Corporation and/or its subsidiaries and affiliates. All rights reserved.
 			-->
 	</version>
@@ -19,6 +19,6 @@
 	</monitors>
 	<dependencies>
 		<dependency bundle-filename="AnalyticsBuilder.bnd" catalog="${ANALYTICS_BUILDER_SDK}/bundles/"/>
-		<dependency bundle-filename="Cumulocity Event Definitions 10.5.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
+		<dependency bundle-filename="Cumulocity Event Definitions.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 	</dependencies>
 </bundle>

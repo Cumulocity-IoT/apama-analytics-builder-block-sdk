@@ -43,7 +43,7 @@ monitor MockInventory {
 	 * Mocks c8y inventory, listens for FindManaged object and sends out a response for that.
 	 */
 	action mockInventory() {
-		monitor.subscribe(FindManagedObject.CHANNEL);
+		monitor.subscribe(FindManagedObject.SEND_CHANNEL);
 
 		on all FindManagedObject() as fmo {
 			log "Request:"+fmo.toString();
@@ -67,8 +67,8 @@ monitor MockInventory {
 			FindManagedObjectResponseAck fmorAck := new FindManagedObjectResponseAck;
 			fmorAck.reqId := fmo.reqId;
 
-			send fmor to FindManagedObjectResponse.CHANNEL;
-			send fmorAck to FindManagedObjectResponse.CHANNEL;
+			send fmor to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
+			send fmorAck to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
 		}
 	}
 }

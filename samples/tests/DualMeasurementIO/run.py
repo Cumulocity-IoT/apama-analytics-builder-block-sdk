@@ -85,20 +85,9 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		# Verifying that model is deployed successfully.
 		for modelId in self.models:
 			self.assertGrep(self.analyticsBuilderCorrelator.logfile, expr='Model \"'+modelId +'\" with PRODUCTION mode has started')
-		self.assertOrderedGrep('output.evt', exprList=[
-			self.outputExpr('ratio', 4, id=self.models[0]),
-			self.outputExpr('ratio', 3, id=self.models[0]),
-			self.outputExpr('ratio', 5, id=self.models[0]),
-			self.outputExpr('ratio', 6, id=self.models[0]),
-		])
+		self.assertBlockOutput('ratio', [4, 3, 5, 6], modelId = self.models[0])
 
-		self.assertOrderedGrep('output.evt', exprList=[
-			self.outputExpr('ratio', 4, id=self.models[1]),
-			self.outputExpr('ratio', 6, id=self.models[1]),
-		])
-		
-		# Verifying the outputs from the block.
-		self.assertOrderedGrep('output.evt', exprList=[
-			self.outputExpr('ratio', 16, id=self.models[2]),
-			self.outputExpr('ratio', 36, id=self.models[2]),
-		])
+		self.assertBlockOutput('ratio', [4, 6], modelId = self.models[1])
+
+		self.assertBlockOutput('ratio', [16, 36], modelId = self.models[2])
+
