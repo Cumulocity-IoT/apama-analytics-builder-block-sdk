@@ -563,7 +563,7 @@ class BlockGenerator:
 			block.setBlockDerivedName(derivedName.text.strip())
 		# set titleIsDerived Name for the block
 		titleIsDerived = typeElement.find(blockTypeIdentifierTitleIsDerivedXPath)
-		if titleIsDerived is not None and titleIsDerived.text is not 'false':
+		if titleIsDerived is not None and titleIsDerived.text != 'false':
 			block.setTitleIsDerived(titleIsDerived.text.strip())
 		# set block to replace.
 		replacesBlockList = typeElement.findall(blockReplacesIdentifierXPath)

@@ -1,0 +1,214 @@
+<HTML><!-- saved from url=(0014)about:internet -->
+
+
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>CumulocityOutputHandler</TITLE>
+<META NAME="keywords" CONTENT="CumulocityOutputHandler&nbsp;event">
+<LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<SCRIPT type="text/javascript">function windowTitle()
+          {
+          parent.document.title="CumulocityOutputHandler";
+          }
+          </SCRIPT>
+<NOSCRIPT></NOSCRIPT>
+</HEAD>
+<BODY BGCOLOR="white" onload="windowTitle();">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../../index.html?apama/analyticsbuilder/cumulocity/CumulocityOutputHandler.html"><B>FRAMES</B></A>  &nbsp;
+
+            &nbsp;<A target="_top" HREF="CumulocityOutputHandler.html"><B>NO FRAMES</B></A>  &nbsp;
+            &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
+<NOSCRIPT>
+<A HREF="../../../alltypes-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+</FONT></TD>
+</TR>
+<TR>
+<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+<TR ALIGN="center" VALIGN="top">
+<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+</TR>
+</TABLE>
+</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+<H2>
+<FONT SIZE="-1">apama.analyticsbuilder.cumulocity</FONT>
+<BR>Event CumulocityOutputHandler</H2>
+<HR>A handler that is used for sending Cumulocity output events to Cumulocity IoT and to other models.<br>
+<br> It provides information about the source device identifier, for example, if the device is a broadcast device or the current device.<br>
+<br> It is typically used to get the target device for the output and then send output. For example: <pre><br>ifpresent outputHandler.deviceToOutput($activation) as device {<br>	Event evt := Event("", $parameters.eventType, device, $activation.timestamp, text,  new dictionary<string,any>);<br>	outputHandler.sendOutput(evt, Event.CHANNEL, $activation);<br>}<br></pre><DL>
+<DT>
+<B>See Also:</B>
+</DT>
+<DD>
+<A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityOutputParams.html" title="type in apama.analyticsbuilder.cumulocity">apama.analyticsbuilder.cumulocity.CumulocityOutputParams</A>&nbsp;-&nbsp;To declare an output block and create an output handler.</DD>
+</DL>
+<DL>
+<DT>
+<B>Routes:</B>
+</DT>
+<DD>any&nbsp;-&nbsp;The output event if it is synchronous.</DD>
+</DL>
+<DL>
+<DT>
+<B>Sends:</B>
+</DT>
+<DD>any&nbsp;-&nbsp;The output event to the output channel.</DD>
+</DL>
+<HR>
+<A NAME="action_summary"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;optional&lt;string&gt;</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#deviceToOutput()">deviceToOutput</A></B>(<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</CODE>
+<br>
+<br>Get the current device identifier for which the output should be produced.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;optional&lt;string&gt;</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#getDevice()">getDevice</A></B>()</CODE>
+<br>
+<br>Get the target device identifier for which output is to be produced.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#isBroadcastDevice()">isBroadcastDevice</A></B>()</CODE>
+<br>
+<br>Check if the target device identifier is a broadcast device.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#isTriggerDevice()">isTriggerDevice</A></B>()</CODE>
+<br>
+<br>Check if the target device is a trigger device. If the device is a trigger device, then output will be sent to the device that caused the model execution.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#sendOutput()">sendOutput</A></B>(any&nbsp;outputEvent,&nbsp;string&nbsp;channel,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</CODE>
+<br>
+<br>Send the output event to Cumulocity IoT by sending it to the specified channel.</TD>
+</TR>
+</TABLE>&nbsp;<A NAME="action_detail"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
+</TR>
+</TABLE>
+<A NAME="deviceToOutput()"></A>
+<H3>deviceToOutput</H3>
+<PRE>optional&lt;string&gt;&nbsp;<B>deviceToOutput</B>(<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</PRE>Get the current device identifier for which the output should be produced.<br>
+<br> If the output device is a trigger device then it returns the device that caused the model execution. It returns an empty value if the output should not be produced for the current activation.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>$activation</tt>&nbsp;-&nbsp;The current activation.</DD>
+</DL>
+<DL>
+<DT>
+<B>Returns:</B>
+</DT>
+<DD>The device identifier for which to produce output, or an empty value if output should not be produced.</DD>
+</DL>
+<HR>
+<A NAME="getDevice()"></A>
+<H3>getDevice</H3>
+<PRE>optional&lt;string&gt;&nbsp;<B>getDevice</B>()</PRE>Get the target device identifier for which output is to be produced.<DL>
+<DT>
+<B>Returns:</B>
+</DT>
+<DD>Empty value if the target device is the trigger device, otherwise the device identifier of the target device.</DD>
+</DL>
+<DL>
+<DT>
+<B>See Also:</B>
+</DT>
+<DD>
+<A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityOutputHandler.html#isTriggerDevice()" title="Action in apama.analyticsbuilder.cumulocity.">apama.analyticsbuilder.cumulocity.CumulocityOutputHandler#isTriggerDevice()</A>&nbsp;-&nbsp;To check if the device is a trigger device.</DD>
+</DL>
+<HR>
+<A NAME="isBroadcastDevice()"></A>
+<H3>isBroadcastDevice</H3>
+<PRE>boolean&nbsp;<B>isBroadcastDevice</B>()</PRE>Check if the target device identifier is a broadcast device.<DL>
+<DT>
+<B>Returns:</B>
+</DT>
+<DD>True if the target device identifier is a broadcast device.</DD>
+</DL>
+<HR>
+<A NAME="isTriggerDevice()"></A>
+<H3>isTriggerDevice</H3>
+<PRE>boolean&nbsp;<B>isTriggerDevice</B>()</PRE>Check if the target device is a trigger device. If the device is a trigger device, then output will be sent to the device that caused the model execution.<DL>
+<DT>
+<B>Returns:</B>
+</DT>
+<DD>True if target device is a trigger device.</DD>
+</DL>
+<HR>
+<A NAME="sendOutput()"></A>
+<H3>sendOutput</H3>
+<PRE>void&nbsp;<B>sendOutput</B>(any&nbsp;outputEvent,&nbsp;string&nbsp;channel,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</PRE>Send the output event to Cumulocity IoT by sending it to the specified channel.<br>
+<br> If the output is synchronous then it is routed internally for consumption by other models. The output event is also tagged by putting the model name against the apama_analytics_modelName key in the params dictionary of the event. Any input block consuming the same event type must filter out any events that have the same key in the dictionary.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>outputEvent</tt>&nbsp;-&nbsp;The output event to send.</DD>
+<DD>
+<tt>channel</tt>&nbsp;-&nbsp;The channel on which to send the output event.</DD>
+<DD>
+<tt>$activation</tt>&nbsp;-&nbsp;The current activation.</DD>
+</DL>
+<DL>
+<DT>
+<B>Routes:</B>
+</DT>
+<DD>any&nbsp;-&nbsp;The output event if it is synchronous.</DD>
+</DL>
+<DL>
+<DT>
+<B>Sends:</B>
+</DT>
+<DD>any&nbsp;-&nbsp;The output event to the output channel.</DD>
+</DL>
+<HR>
+<HR>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../../index.html?apama/analyticsbuilder/cumulocity/CumulocityOutputHandler.html"><B>FRAMES</B></A>  &nbsp;
+
+            &nbsp;<A target="_top" HREF="CumulocityOutputHandler.html"><B>NO FRAMES</B></A>  &nbsp;
+            &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
+<NOSCRIPT>
+<A HREF="../../../alltypes-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+</FONT></TD>
+</TR>
+<TR>
+<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+<TR ALIGN="center" VALIGN="top">
+<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+</TR>
+</TABLE>
+</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+</BODY>
+</HTML>
