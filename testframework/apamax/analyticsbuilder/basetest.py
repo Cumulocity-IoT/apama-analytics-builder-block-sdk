@@ -78,7 +78,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:param corrHelper: The CorrelatorHelper object.
 		:return: None.
 		"""
-		corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
+		corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity/10.5")
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-forward-events.cdp')
 		
 	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, **kwargs):
@@ -102,6 +102,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		corr = CorrelatorHelper(self)
 		arguments=kwargs.get('arguments', [])
 		arguments.append(f'-DanalyticsBuilder.numWorkerThreads={numWorkers}')
+		arguments.append(f'-DanalyticsBuilder.timedelay_secs=0.1')
 		kwargs['arguments']=arguments
 		logfile=kwargs.get('logfile', 'correlator.log')
 		kwargs['logfile']=logfile

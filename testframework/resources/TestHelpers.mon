@@ -101,7 +101,7 @@ event TestInput {
 		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
 		on all Input(inputId = $parameters.inputId, modelId = modelId) as i {
 			log i.toString() +" @ "+currentTime.toString();
-			TimerHandle id := $base.createTimerWith(TimerParams.relative(0.1).withPayload(i.value).withPartition(i.partitionId));
+			TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(i.value).withPartition(i.partitionId));
 		}
 	}
 	action $timerTriggered(Activation $activation, any $payload) {
@@ -147,7 +147,7 @@ event TestOutput {
 			}
 		}
 		log "TEST: Output "+modelId+"."+$parameters.outputId+" = "+$input_input.value.valueToString() at INFO;
-		send Output($parameters.outputId, modelId, $activation.partition.valueToString(), currentTime, $input_input.value, $input_input.properties) to "TestOutput";
+		send Output($parameters.outputId, modelId, $activation.partition.valueToString(), $activation.timestamp, $input_input.value, $input_input.properties) to "TestOutput";
 	}
 }
 
