@@ -102,6 +102,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		corr = CorrelatorHelper(self)
 		arguments=kwargs.get('arguments', [])
 		arguments.append(f'-DanalyticsBuilder.numWorkerThreads={numWorkers}')
+		arguments.append(f'-DanalyticsBuilder.timedelay_secs=0.1')
 		kwargs['arguments']=arguments
 		logfile=kwargs.get('logfile', 'correlator.log')
 		kwargs['logfile']=logfile
@@ -142,13 +143,14 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:return: The identifier of the created model.
 		"""
 		if corr == None: corr = self.analyticsBuilderCorrelator
+		if isDeviceOrGroup == None: isDeviceOrGroup = 'c8y_IsDevice'
 		if id == None:
 			id = 'model_%s' % self.modelId
 			self.modelId = self.modelId + 1
 		waiter = Waiter(self, corr)
 		if not isinstance(blockUnderTest, list):
 			blockUnderTest=[blockUnderTest]
-		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(wiring), '{}'])
+		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(wiring), '{"isDeviceOrGroup":any(string, "%s")}'%isDeviceOrGroup])
 		corr.sendEventStrings(f'apamax.analyticsbuilder.test.Test({testParams})')
 		waiter.waitFor(expr='com.apama.scenario.Created', errorExpr='CreateFailed')
 		return id
@@ -178,6 +180,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:param name: The identifier of the input to send to.
 		:param value: The value to send. Default to 0, but can be string or boolean.
 		:param id: The model to test, or model_0 by default.
+		:param partition: The partition to send input.
 		"""
 		if isinstance(value, float) or isinstance(value, int): eplType = 'float'
 		if isinstance(value, bool): 
@@ -187,29 +190,29 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			value = json.dumps(value)
 		return f'apamax.analyticsbuilder.test.Input("{name}", "{id}", "{partition}", any({eplType}, {value}))'
 	
-	def outputFromBlock(self, outputId, modelId='model_0', partitionId=None):
+	def outputFromBlock(self, outputId, modelId='model_0', partitionId=None,time=None):
 		"""
 		Get all of the outputs of a block
 		:param outputId: The identifier of the output
 		:param modelId: The model to test, or model_0 by default
 		:param partitionId: which partition, or None by default to not filter by partition.
+		:param time: at which time, or None by default to not filter by time.
 		:return: list of the values.
 		"""
-		self.log.info(self.apama.extractEventLoggerOutput(self.analyticsBuilderCorrelator.logfile))
 		return [evt['value'] for evt in self.apama.extractEventLoggerOutput(self.analyticsBuilderCorrelator.logfile)
-			if evt['modelId'] == modelId and evt['outputId'] == outputId and (partitionId == None or evt['partitionId'] == partitionId )]
+			if evt['modelId'] == modelId and evt['outputId'] == outputId and (partitionId == None or evt['partitionId'] == partitionId ) and (time == None or evt['time'] == time )]
 
 	def allOutputFromBlock(self, modelId='model_0'):
 		"""
 		Get all of the outputs of a block - a list of dictionaries
 		:param modelId: The model to test, or model_0 by default
-		:return: list of dictionaries with keys including value, partitionId, time, outputId and properties
+		:return: list of dictionaries with keys including value, partitionId, time, outputId, modelId and properties
 		"""
 		return [evt for evt in self.apama.extractEventLoggerOutput(self.analyticsBuilderCorrelator.logfile)
 			if evt['modelId'] == modelId]
 
-	def assertBlockOutput(self, outputId, expected, modelId='model_0', partitionId = None, **kwargs):
-		self.assertThat('output == expected', output=self.outputFromBlock(outputId, modelId = modelId, partitionId = partitionId), expected=expected, **kwargs)
+	def assertBlockOutput(self, outputId, expected, modelId='model_0', partitionId = None, time=None ,**kwargs):
+		self.assertThat('output == expected', output=self.outputFromBlock(outputId, modelId = modelId, partitionId = partitionId,time=time), expected=expected, **kwargs)
 
 	def outputExpr(self, name='.*', value=None, id='.*', partition='.*', time='.*', properties='.*'):
 		"""

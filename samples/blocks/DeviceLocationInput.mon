@@ -55,6 +55,7 @@ event DeviceLocationInput_$Parameters {
  * properties such as 'alt', 'lng' and 'lat' - see https://cumulocity.com/guides/concepts/domain-model/
  *
  * @$blockCategory Input
+ * @$consumesInput
  * @$blockType c8y_Input
  */
 event DeviceLocationInput {

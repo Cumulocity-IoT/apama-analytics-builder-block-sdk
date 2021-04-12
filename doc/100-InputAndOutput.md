@@ -10,6 +10,9 @@ An input block is a block that receives data from an external (to the model) sou
 
 An input block needs to declare what event type and fields that identify a series of events (that is, what fields it is filtering on) it is consuming. This is done by calling `BlockBase.consumesInput` from the `$validate` action by providing an `InputParams` object which returns an`InputHandler` object. Create an `InputParams` object by calling the static action `InputParams.forEventType` which returns an InputParams object back, providing the event type name (fully qualified, that is, including the package name). Then chain a call to update the InputParams object with the partition value by calling `withPartition`, providing the partition value it is listening for and calling `withFields`, providing a set of field names and values it is filtering on. This is required so that the runtime can determine whether an input block is receiving output from a different model, in which case the models need to be executed in the correct order. The InputHandler object is used to schedule input events for processing and thus should be saved for later use.
 
+An input block needs to declare whether an input is synchronous or asynchronous. Synchronous inputs can trigger block outputs, and thus model evaluations. These will operate in a 'synchronous' manner : multiple outputs with the same timestamp will be processed atomically, across models if a synchronous input and output are used. An asynchronous input may update the state of a block, but will generally not create any new block outputs and thus no new model evaluations. Asynchronous inputs do not contribute towards chains between models. You can declare an input asynchronous by calling `withIsSync(false)` on the `InputParams` object for that input. Most inputs will be synchronous, and that is the default type.
+
+
 ```Java
 /** The input handler for scheduling input events. */
 InputHandler inputHandler;
@@ -26,6 +29,9 @@ action $validate() {
         inputHandler := $base.consumesInput(inputParams);
     }
 ```
+
+> **Note:** Same sets of `fields` should be used in the Input and Output blocks consuming and producing the same event. Otherwise, incorrect events might get delivered or connection between models will be formed incorrectly.
+
 The `fields` provided to `BlockBase.consumesInput` through the `InputParams` object do not have to reflect the exact fields of an event type but they should be consistent in fields used across all input and output blocks handling the events of the same type. For example, when listening to Cumulocity `Measurement` objects, a `fragment` and `series` are specified, but these do not correspond to fields of an event type (instead, the values are keys in the measurements dictionary and sub-dictionary).
 
 The `BlockBase.consumesInput` action should be called during a call to `$validate`. The runtime needs to validate that any inputs or outputs for a model are legal in the context of other models running.
@@ -115,6 +121,8 @@ action tagOutputEvent(MyEvent e) {
 
 
 ```
+> **Note:** Same sets of `fields` should be used in the Input and Output blocks consuming and producing the same event. From above examples, both Input and Output blocks for `MyEvent` event type are using same value for `fields`
+
 ### Sending Output events
 
 Output blocks should construct the event to send, typically using block inputs and parameters. The event should be routed (using the `route` statement) if synchronous and sent (using the `send` statement) to the appropriate channel. The event is routed so that other models can pick up the same event and process it.
@@ -130,6 +138,8 @@ action $process(Activation $activation, string $input_source,string $input_type)
     outputHandler.sendOutput(m, MyEvent.SEND_CHANNEL, $activation);
 }
 ```
+
+> **Note:** For synchronous outputs, it is not allowed to have two or more output blocks which are generating the same output streams. From the above example, if there is another block with the same output stream already deployed in a model then deploying the model with the above block will result in a runtime error.
 
 To handle Cumulocity output events, refer to the `CumulocityOutputHandler` API in [Cumulocity Helper](105-CumulocityHelper).
 

@@ -83,6 +83,8 @@ event TestInput_$Parameters {
 	constant string type_boolean := "boolean";
 	constant string type_string := "string";
 	constant string type_pulse := "pulse";
+	string isGroup;
+	constant string $DEFAULT_isGroup := "c8y_IsDevice";
 }
 
 /** Test block for supplying input to a block under test */
@@ -90,10 +92,20 @@ event TestInput {
 	BlockBase $base;
 	TestInput_$Parameters $parameters;
 	string modelId;
-
+	boolean isGroup;
+	
 	action $validate(){
-	    RequestForwarding.byKey(new Input, "partitionId");
-	    InputParams inputParams := InputParams.forEventType(Input.getName()).withPartition("");
+		isGroup := false;
+	    if $parameters.isGroup = "c8y_IsDeviceGroup" {
+	    	isGroup := true;
+	    }
+		RequestForwarding.byKey(new Input, "partitionId");
+	    InputParams inputParams := InputParams.forEventType(Input.getName());
+			if isGroup {
+				inputParams := inputParams.withPartition(new Partition_Wildcard);
+			} else {
+				inputParams := inputParams.withPartition("");
+			}
 		any _ := $base.consumesInput(inputParams);
 	}
 
@@ -101,7 +113,11 @@ event TestInput {
 		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
 		on all Input(inputId = $parameters.inputId, modelId = modelId) as i {
 			log i.toString() +" @ "+currentTime.toString();
-			TimerHandle id := $base.createTimerWith(TimerParams.relative(0.1).withPayload(i.value).withPartition(i.partitionId));
+			if i.partitionId = "" then {			
+				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(i.value));
+			}else {
+				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(i.value).withPartition(i.partitionId));
+			}
 		}
 	}
 	action $timerTriggered(Activation $activation, any $payload) {
@@ -136,6 +152,7 @@ event TestOutput {
 	string modelId;
 	action $init(dictionary<string, any> $modelScopeParameters) {
 		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
+		log "Model "+ modelId + " output "+$parameters.outputId +" is type " + $base.getInputTypeName("input");
 	}
 	action $process(Activation $activation, Value $input_input) {
 		switch($input_input.value as v) {
@@ -147,7 +164,7 @@ event TestOutput {
 			}
 		}
 		log "TEST: Output "+modelId+"."+$parameters.outputId+" = "+$input_input.value.valueToString() at INFO;
-		send Output($parameters.outputId, modelId, $activation.partition.valueToString(), currentTime, $input_input.value, $input_input.properties) to "TestOutput";
+		send Output($parameters.outputId, modelId, $activation.partition.valueToString(), $activation.timestamp, $input_input.value, $input_input.properties) to "TestOutput";
 	}
 }
 
@@ -294,6 +311,13 @@ monitor TestHelper {
 			for inputInfo in blockInputs {
 				string name := <string> inputInfo.getEntry("id");
 				string specificType := "float"; // by default
+				if inputs.hasKey(prefix + name) {
+					ifpresent inputs[prefix + name] as inputType {
+						specificType := inputType.valueToString();
+					} else {
+						specificType := "";
+					}
+				}
 				if inputs.hasKey(name) {
 					ifpresent inputs[name] as inputType {
 						specificType := inputType.valueToString();
@@ -308,7 +332,12 @@ monitor TestHelper {
 				}
 				if specificType = "" { continue; }
 				string blockIn := "input_"+prefixedName;
-				c.block(blockIn, TestInput.getName(), {"inputId":prefixedName, "type":specificType});
+				string isGroup :=  "c8y_IsDevice";
+				if t.extraParams.hasKey("isDeviceOrGroup"){
+					isGroup := <string> t.extraParams["isDeviceOrGroup"];
+				}
+					
+				c.block(blockIn, TestInput.getName(), {"inputId":prefixedName, "type":specificType,"isGroup":isGroup });
 				c.wire(blockIn, "output", blockKey, name);
 			}
 

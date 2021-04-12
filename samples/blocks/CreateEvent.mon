@@ -77,6 +77,7 @@ event CreateEvent_$Parameters {
  * If neither are set, the model name is used as the text.
  *
  * @$blockCategory Output
+ * @$producesOutput
  * @$blockType c8y_Output
  * @$derivedName $eventType Event
  * @$titleIsDerived true

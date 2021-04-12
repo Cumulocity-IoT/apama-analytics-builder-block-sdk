@@ -1,0 +1,473 @@
+﻿/*
+ * $Copyright (c) 2020-2021 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+ */
+
+/* ***DISCLAIMER*** 
+ * 
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.Partition_Broadcast;
+using apama.analyticsbuilder.Partition_Default;
+using apama.analyticsbuilder.Partitioner;
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.TimerHandle;
+using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.L10N;
+using apama.analyticsbuilder.ConfigurationProperty;
+using apama.analyticsbuilder.buckets.BucketWindowConfig;
+using apama.analyticsbuilder.buckets.BucketWindow;
+
+
+/** The parameters for the Cross Device Aggregate block. */
+event GroupStatistics_$Parameters {
+	
+	/**Window Duration (secs).
+	 *
+	 * If present, the amount of time (in seconds) for which values are to be kept in the window.
+	 *
+	 * This must be a finite and positive number.
+	 */
+	optional<float> windowDuration;
+	
+	/**Output Period (secs).
+	 * 
+	 * The amount of time (in seconds) between each output.
+	 *
+	 * This must be a finite and positive number.
+	 */
+	float outputPeriod;
+	
+	/**Default value for outputPeriod.*/
+	constant float $DEFAULT_outputPeriod := 5.0;
+	
+	/**
+	 * This action is called by the framework to validate the parameters of the block.
+	 * Here the action checks if the value of <tt>windowDuration</tt> and <tt>outputPeriod</tt> are provided,
+	 * it should be finite and positive.
+	 */
+	action $validate() {
+		ifpresent windowDuration {
+			if (not windowDuration.isFinite() or windowDuration <= 0.0) {
+				throw L10N.getLocalizedException("fwk_param_finite_positive_value", [BlockBase.getL10N_param("windowDuration",self),windowDuration]);
+			}
+		}
+		
+		if (not outputPeriod.isFinite() or outputPeriod < 0.0) {
+			throw L10N.getLocalizedException("fwk_param_finite_non-negative_value", [BlockBase.getL10N_param("outputPeriod",self),outputPeriod]);
+		}
+	}
+}
+
+/** 
+ * This event is used by the BucketInterface to maintain running aggregate values in a bucket. It supports adding new values and combining two objects to generate
+ * combined aggregate values. This event is used to combine buckets to generate aggregate values for the window duration, combining aggregate values for all devices
+ * on a worker and combining aggregate values from all workers to generate final aggregate values.
+ * 
+ * It uses a combination of Online weighted incremental and parallel algorithms - see
+ * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Weighted_incremental_algorithm
+ * and https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm (and see also Welford's Online algorithm).
+ *
+ * Within a bucket, use the weighted incremental; update the bucket's mean, squareDiffSum (variance * weight) and weightSum.
+ * On every update, we calculate the new mean if it is different from the value (or just use the current value)
+ * and update squareDiffSum. Avoid NaNs if the weight is 0.
+ *
+ * To combine the buckets, use the parallel algorithm.
+ *
+ * To avoid rounding errors while calculating aggregate values within a bucket and when combining the buckets,
+ * we are multiplying by weights and dividing by total weights while updating the mean.
+ * Also, we are not doing any calculations if the mean is the same as the previous mean.
+ *
+ * (Note the framework will not treat this event type specially - it does not end with a $-prefixed word.)
+ * @private
+ */
+event GroupStatistics_AggregateData {
+	
+	/** Current min value in the bucket. */
+	float min;
+	/** Current max value in the bucket. */
+	float max;
+	/** Current weighted average (mean) of the bucket. */
+	float mean;
+	/** Sum of squares of differences from the current mean which is equal to variance * weight. */
+	float squareDiffSum;
+	/** Sum of weights. */
+	float weightSum;
+	
+	/** Update aggregates with new value and weight. */
+	action update(float value, float weight) {
+		min := float.min(value, min);
+		max := float.max(value, max);
+		
+
+		if weight > 0.0 {
+			float meanOld := mean;
+			// avoid arithmetic that can produce rounding errors:
+			// - if the value is the same as the old mean then the mean would remain unchanged
+			// - if there is no previous value in this bucket then the mean is simply the value
+			if value != meanOld {
+				if weightSum = 0.0 {
+					// first value
+					mean := value;
+				} else {
+					mean := (meanOld * weightSum + value * weight) / (weight + weightSum);
+				}
+				// check https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm
+				squareDiffSum := squareDiffSum + weight * (value - meanOld) * (value - mean);
+			}
+			weightSum := weightSum + weight;
+		}
+	}
+
+	/** Merge aggregates from another GroupStatistics_AggregateData and generate combined aggregates. */
+	action mergeAggregate(GroupStatistics_AggregateData other) {
+		// check https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm
+		// if weight is 0 then the mean and variance won't change
+		// if weight is greater than 0, then calculate stats.
+		if other.weightSum > 0.0 { 
+			float delta :=  self.mean - other.mean;
+			self.squareDiffSum := self.squareDiffSum + other.squareDiffSum + delta * delta * self.weightSum * other.weightSum / (self.weightSum + other.weightSum);
+			if not (self.mean = other.mean and self.weightSum = other.weightSum) {
+				self.mean := (self.weightSum * self.mean + other.weightSum * other.mean) / (self.weightSum + other.weightSum);
+			}
+			self.weightSum := self.weightSum + other.weightSum;
+		}
+		self.min := float.min(self.min, other.min);
+		self.max := float.max(self.max, other.max);
+	}
+
+	/** Get the portion of the bucket. Used when only part of the first bucket is expired. */
+	action forProportion(float proportion) returns GroupStatistics_AggregateData {
+		GroupStatistics_AggregateData copy := self.clone();
+		copy.weightSum := self.weightSum * proportion;
+		copy.squareDiffSum := squareDiffSum * proportion;
+		return copy;
+	}
+
+	/** Create new instance. */
+	static action createDefault() returns GroupStatistics_AggregateData {
+		GroupStatistics_AggregateData newData := new GroupStatistics_AggregateData;
+		newData.min := float.INFINITY;
+		newData.max := -float.INFINITY;
+		return newData;
+	}
+}
+
+/**
+ * Used by the block for sharing aggregate values computed on current worker to all the other workers.
+ * (Note the framework will not treat this event type specially - it does not end with a $-prefixed word.)
+ */
+event GroupStatistics_WorkerData { 
+	/** The worker ID. */
+	integer workerId;
+	/** The block ID. */
+	string blockId;
+	/** The model ID. */
+	string modelId;
+	/** Count of devices from which input data for aggregate is received. */
+	integer deviceCount;
+	/** Combined aggregate values for all devices on the worker specified by the worker ID. */
+	GroupStatistics_AggregateData data;	
+}
+
+/**
+ * If the runtime is configured to use more than one worker then devices will be distributed across workers and
+ * each WorkerState object will have only a subset of devices. This object is shared across all the devices in a worker,
+ * and block instance running on different workers will have different shared state.
+ */
+event GroupStatistics_$WorkerState {
+	/** Latest snapshot of aggregate values received from all workers.*/ 
+	dictionary<integer, GroupStatistics_WorkerData> workerSnapshot;
+
+	/** Per device bucket window for aggregated data.*/
+	dictionary<any, BucketWindow> perDeviceBucket;
+}
+
+/**Group Statistics.
+ *
+ * Generates periodic aggregate values across all the devices in a group for which the block has received input values.
+ * 
+ * This block generates the following aggregate values:
+ * <ul> 
+ * <li>Minimum</li>
+ * <li>Maximum</li>
+ * <li>Device Count</li>
+ * <li>Average </li>
+ * <li>Standard Deviation</li>
+ * <li>Variance</li>
+ * </ul>
+ *
+ * The block can operate over a time-bounded window that is specified with the Window Duration parameter.
+ * If this parameter is not specified, the block uses an unbounded window. Output is generated periodically as specified by the Output Period parameter.
+ *
+ * If a window is configured, the block uses a set of 20 buckets, so the expired value is an approximation to the nearest bucket interval.
+ *
+ * Note: The Group Statistics block calculates and generates aggregate values for the group as a whole (not for individual devices).
+ * To generate aggregates for an individual device in a group, use the Average (Mean), Standard Deviation, or Minimum/Maximum blocks.
+ * The Group Statistics block only considers devices from which it has received input values.
+ *
+ * @$blockCategory Aggregates
+*/
+event GroupStatistics {
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when the block is required for a model.
+	 */
+	BlockBase $base;
+
+	/** Block parameters, filled in by the framework. */
+	GroupStatistics_$Parameters $parameters;
+
+	/** Configuration to create buckets in window for each device. */
+	BucketWindowConfig config;
+	
+	/** Constant to identify single time timer for calculating aggregate values for current worker and sending them to other workers for generating final aggregate values. */
+	constant integer TIMERTYPE_SHAREDATA_ONCE := 1;
+	
+	/** Constant to identify recurring timer for calculating aggregate values for current worker and sending them to other workers for generating final aggregate values. */
+	constant integer TIMERTYPE_SHAREDATA_RECUR := 2;
+	
+	/** Constant to identify recurring timer for generating final aggregate values by combining values from all workers. */
+	constant integer TIMERTYPE_GENOUTPUT := 3;
+	
+	/**
+	 * This action is called by the framework to initialize the state of the block.
+	 * Here the action is configuring buckets according to the value provided by <tt>windowDuration</tt> parameter. It is also
+	 * setting up timers and listeners to synchronize data between workers.
+	 *
+	 * @param $workerState The worker state object, shared across devices on a worker.
+	 */
+	action $init(GroupStatistics_$WorkerState $workerState) {
+		if($parameters.windowDuration.getOr(0.0) > 0.0) {
+			config.expireBuckets := true;
+			config.numBuckets := NUM_BUCKETS;
+		} else {
+			config.numBuckets := 1;
+		}
+		config.windowDuration := $parameters.windowDuration.getOr(1.0);
+		// following actions are called from BucketInterface.
+		config.updateBucket   := updateBucket;
+		config.calculateValue := calculateValue;
+		config.newBucketValue := newBucketValue;
+
+		// We need two recurring timers to do the following operations periodically for all workers:
+		// 1) Combine aggregate values from all devices on the worker and send the values to all workers.
+		// 2) Combine the latest aggregate values from all the workers to generate the final aggregate value and generate outputs for each device.
+		// Both timers have the same frequency (Output Period) but we want to run them out of phase so that there is less chance of workers combining different set of 
+		// aggregate data to generate the final aggregate data. To do this, create TIMERTYPE_SHAREDATA in two phases - first create a single-time timer for a duration
+		// 'outputPeriod / 2'. When this timer is triggered, we create a recurring timer for 'outputPeriod' period.
+
+		//1) Create timer for sending partial aggregate data to all workers. Pass the TIMERTYPE_SHAREDATA_ONCE as payload so that we can identify the triggered timer.
+		TimerHandle shareDataHandle := $base.createTimerWith(TimerParams.relative($parameters.outputPeriod / 2.0).withPayload(TIMERTYPE_SHAREDATA_ONCE));
+
+		//2) Create timer for combining partial aggregate data from all workers to generate final aggregate values. Pass the TIMERTYPE_GENOUTPUT as payload so that we 
+		// can identify the type of the triggered timer. Use Partition_Broadcast as partition so that timer is triggered for each device and output generated.
+		TimerHandle genOutputHandle := $base.createTimerWith(TimerParams.recurring($parameters.outputPeriod).withPayload(TIMERTYPE_GENOUTPUT).withPartition(new Partition_Broadcast)); 		
+	
+		// Listen for aggregate data from all workers but only for the correct block in the correct model by filtering on the blockId and modelId.
+		on all GroupStatistics_WorkerData(blockId=$base.getBlockId(), modelId=$base.getModelId()) as data {
+			$workerState.workerSnapshot[data.workerId] := data;
+		}
+	}
+	
+	/**
+	 * This action receives the input values and contains the logic of the block.
+	 *
+	 * It calculates aggregate values from the new input value.
+	 *
+	 * @param $activation The current activation.
+	 * @param $workerState The worker state object, shared across devices on a worker.
+	 * @param $input_value Input value for which the aggregate values are to be calculated.
+	 *
+	 * @$inputName value Value
+	 * 
+	 */
+	action $process(Activation $activation, GroupStatistics_$WorkerState $workerState, float $input_value) {
+		// Add the value to the correct window but don't generate any output which will be generated periodically.
+		BucketWindow bucketWindow := $workerState.perDeviceBucket.getOrAddDefault($activation.partition);
+		any _ := bucketWindow.add($activation.timestamp, $input_value, config, new any);
+	}
+	
+	/**
+	 * Callback action, called from the BucketInterface whenever a new bucket value is required by the window.
+	 * It returns a value for the new bucket. @private
+	 */
+	action newBucketValue(any _) returns any {
+		return GroupStatistics_AggregateData.createDefault();
+	}
+	
+	/**
+	 * Callback action, called from the BucketInterface; it updates the current bucket and
+	 * returns its value.
+	 *
+	 * @param bucketValue The value of the current bucket in the window.
+	 * @param prevTime The previous time when the value was added to the bucket.
+	 * @param time The current time when the current value is to be added to the bucket.
+	 * @param value The current value.
+	 * @return The updated value for this bucket.
+	 * @private
+	 */
+	action updateBucket(any bucketValue, float prevTime, float time, float value, any _) returns any {
+		GroupStatistics_AggregateData bucket := <GroupStatistics_AggregateData> bucketValue;
+		bucket.update(value, time - prevTime);
+		return bucket;
+	}
+	
+	/**
+	 * Callback action, called from the BucketInterface. It Combines all the values
+	 * in the window to calculate aggregate values.
+	 *
+	 * @param proportionTime Proportionate time of the first bucket, if the first bucket is not expired the value would be 1.
+	 * @param eventWindow The bucket window.
+	 * @return The computed value using all the buckets in the window.
+	 * @private
+	 */
+	action calculateValue(float proportionTime, sequence<any> eventWindow, any _) returns any {
+		GroupStatistics_AggregateData data := GroupStatistics_AggregateData.createDefault();
+		integer i := 1;
+		while i < eventWindow.size() {
+			data.mergeAggregate(<GroupStatistics_AggregateData> eventWindow[i]);
+			i := i + 1;
+		}
+		// Only add the specified portion of the first bucket.
+		data.mergeAggregate((<GroupStatistics_AggregateData> eventWindow[0]).forProportion(proportionTime));
+		return data;
+	}
+	
+	/**
+	 * This action is called by the framework whenever a timer is fired.
+	 * It does two things depending on the value of the payload.
+	 * Either it sends the aggregate data of the current worker to other workers, or it generates outputs for all the devices in the group.
+	 *
+	 * @param $activation The current Activation.
+	 * @param $workerState The worker state object, shared across devices on a worker.
+	 * @param $payload The payload value set while creating the timer.
+	 */
+	action $timerTriggered(Activation $activation, GroupStatistics_$WorkerState $workerState, any $payload) { 
+		// Find the type of the timer from the payload.
+		integer timerType := <integer>$payload;
+
+		// Generate aggregated data for the current worker and share it with other workers. Also create a recurring timer to do this periodically.
+		if timerType = TIMERTYPE_SHAREDATA_ONCE {
+			TimerHandle shareDataHandle := $base.createTimerWith(TimerParams.recurring($parameters.outputPeriod).withPayload(TIMERTYPE_SHAREDATA_RECUR));
+			shareData($activation, $workerState);
+		}
+
+		// Generate aggregated data for this worker and share with other workers.
+		if timerType = TIMERTYPE_SHAREDATA_RECUR {
+			shareData($activation, $workerState);
+		}
+
+		// Calculate final aggregate values by combining values from all workers and generate outputs for each device.
+		if timerType = TIMERTYPE_GENOUTPUT { 
+			generateOutput($activation, $workerState);
+		}
+	} 
+
+	/** Generate aggregated data for the current worker and share it with other workers.
+	 *
+	 * @param $activation The current Activation.
+	 * @param $workerState The worker state object, shared across devices on a worker.
+	 * @private
+	 */
+	action shareData(Activation $activation, GroupStatistics_$WorkerState $workerState) {
+		GroupStatistics_AggregateData workerAggregate := GroupStatistics_AggregateData.createDefault();
+
+		// Iterate over all the bucket windows for all the devices in the current worker and combine aggregate values.
+		BucketWindow bucketWindow;
+		for bucketWindow in $workerState.perDeviceBucket.values() {
+			GroupStatistics_AggregateData deviceData := <GroupStatistics_AggregateData>bucketWindow.calculateValue($activation.timestamp, config, new any);
+			workerAggregate.mergeAggregate(deviceData);
+		}
+		
+		integer deviceCount := $workerState.perDeviceBucket.size();
+		// Share the data with all workers.
+		send GroupStatistics_WorkerData($base.getWorkerId(), $base.getBlockId(), $base.getModelId(), deviceCount, workerAggregate) to Partitioner.ALL_WORKERS;
+	}
+ 
+	
+	/** 
+	 * Calculate the final aggregate values by combining values from all workers and generate outputs for each device.
+	 *
+ 	 * @param $activation The current Activation.
+	 * @param $workerState The worker state object, shared across devices on a worker.
+	 * @private
+	 */
+	action generateOutput(Activation $activation, GroupStatistics_$WorkerState $workerState) {
+		switch($activation.partition as p) {
+			// No need to generate output for broadcast and default partitions
+			// as they are used by framework.
+			case Partition_Broadcast: {return;}
+			case Partition_Default:{return;}
+			default: {}
+		}
+
+		integer deviceCount := 0;
+		// Combine data from all workers to generate final aggregate values.
+		GroupStatistics_AggregateData cumulativeAggregate := GroupStatistics_AggregateData.createDefault();
+		integer w;
+		for w in $workerState.workerSnapshot.keys() {
+			// Don't consider data from a worker if it does not have any data for any devices.
+			if $workerState.workerSnapshot[w].deviceCount = 0 {
+				continue;
+			}
+			deviceCount := deviceCount + $workerState.workerSnapshot[w].deviceCount;
+			GroupStatistics_AggregateData workerAggregate := $workerState.workerSnapshot[w].data;
+			cumulativeAggregate.mergeAggregate(workerAggregate);
+		}
+		
+		// Don't generate output if no input values are received.
+		if deviceCount != 0 {
+			$setOutput_deviceCount($activation, deviceCount.toFloat());
+			$setOutput_minValue($activation, cumulativeAggregate.min);
+			$setOutput_maxValue($activation, cumulativeAggregate.max);
+			$setOutput_meanValue($activation, cumulativeAggregate.mean);
+			float variance := cumulativeAggregate.squareDiffSum / cumulativeAggregate.weightSum;
+			$setOutput_stdDeviation($activation, variance.sqrt());
+		}
+	}
+
+	/** Minimum.
+	 * 
+	 * The smallest input value (closest to negative infinity) across all the devices in a group.
+	 */
+	action<Activation,float> $setOutput_minValue;
+	
+	/** Maximum.
+	 * 
+	 * The largest input value (closest to positive infinity) across all the devices in a group.
+	 */
+	action<Activation,float> $setOutput_maxValue;
+	
+	/** Device Count.
+	 *
+	 * The number of devices in a group for which input values have been received so far.
+	 */
+	action<Activation,float> $setOutput_deviceCount;
+
+	/** Average.
+	 * 
+	 * The sum of the value multiplied by how long it stays at that value divided by the total time and the device count.
+	 */
+	action<Activation,float> $setOutput_meanValue;
+
+	/** Standard Deviation.
+	 * 
+	 * The standard deviation of the input values across all the devices in a group.
+	 */
+	action<Activation,float> $setOutput_stdDeviation;
+
+	/** Variance.
+	 * 
+	 * The variance of the input values across all the devices in a group.
+	 */
+	action<Activation,float> $setOutput_variance;
+
+	/**Number of buckets. @private*/
+	constant integer NUM_BUCKETS := 20;
+}

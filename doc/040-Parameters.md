@@ -109,7 +109,7 @@ After the model has validated all blocks (calling `$validate` methods where pres
 
 The `$validate`, `$preSpawnInit` and `$init` methods do not have any required parameters, but they may optionally take:
 
-* `dictionary<string,any> $modelScopeProperties` - contains the model name, mode and mode properties. (See the `ABConstants` type for the key values to use.)
+* `dictionary<string,any> $modelScopeParameters` - contains the model name, mode and mode properties. (See the `ABConstants` type for the key values to use.)
 * `ConfigurationProperty $configPropertyValues` - accessor for global configuration properties.
 * `Partitioner $partitioner` - accessor for Partitioner helper object.
 

@@ -709,4 +709,4 @@ action $validate() returns Promise {
 ```
 See the **DualMeasurementIO.mon** sample for a complete example on multiple outputs in a block.
 
-[< Prev: Asynchronous validations](110-AsynchronousValidations.md) | [Contents](000-contents.md)
+[< Prev: Asynchronous validations](110-AsynchronousValidations.md) | [Contents](000-contents.md) | [Next: Sharing data across partitions and workers >](160-SharingDataAcrossPartition.md) 

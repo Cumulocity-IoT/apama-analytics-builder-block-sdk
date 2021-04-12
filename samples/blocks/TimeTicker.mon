@@ -68,6 +68,7 @@ event TimeTickerFakeInputEvent {
  * The output is associated with the device or devices in deviceId.
  *
  * @$blockCategory Utilities
+ * @$consumesInput
  * @$derivedName Time ticker $periodSecs
  */
 event TimeTicker{

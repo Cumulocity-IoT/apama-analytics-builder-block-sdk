@@ -32,7 +32,7 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.9.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
@@ -91,6 +91,11 @@
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#isTriggerDevice()">isTriggerDevice</A></B>()</CODE>
 <br>
 <br>Check if the target device is a trigger device. If the device is a trigger device, then output will be sent to the device that caused the model execution.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#routeOutput()">routeOutput</A></B>(any&nbsp;outputEvent,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</CODE>
+<br>
+<br>Route the output event internally only.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#sendOutput()">sendOutput</A></B>(any&nbsp;outputEvent,&nbsp;string&nbsp;channel,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</CODE>
@@ -154,6 +159,31 @@
 <DD>True if target device is a trigger device.</DD>
 </DL>
 <HR>
+<A NAME="routeOutput()"></A>
+<H3>routeOutput</H3>
+<PRE>void&nbsp;<B>routeOutput</B>(any&nbsp;outputEvent,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</PRE>Route the output event internally only.<br>
+<br> Normally, blocks would call sendOutput, but if there is a need to send output separately, this will only route the outputEvent (and forward to other worker contexts as needed). This method will also 'tag' the outputEvent.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>outputEvent</tt>&nbsp;-&nbsp;The output event to send.</DD>
+<DD>
+<tt>$activation</tt>&nbsp;-&nbsp;The current activation.</DD>
+</DL>
+<DL>
+<DT>
+<B>Routes:</B>
+</DT>
+<DD>any&nbsp;-&nbsp;The output event if it is synchronous.</DD>
+</DL>
+<DL>
+<DT>
+<B>Sends:</B>
+</DT>
+<DD>any&nbsp;-&nbsp;</DD>
+</DL>
+<HR>
 <A NAME="sendOutput()"></A>
 <H3>sendOutput</H3>
 <PRE>void&nbsp;<B>sendOutput</B>(any&nbsp;outputEvent,&nbsp;string&nbsp;channel,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</PRE>Send the output event to Cumulocity IoT by sending it to the specified channel.<br>
@@ -167,12 +197,6 @@
 <tt>channel</tt>&nbsp;-&nbsp;The channel on which to send the output event.</DD>
 <DD>
 <tt>$activation</tt>&nbsp;-&nbsp;The current activation.</DD>
-</DL>
-<DL>
-<DT>
-<B>Routes:</B>
-</DT>
-<DD>any&nbsp;-&nbsp;The output event if it is synchronous.</DD>
 </DL>
 <DL>
 <DT>
@@ -200,7 +224,7 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.9.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>

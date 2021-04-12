@@ -15,6 +15,7 @@ using apama.analyticsbuilder.Activation;
 using apama.analyticsbuilder.BlockBase;
 using com.apama.exceptions.Exception;
 using apama.analyticsbuilder.L10N;
+using apama.analyticsbuilder.TimerParams;
 
 /**
  * Event definition of the parameters for the Time Delay block.
@@ -73,10 +74,10 @@ event TimeDelay {
 	 */
 	action $process(Activation $activation, any $input_value) {
 		if ($parameters.delaySecs = 0.0) {
-			$setOutput_delayedValue($activation,$input_value);  // it's not legal to create a timer with 0 delay, but we can just pass-through the value.
+			$setOutput_delayedValue($activation, $input_value);  // it's not legal to create a timer with 0 delay, but we can just pass-through the value.
 		}
 		else {
-			$base.createTimer($parameters.delaySecs,$input_value);	// Creates a timer with the specified duration.
+			any discard := $base.createTimerWith(TimerParams.relative($parameters.delaySecs));	// Creates a timer with the specified duration.
 		}
 	}
 	
@@ -85,8 +86,8 @@ event TimeDelay {
 	 * 
 	 * Here it is setting the output after the timer has been triggered.
 	 */
-	action $timerTriggered(Activation $activation, any $payload) {
-		$setOutput_delayedValue($activation, $payload);
+	action $timerTriggered(Activation $activation, any $input_value) {
+		$setOutput_delayedValue($activation, $input_value);
 	}
 	
 	/**

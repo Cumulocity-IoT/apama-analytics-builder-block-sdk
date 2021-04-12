@@ -112,6 +112,8 @@ event DualMeasurementIO_$State {
  * This also generates output to measurements defined by ratio and inverse ratio.
  *
  * @$blockCategory Input
+ * @$producesOutput
+ * @$consumesInput
  * @$blockType c8y_Input
  */
 event DualMeasurementIO{

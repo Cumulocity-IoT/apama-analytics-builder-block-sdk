@@ -14,6 +14,7 @@ When the timer fires, it will call a method named `$timerTriggered` on the block
 * `Activation $activation`
 * Block `$State` `$blockState`
 * `$payload` (of any EPL type - `string`, `float`, event types, `any`, etc.)
+* `$input_value` (subset of inputs of the block.)
 * `TimerHandle $timerHandle`
 * `ConfigPropertyValue $configPropertyValues`
 
@@ -27,10 +28,10 @@ The following is a simple example of timers, to delay float values by 1 second:
 event Delay1Sec {
     BlockBase $base;
     action $process(float $input_value) {
-        $base.createTimer(1.0, $input_value);
+        any discard := $base.createTimerWith(TimerParams.relative(1.0));
     }
-    action $timerTriggered(Activation $activation, float $payload) {
-        $setOutput_delayed($activation, $payload);
+    action $timerTriggered(Activation $activation, float $input_value) {
+        $setOutput_delayed($activation, $input_value);
     }
     action<Activation, float> $setOutput_delayed;
 }

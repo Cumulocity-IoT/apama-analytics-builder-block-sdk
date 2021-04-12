@@ -27,6 +27,7 @@ class Block(object):
 		self.data['inputs'] = []
 		self.data['outputs'] = []
 		self.data['parameters'] = []
+		self.idNames = {}
 
 	def setBlockId(self, blockId):
 		self.data['id'] = blockId
@@ -48,6 +49,14 @@ class Block(object):
 
 	def setBlockCategory(self, blockCategory):
 		self.data['category'] = blockCategory
+		return self
+
+	def setBlockConsumesInput(self):
+		self.data['consumesInput'] = True
+		return self
+
+	def setBlockProducesOutput(self):
+		self.data['producesOutput'] = True
 		return self
 
 	def setBlockType(self, blockType):
@@ -84,6 +93,10 @@ class Block(object):
 
 	def getUnderlyingDataMap(self):
 		return self.data
+
+	def addId(self, name, type):
+		if name in self.idNames: raise NameError('Duplicate name ' + name + ' used as ' + self.idNames[name] + ' and ' + type)
+		self.idNames[name] = type
 
 
 class InputOutputHolder:
@@ -231,13 +244,15 @@ class ValidateBlockDollarFields:
 		self.data['$blockType'] = False
 		self.data['$derivedName'] = False
 		self.data['$titleIsDerived'] = False
-		self.fieldWithMultipleOccurances = ['$replacesBlock']
+		self.fieldWithMultipleOccurances = ['$replacesBlock', '$consumesInput', '$producesOutput']
 
 
 packageXPath = "./Package"
 blockIdentifierXPath = "./Type[@category='Event']/Member[@name=\"$base\"][@type=\"BlockBase\"][@package='apama.analyticsbuilder']/.."
 blockIdentifierXPathAlternate = "./Type[@category='Event']/Member[@name=\"$base\"][@type=\"apama.analyticsbuilder.BlockBase\"]/.."
 blockIdentifierCategoryXPath = "./DollarFields/DollarField[@name='$blockCategory']"
+blockIdentifierConsumesInputXPath = "./DollarFields/DollarField[@name='$consumesInput']"
+blockIdentifierProducesOutputXPath = "./DollarFields/DollarField[@name='$producesOutput']"
 blockTypeIdentifierTypeXPath = "./DollarFields/DollarField[@name='$blockType']/Description"
 blockTypeIdentifierDerivedNameXPath = "./DollarFields/DollarField[@name='$derivedName']/Description"
 blockTypeIdentifierTitleIsDerivedXPath = "./DollarFields/DollarField[@name='$titleIsDerived']/Description"
@@ -300,7 +315,7 @@ class BlockGenerator:
 		return self._getTypeUnderscoreName(member) + '_'
 
 	##  Parse XML Type Element and generate list of Input Objects
-	def _createInputElement(self, typeElement):
+	def _createInputElement(self, typeElement, block):
 		inputList = []
 		# fetch inputName parameters first
 		inputNameMap = dict()
@@ -320,6 +335,7 @@ class BlockGenerator:
 				'name'].startswith('$input_', 0, 7):
 				try:
 					inputId = parameter.attrib['name'][7:]
+					block.addId(inputId, 'input')
 					inputPackageName = parameter.get('package', '').strip()
 
 					if inputPackageName != '':
@@ -356,7 +372,7 @@ class BlockGenerator:
 		return inputList
 
 	## Parse XML type element and generate list of Output Objects
-	def _createOutputElement(self, typeElement):
+	def _createOutputElement(self, typeElement, block):
 		outputList = []
 		for outputMember in typeElement.iterfind(outputIdentifierXPath):
 			if 'name' in outputMember.attrib and (len(outputMember.attrib['name'].strip()) > 11) and \
@@ -364,6 +380,7 @@ class BlockGenerator:
 				try:
 					outputEvent = InputOutputHolder()
 					outputId = outputMember.attrib['name'][11:]
+					block.addId(outputId, 'output')
 					outputEvent.setInputId(outputMember.attrib['name'][11:])
 
 					outputParameterElements = outputMember.findall('./Parameters/Parameter')
@@ -407,14 +424,14 @@ class BlockGenerator:
 					seqUnderlyingType = t.find('./Parameters/Parameter[@type]')  # optional <sequence <T> >
 					if seqUnderlyingType is not None:
 						member_type = seqUnderlyingType.attrib['type']
-						return member_type, is_optional, ('NameValue' in member_type)
+						return member_type, is_optional, ('NameValue' in member_type or 'LngLat' in member_type)
 			else:
 				self.raiseError("Parameter type is missing.")
 		elif member.attrib.get('type').lower() == 'sequence'.lower():
 			t = member.find('./Parameters/Parameter[@type]')
 			if t is not None:
 				member_type = 'sequence<' + t.attrib['type'] + '>'
-				return member_type, is_optional, ('NameValue' in member_type)
+				return member_type, is_optional, ('NameValue' in member_type or 'LngLat' in member_type)
 			else:
 				self.raiseError("Parameter type is missing.")
 		else:
@@ -422,7 +439,7 @@ class BlockGenerator:
 		return member_type, is_optional, (self._isThisTypeSupported(member_type))
 
 	# Create Parameter List
-	def _createParameterList(self, typeElement, xmlRootElement):
+	def _createParameterList(self, typeElement, xmlRootElement, block):
 		parameterList = []
 		parameterNameSearch = typeElement.attrib.get('name').strip() + '_$Parameters'
 		parameterMember = typeElement.find('./Member[@type=\'' + parameterNameSearch + '\']')
@@ -448,6 +465,7 @@ class BlockGenerator:
 					if 'constant' not in member.attrib \
 							and is_supported_type:
 						parameterId = member.attrib.get('name').strip('\t ')
+						block.addId(parameterId, 'parameter')
 						parameterObject = Parameter().setParameterId(parameterId)
 
 						for extraTag in vanillaFieldTags:
@@ -553,6 +571,17 @@ class BlockGenerator:
 		blockCategory = typeElement.find(blockIdentifierCategoryXPath + '/Description')
 		if blockCategory is not None and blockCategory.text is not None:
 			block.setBlockCategory(blockCategory.text.strip())
+
+		# check and set consumesInput
+		consumesInput = typeElement.find(blockIdentifierConsumesInputXPath)
+		if consumesInput is not None:
+			block.setBlockConsumesInput()
+
+		# check and set consumesInput
+		producesOutput = typeElement.find(blockIdentifierProducesOutputXPath)
+		if producesOutput is not None:
+			block.setBlockProducesOutput()
+
 		# set Block Type
 		blockType = typeElement.find(blockTypeIdentifierTypeXPath)
 		if blockType is not None and blockType.text is not None:
@@ -577,11 +606,11 @@ class BlockGenerator:
 			block.setBlockName(nameField).setDescription(
 				descriptionField if descriptionField is not None else '').setExtendDocs(extendDocsField)
 		# set Input Event List
-		block.setInputEventJsonList(self._createInputElement(typeElement))
+		block.setInputEventJsonList(self._createInputElement(typeElement, block))
 		# set Output Events List
-		block.setOutputEventJsonList(self._createOutputElement(typeElement))
+		block.setOutputEventJsonList(self._createOutputElement(typeElement, block))
 		# set Parameter List
-		block.setParameterJsonList(self._createParameterList(typeElement, xmlRootElement))
+		block.setParameterJsonList(self._createParameterList(typeElement, xmlRootElement, block))
 
 		return block
 

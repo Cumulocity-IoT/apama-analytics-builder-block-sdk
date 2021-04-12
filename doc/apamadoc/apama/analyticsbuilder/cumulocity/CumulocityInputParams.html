@@ -32,13 +32,13 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.9.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
 </TR>
 <TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
 </TR>
 </TABLE>
 <HR>
@@ -56,7 +56,17 @@
 <A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityInputHandler.html" title="type in apama.analyticsbuilder.cumulocity">apama.analyticsbuilder.cumulocity.CumulocityInputHandler</A>&nbsp;-&nbsp;To schedule input Cumulocity events for processing.</DD>
 </DL>
 <HR>
-<A NAME="action_summary"></A>
+<A NAME="member_summary"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Member summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE><B><A HREF="CumulocityInputParams.html#isSync">isSync</A></B></CODE>
+<br>
+<br>If false, then the input never triggers evaluation of a model.</TD>
+</TR>
+</TABLE>&nbsp;<A NAME="action_summary"></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
@@ -72,11 +82,31 @@
 <br>Declare the input stream being consumed by the block.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../../apama/analyticsbuilder/Promise.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Promise</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityInputParams.html#declareAsync()">declareAsync</A></B>()</CODE>
+<br>
+<br>Declare the async input stream being consumed by the block.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityInputParams.html" title="type in apama.analyticsbuilder.cumulocity">apama.analyticsbuilder.cumulocity.CumulocityInputParams</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="CumulocityInputParams.html#forAsyncEventType()">forAsyncEventType</A></B>(string&nbsp;deviceId,&nbsp;any&nbsp;block,&nbsp;string&nbsp;eventType)</CODE>
+<br>
+</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityInputParams.html" title="type in apama.analyticsbuilder.cumulocity">apama.analyticsbuilder.cumulocity.CumulocityInputParams</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityInputParams.html#withFields()">withFields</A></B>(dictionary&lt;string,&nbsp;any&gt;&nbsp;fields)</CODE>
 <br>
 <br>Specify the fields that the block listens for.</TD>
 </TR>
-</TABLE>&nbsp;<A NAME="action_detail"></A>
+</TABLE>&nbsp;<A NAME="member_detail"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Member detail</B></FONT></TH>
+</TR>
+</TABLE>
+<A NAME="isSync"></A>
+<H3>isSync</H3>
+<PRE>boolean&nbsp;<B>isSync</B>
+</PRE>If false, then the input never triggers evaluation of a model.<HR>
+<A NAME="action_detail"></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
@@ -117,6 +147,31 @@
 <tt>handlerCreated</tt>&nbsp;-&nbsp;The Callback action to save the input handler created.</DD>
 </DL>
 <HR>
+<A NAME="declareAsync()"></A>
+<H3>declareAsync</H3>
+<PRE>
+<A HREF="../../../apama/analyticsbuilder/Promise.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Promise</A>&nbsp;<B>declareAsync</B>()</PRE>Declare the async input stream being consumed by the block.<br>
+<br> This is an asynchronous operation that performs an inventory lookup for the source device or device group. It will call <tt>BlockBase.consumesInput()</tt> after the lookup to declare that the block is an input block.<br>
+<br> This must be called during the <tt>$validate</tt> action, not afterward. Either the promise returned by this action or another promised chained with it must be returned from the <tt>$validate</tt> action.<HR>
+<A NAME="forAsyncEventType()"></A>
+<H3>forAsyncEventType</H3>
+<PRE>
+<A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityInputParams.html" title="type in apama.analyticsbuilder.cumulocity">apama.analyticsbuilder.cumulocity.CumulocityInputParams</A>&nbsp;static <B>forAsyncEventType</B>(string&nbsp;deviceId,&nbsp;any&nbsp;block,&nbsp;string&nbsp;eventType)</PRE>
+<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>deviceId</tt>
+</DD>
+<DD>
+<tt>block</tt>
+</DD>
+<DD>
+<tt>eventType</tt>
+</DD>
+</DL>
+<HR>
 <A NAME="withFields()"></A>
 <H3>withFields</H3>
 <PRE>
@@ -153,13 +208,13 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.9.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
 </TR>
 <TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
 </TR>
 </TABLE>
 <HR>

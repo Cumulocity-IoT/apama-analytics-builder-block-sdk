@@ -32,7 +32,7 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.9.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
@@ -131,6 +131,11 @@
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="BlockBase.html#getL10N_param()">getL10N_param</A></B>(string&nbsp;parameterId,&nbsp;any&nbsp;blockOrParam)</CODE>
 <br>
 <br>Get a localized sub-message to identify a parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getModelId()">getModelId</A></B>()</CODE>
+<br>
+<br>Get the unique model identifier.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;float</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getModelTime()">getModelTime</A></B>()</CODE>
@@ -393,6 +398,16 @@
 <DD>Localized sub-message.</DD>
 </DL>
 <HR>
+<A NAME="getModelId()"></A>
+<H3>getModelId</H3>
+<PRE>string&nbsp;<B>getModelId</B>()</PRE>Get the unique model identifier.<br>
+<br> It is internal runtime identifier and is not guaranteed to remain same across multiple model deployments and un-deployments.<DL>
+<DT>
+<B>Returns:</B>
+</DT>
+<DD>Model identifier.</DD>
+</DL>
+<HR>
 <A NAME="getModelTime()"></A>
 <H3>getModelTime</H3>
 <PRE>float&nbsp;<B>getModelTime</B>()</PRE>The current effective model time. This should be used instead of <tt>currentTime</tt> when access to the current time is required. The time for any absolute timer must be greater than this value.<HR>
@@ -552,7 +567,7 @@
 <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.7.0.1</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.9.0.1</B></FONT></TD>
 </TR>
 </TABLE>
 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>

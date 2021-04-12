@@ -23,7 +23,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		self.modelId = self.createTestModel('apamax.analyticsbuilder.samples.TimeWindow', {'durationSecs':10.0})
 		
 		self.sendEventStrings(correlator,
-		                      self.timestamp(1.9),
+		                      self.timestamp(1),
 		                      self.inputEvent('value', 1, id = self.modelId),
 		                      self.timestamp(3))
 		
@@ -31,15 +31,15 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		self.assertBlockOutput('windowContents', [])
 		
 		self.sendEventStrings(correlator,
-		                      self.timestamp(5.9),
+		                      self.timestamp(5),
 		                      self.inputEvent('value', 2, id = self.modelId),
-		                      self.timestamp(6.9),
+		                      self.timestamp(6),
 		                      self.inputEvent('value', 3, id = self.modelId),
-		                      self.timestamp(7.9),
+		                      self.timestamp(7),
 		                      self.inputEvent('value', 4, id = self.modelId),
-		                      self.timestamp(11.9),
+		                      self.timestamp(11),
 							  self.inputEvent('value', 5, id = self.modelId),
-		                      self.timestamp(14.9),
+		                      self.timestamp(14),
 							  self.inputEvent('value', 6, id = self.modelId),
 		                      self.timestamp(22),
 							  self.inputEvent('reset', True, id = self.modelId),
@@ -49,11 +49,16 @@ class PySysTest(AnalyticsBuilderBaseTest):
 							  )
 
 	def validate(self):
-		windowContents = [evt['properties']['timeWindow'] for evt in self.allOutputFromBlock(modelId = self.modelId) if evt['outputId'] == 'windowContents']
+		def roundValues(lsdict):
+			for d in lsdict:
+				for k in d.keys():
+					d[k] = round(d[k]*10)/10
+			return lsdict
+		windowContents = [roundValues(evt['properties']['timeWindow']) for evt in self.allOutputFromBlock(modelId = self.modelId) if evt['outputId'] == 'windowContents']
 		def point(value, timestamp):
 			return {'value': value, 'timestamp': timestamp}
 		# As it's been 2 seconds since we sent the input, now the output should be generated.
 		self.assertThat('outputLen == 3', outputLen = len(windowContents))
 		self.assertThat('output == expected', output = windowContents[0], expected = [point(1,1), point(2, 5), point(3, 6), point(4, 7)])
-		self.assertThat('output == expected', output = windowContents[1], expected = [point(4, 9), point(5, 11), point(6, 14)])
-		self.assertThat('output == expected', output = windowContents[2], expected = [point(7, 22.5)])
+		self.assertThat('output == expected', output = windowContents[1], expected = [point(4, 9.9), point(5, 11), point(6, 14)])
+		self.assertThat('output == expected', output = windowContents[2], expected = [point(7, 23.4)])
