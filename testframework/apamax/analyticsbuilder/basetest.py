@@ -25,14 +25,14 @@ class Waiter:
 		self.corr = corr
 		self.stdouterr = self.parent.allocateUniqueStdOutErr('waiter')
 
-		corr.receive(self.stdouterr[0], channels=channels)
+		corr.receive(self.stdouterr[0], channels=channels, utf8=True)
 	def waitFor(self, expr, count=5, errorExpr=None):
 		self.corr.flush(count=count)
 		if errorExpr==None:
 			self.parent.waitForSignal(self.stdouterr[0], expr=expr)
 		else:
-			self.parent.waitForSignal(self.stdouterr[0], expr=f'({expr})|({errorExpr})')
-			self.parent.assertGrep(self.stdouterr[0], expr=errorExpr, contains=False)
+			self.parent.waitForSignal(self.stdouterr[0], expr=f'({expr})|({errorExpr})', encoding='UTF-8')
+			self.parent.assertGrep(self.stdouterr[0], expr=errorExpr, contains=False, encoding='UTF-8')
 
 class AnalyticsBuilderBaseTest(ApamaBaseTest):
 	"""
