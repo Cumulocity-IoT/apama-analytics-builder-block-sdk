@@ -1,6 +1,8 @@
 # Naming and documenting blocks
 
-Within a block, some fields, action names and parameters within actions have special meanings and will be used by the framework, while blocks can include other fields and actions that the framework will not use. To identify which actions and fields have a special meaning, the dollar (`$`) character is used to identify actions and fields with a special meaning. Some parameters in special actions will also use the `$` prefix, such as `$input_`.
+The public API of the block SDK is encompassed within the apama.analyticsbuilder package. As seen in the examples below, this is the package from which the SDK components for creating a block are used.
+
+Within a block, some fields, action names and parameters within actions have special meanings and will be used by the framework, while blocks can include other fields and actions that the framework will not use. To identify which actions and fields have a special meaning, the dollar (`$`) character is used to prefix thee names of actions and fields. Some parameters in special actions will also use the `$` prefix, such as `$input_`.
 
 Similarly, as well as the standard ApamaDoc tags that start with an `@` character, Analytics Builder extended tags can be used in a number of places. These extended tags start with the characters `@$`.
 

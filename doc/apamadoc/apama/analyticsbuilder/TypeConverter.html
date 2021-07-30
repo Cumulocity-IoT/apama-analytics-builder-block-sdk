@@ -1,0 +1,284 @@
+<HTML><!-- saved from url=(0014)about:internet -->
+
+
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>TypeConverter</TITLE>
+<META NAME="keywords" CONTENT="TypeConverter&nbsp;event">
+<LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<SCRIPT type="text/javascript">function windowTitle()
+          {
+          parent.document.title="TypeConverter";
+          }
+          </SCRIPT>
+<NOSCRIPT></NOSCRIPT>
+</HEAD>
+<BODY BGCOLOR="white" onload="windowTitle();">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/TypeConverter.html"><B>FRAMES</B></A>  &nbsp;
+
+            &nbsp;<A target="_top" HREF="TypeConverter.html"><B>NO FRAMES</B></A>  &nbsp;
+            &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
+<NOSCRIPT>
+<A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+</FONT></TD>
+</TR>
+<TR>
+<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+<TR ALIGN="center" VALIGN="top">
+<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.10.0.3</B></FONT></TD>
+</TR>
+</TABLE>
+</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_summary">CONSTANT</A>&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_detail">CONSTANT</A>&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+<H2>
+<FONT SIZE="-1">apama.analyticsbuilder</FONT>
+<BR>Event TypeConverter</H2>
+<HR>Type converter helper event for consistently converting from one type to another.<br>
+<br> The toType() actions obey the conversions in the Analytics Builder documentation. The valueToType() actions delve deeper and attempt to convert the contents of a string or any.<HR>
+<A NAME="constant_summary"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Constant summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;constant string</CODE></FONT></TD><TD><CODE><B><A HREF="TypeConverter.html#BOOLEAN">BOOLEAN</A> := "boolean"</B></CODE>
+<br>
+</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;constant string</CODE></FONT></TD><TD><CODE><B><A HREF="TypeConverter.html#FALSE">FALSE</A> := "false"</B></CODE>
+<br>
+</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;constant string</CODE></FONT></TD><TD><CODE><B><A HREF="TypeConverter.html#FLOAT">FLOAT</A> := "float"</B></CODE>
+<br>
+</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;constant string</CODE></FONT></TD><TD><CODE><B><A HREF="TypeConverter.html#STRING">STRING</A> := "string"</B></CODE>
+<br>
+</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;constant string</CODE></FONT></TD><TD><CODE><B><A HREF="TypeConverter.html#TRUE">TRUE</A> := "true"</B></CODE>
+<br>
+</TD>
+</TR>
+</TABLE>&nbsp;<A NAME="action_summary"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#fromString()">fromString</A></B>(string&nbsp;s,&nbsp;string&nbsp;type)</CODE>
+<br>
+<br>Converts a string into the type and returns the result within an any.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#toBoolean()">toBoolean</A></B>(any&nbsp;a)</CODE>
+<br>
+<br>Converts an any to a boolean. As per the Analytics Builder documentation, any non-empty or non-zero value results in a true result.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;float</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#toFloat()">toFloat</A></B>(any&nbsp;a)</CODE>
+<br>
+<br>Converts an any to a float. As per the Analytics Builder documentation, a string type cannot be cast to a float and an exception will be thrown.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/Value.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Value</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#toValue()">toValue</A></B>(any&nbsp;a)</CODE>
+<br>
+<br>Converts the any to a Value object. The any will be set as the value of the Value.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#valueToBoolean()">valueToBoolean</A></B>(any&nbsp;a)</CODE>
+<br>
+<br>Converts the value to a boolean. In this case, for a string, the contents of the string are parsed and converted rather than the string type itself.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;float</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#valueToFloat()">valueToFloat</A></B>(any&nbsp;a)</CODE>
+<br>
+<br>Converts the value to a float. In this case, for a string, the contents of the string are parsed and converted rather than the string type itself. Invalid values will cause an exception to be thrown.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;float</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#valueToFloatSafe()">valueToFloatSafe</A></B>(any&nbsp;a)</CODE>
+<br>
+<br>Converts the value to a float. In this case, for a string, the contents of the string are parsed and converted rather than the string type itself. Invalid values will result in float.NaN.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="TypeConverter.html#valueToString()">valueToString</A></B>(any&nbsp;a)</CODE>
+<br>
+<br>Converts the value of an any to a string. This mimics the any.valueToString() with the exception that an empty any results in an empty string rather than "empty".</TD>
+</TR>
+</TABLE>&nbsp;<A NAME="constant_detail"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Constant detail</B></FONT></TH>
+</TR>
+</TABLE>
+<A NAME="BOOLEAN"></A>
+<H3>BOOLEAN</H3>
+<PRE>constant string&nbsp;<B>BOOLEAN := "boolean"</B>
+</PRE>
+<HR>
+<A NAME="FALSE"></A>
+<H3>FALSE</H3>
+<PRE>constant string&nbsp;<B>FALSE := "false"</B>
+</PRE>
+<HR>
+<A NAME="FLOAT"></A>
+<H3>FLOAT</H3>
+<PRE>constant string&nbsp;<B>FLOAT := "float"</B>
+</PRE>
+<HR>
+<A NAME="STRING"></A>
+<H3>STRING</H3>
+<PRE>constant string&nbsp;<B>STRING := "string"</B>
+</PRE>
+<HR>
+<A NAME="TRUE"></A>
+<H3>TRUE</H3>
+<PRE>constant string&nbsp;<B>TRUE := "true"</B>
+</PRE>
+<HR>
+<A NAME="action_detail"></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
+</TR>
+</TABLE>
+<A NAME="fromString()"></A>
+<H3>fromString</H3>
+<PRE>any&nbsp;static <B>fromString</B>(string&nbsp;s,&nbsp;string&nbsp;type)</PRE>Converts a string into the type and returns the result within an any.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>s</tt>
+</DD>
+<DD>
+<tt>type</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="toBoolean()"></A>
+<H3>toBoolean</H3>
+<PRE>boolean&nbsp;static <B>toBoolean</B>(any&nbsp;a)</PRE>Converts an any to a boolean. As per the Analytics Builder documentation, any non-empty or non-zero value results in a true result.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>a</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="toFloat()"></A>
+<H3>toFloat</H3>
+<PRE>float&nbsp;static <B>toFloat</B>(any&nbsp;a)</PRE>Converts an any to a float. As per the Analytics Builder documentation, a string type cannot be cast to a float and an exception will be thrown.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>a</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="toValue()"></A>
+<H3>toValue</H3>
+<PRE>
+<A HREF="../../apama/analyticsbuilder/Value.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Value</A>&nbsp;static <B>toValue</B>(any&nbsp;a)</PRE>Converts the any to a Value object. The any will be set as the value of the Value.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>a</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="valueToBoolean()"></A>
+<H3>valueToBoolean</H3>
+<PRE>boolean&nbsp;static <B>valueToBoolean</B>(any&nbsp;a)</PRE>Converts the value to a boolean. In this case, for a string, the contents of the string are parsed and converted rather than the string type itself.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>a</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="valueToFloat()"></A>
+<H3>valueToFloat</H3>
+<PRE>float&nbsp;static <B>valueToFloat</B>(any&nbsp;a)</PRE>Converts the value to a float. In this case, for a string, the contents of the string are parsed and converted rather than the string type itself. Invalid values will cause an exception to be thrown.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>a</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="valueToFloatSafe()"></A>
+<H3>valueToFloatSafe</H3>
+<PRE>float&nbsp;static <B>valueToFloatSafe</B>(any&nbsp;a)</PRE>Converts the value to a float. In this case, for a string, the contents of the string are parsed and converted rather than the string type itself. Invalid values will result in float.NaN.<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>a</tt>
+</DD>
+</DL>
+<HR>
+<A NAME="valueToString()"></A>
+<H3>valueToString</H3>
+<PRE>string&nbsp;static <B>valueToString</B>(any&nbsp;a)</PRE>Converts the value of an any to a string. This mimics the any.valueToString() with the exception that an empty any results in an empty string rather than "empty".<DL>
+<DT>
+<B>Parameters:</B>
+</DT>
+<DD>
+<tt>a</tt>
+</DD>
+</DL>
+<HR>
+<HR>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/TypeConverter.html"><B>FRAMES</B></A>  &nbsp;
+
+            &nbsp;<A target="_top" HREF="TypeConverter.html"><B>NO FRAMES</B></A>  &nbsp;
+            &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
+<NOSCRIPT>
+<A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+</FONT></TD>
+</TR>
+<TR>
+<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+<TR ALIGN="center" VALIGN="top">
+<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
+              </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.10.0.3</B></FONT></TD>
+</TR>
+</TABLE>
+</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_summary">CONSTANT</A>&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_detail">CONSTANT</A>&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+</BODY>
+</HTML>

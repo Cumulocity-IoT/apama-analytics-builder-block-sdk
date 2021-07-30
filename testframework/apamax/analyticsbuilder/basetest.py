@@ -81,23 +81,27 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-forward-events.cdp')
 		
-	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, **kwargs):
+	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, injectBlocks = True, **kwargs):
 		"""
 		Start a correlator with the EPL for Analytics Builder loaded.
-		:param blockSourceDir: A location of blocks to include.
+		:param blockSourceDir: A location of blocks to include, or a list of locations
 		:param Xclock: Externally clock correlator (on by default).
 		:param numWorkers: Number of workers for Analytics Builder runtime (4 by default).
+		:param injectBlocks: if false, don't inject the actual block EPL (use if there are dependencies), returns blockOutput directory. Also skips applicationInitialized call.
+		:param \**kwargs: extra kwargs are passed to startCorrelator
 		"""
 
 		# Build and extract the block extension:
 		if blockSourceDir == None: blockSourceDir = self.input
-		blockOutput = self.output+'/block-output.zip'
-		self.runAnalyticsBuilderScript(['build', 'extension', '--input', blockSourceDir, '--output', blockOutput])
-		with zipfile.ZipFile(blockOutput, 'r') as zf:
-			blockOutput = Path(self.output + '/block-output/')
-			os.mkdir(blockOutput)
-			zf.extractall(blockOutput)
-
+		if not isinstance(blockSourceDir, list):
+			blockSourceDir = [blockSourceDir]
+		blockOutput = self.output+'/block-output-'
+		blockOutputDirs=[]
+		blockSrcOutput = self.output+'/block-src-'
+		for blockDir in blockSourceDir:
+			blockOutput=blockSrcOutput + os.path.basename(blockDir)
+			self.buildExtensionDirectory(blockDir, blockOutput)
+			blockOutputDirs.append(Path(blockOutput))
 		# Start the correlator:
 		corr = CorrelatorHelper(self)
 		arguments=kwargs.get('arguments', [])
@@ -114,18 +118,49 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-inventoryLookup-events.cdp')
 		corr.injectEPL(self.project.ANALYTICS_BUILDER_SDK+'/testframework/resources/TestHelpers.mon')
 
-		# inject block files:
-		corr.injectEPL(sorted(list(blockOutput.rglob('*.mon'))))
-		corr.send(sorted(list(blockOutput.rglob('*.evt'))))
 
-		# now done
-		corr.sendEventStrings('com.apama.connectivity.ApplicationInitialized()')
-		corr.flush(10)
+		for blockOutput in blockOutputDirs:
+			corr.send(sorted(list(blockOutput.rglob('*.evt'))))
 		self.analyticsBuilderCorrelator = corr
 		corr.receive('output.evt', channels=['TestOutput'])
 		corr.injectTestEventLogger(channels=['TestOutput'])
 
+		if not injectBlocks:
+			return blockOutputDirs
+
+		self.preInjectBlock(corr)
+
+		# inject block files:
+		for blockOutput in blockOutputDirs:
+			corr.injectEPL(sorted(list(blockOutput.rglob('*.mon'))))
+			corr.send(sorted(list(blockOutput.rglob('*.evt'))))
+		# now done
+		corr.sendEventStrings('com.apama.connectivity.ApplicationInitialized()')
+		corr.flush(count=10)
 		return corr
+
+	def buildExtensionDirectory(self, blockSourceDir, blockOutput):
+		"""
+		Build a directory of blocks to a directory to inject.
+
+		Wrapper for calling anlytics_builder build extension and extracting the output.
+		:param blockSourceDir: the block source directory
+		:param blockOutput: string path to output to.
+		"""
+		self.runAnalyticsBuilderScript(['build', 'extension', '--input', blockSourceDir, '--output', f'{blockOutput}.zip'])
+		with zipfile.ZipFile(f'{blockOutput}.zip', 'r') as zf:
+				os.mkdir(blockOutput)
+				zf.extractall(blockOutput)
+
+
+	def preInjectBlock(self, corr):
+		"""
+		Inject anything required before injecting blocks.
+
+		Tests can override this to inject/ send anything required before injecting blocks. Default implemenation is a no-op.
+		:param corr:  The correlator object to use
+		"""
+		pass
 
 
 	def createTestModel(self, blockUnderTest, parameters={}, id=None, corr=None, inputs={}, isDeviceOrGroup=None, wiring=[]):
