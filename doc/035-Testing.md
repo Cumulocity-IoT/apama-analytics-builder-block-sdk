@@ -1,11 +1,11 @@
 # Testing blocks
 
-Blocks can be tested using the PySys testing framework. This is included in the Apama installation, along with extensions for using Apama with PySys. Built on top of the Apama extensions is a framework to test blocks. Refer to the [Apama Python API documentation](http://www.apamacommunity.com/documents/10.7.2.0/apama_10.10.0.0_webhelp/pydoc/).
+Blocks can be tested using the PySys testing framework. This is included in the Apama installation, along with extensions for using Apama with PySys. Built on top of the Apama extensions is a framework to test blocks. Refer to the [Apama Python API documentation](https://documentation.softwareag.com/apama/v10-11/apama10-11/pydoc/index.html).
 
-The samples include tests. The `pysystestproject.xml` configuration relies on the environment variable `ANALYTICS_BUILDER_SDK` being set to the location of the block SDK using an absolute path. PySys tests should contain a `run.py` with a class that extends `apama.analyticsbuilder.basetest:AnalyticsBuilderBaseTest`. In the `execute` method of the test, start a correlator with the `self.startAnalyticsBuilderCorrelator()` method. This starts a correlator, injects the Analytics Builder framework into it, and returns a `CorrelatorHelper` object. Provide a `blockSourceDir` parameter with the path to the source of the blocks, typically within the project tree (use `self.project.SOURCE` from the supplied `pysysproject.xml` file). Then, create a model to test the block with the `self.createTestModel('<blockUnderTest>')`  This results in a model being activated in the correlator with an input and output connected to every input and output of the block, and an identifier of the model is returned. The block can be exercised by sending events created by the `self.inputEvent` method, for a given block input identifier. 
+The samples include tests. The `pysystestproject.xml` configuration relies on the environment variable `ANALYTICS_BUILDER_SDK` being set to the location of the block SDK using an absolute path. PySys tests should contain a `run.py` with a class that extends `apama.analyticsbuilder.basetest:AnalyticsBuilderBaseTest`. In the `execute` method of the test, start a correlator with the `self.startAnalyticsBuilderCorrelator()` method. This starts a correlator, injects the Analytics Builder framework into it, and returns a `CorrelatorHelper` object. Provide a `blockSourceDir` parameter with the path to the source of the blocks, typically within the project tree (use `self.project.SOURCE` from the supplied `pysysproject.xml` file). Then, create a model to test the block with the `self.createTestModel('<blockUnderTest>')`  This results in a model being activated in the correlator with an input and output connected to every input and output of the block, and an identifier of the model is returned. The block can be exercised by sending events created by the `self.inputEvent` method, for a given block input identifier.
 
 
-Both `createTestModel` and `inputEvent` take an optional argument: `id` - an identifier of the model. If an identifier is not specified, `createModel` will use the identifiers `model_0` and upwards, and `inputEvent` will use `model_0` (that is, the first created model). 
+Both `createTestModel` and `inputEvent` take an optional argument: `id` - an identifier of the model. If an identifier is not specified, `createModel` will use the identifiers `model_0` and upwards, and `inputEvent` will use `model_0` (that is, the first created model).
 
 `createTestModel` takes these arguments:
 
@@ -14,7 +14,7 @@ Both `createTestModel` and `inputEvent` take an optional argument: `id` - an ide
 * `id` (optional) - identifier of the model
 * `corr` (optional) - correlator to use; defaults to using the last correlator started by `startAnalyticsBuilderCorrelator`.
 * `inputs` (optional) - a map of the types of inputs, from input identifier to the type of the input.  If an input identifier is not specified, the input defaults to the 'float' type. If the value for the identifier is set to 'None; or an empty string, that input is not connected
-* `wiring` (optional unless testing multiple blocks) - list of strings containing source block index, output port identifier, target block index, input port identifier separated by colons - e.g. `['0:timeWindow:1:window']` 
+* `wiring` (optional unless testing multiple blocks) - list of strings containing source block index, output port identifier, target block index, input port identifier separated by colons - e.g. `['0:timeWindow:1:window']`
 
 
 The following methods can be used to check the output of the block is as expected:

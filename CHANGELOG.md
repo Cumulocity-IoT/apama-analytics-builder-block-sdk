@@ -4,3 +4,6 @@
 * The version 2 API for writing input and output blocks is available.
 * The version 1 API for writing input and output blocks is deprecated. Existing blocks will need to be migrated. See [Migrating input and output blocks to the version 2 API](doc/150-MigrateInputOutputBlocks.md) for more details.
 
+## 10.11.0.0
+* You can now build an extension by skipping uninteresting folders from the build. See [Building a block into an extension](doc/030-BuildingExtensions.md) for more details.
+* It is now possible to list the extensions that are uploaded to a Cumulocity IoT instance. See [Building a block into an extension](doc/030-BuildingExtensions.md) for more details.

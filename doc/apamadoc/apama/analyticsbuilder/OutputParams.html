@@ -1,195 +1,255 @@
-<HTML><!-- saved from url=(0014)about:internet -->
-
-
-<HEAD>
-<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>OutputParams</TITLE>
-<META NAME="keywords" CONTENT="OutputParams&nbsp;event">
-<LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
-<SCRIPT type="text/javascript">function windowTitle()
+<HTML>
+    <!-- saved from url=(0014)about:internet -->
+    
+    <HEAD>
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <TITLE>OutputParams</TITLE>
+        <META NAME="keywords" CONTENT="OutputParams&nbsp;event">
+        <LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+        <SCRIPT type="text/javascript">function windowTitle()
           {
           parent.document.title="OutputParams";
           }
           </SCRIPT>
-<NOSCRIPT></NOSCRIPT>
-</HEAD>
-<BODY BGCOLOR="white" onload="windowTitle();">
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/OutputParams.html"><B>FRAMES</B></A>  &nbsp;
+        <NOSCRIPT></NOSCRIPT>
+    </HEAD>
+    <BODY BGCOLOR="white" onload="windowTitle();">
+        <TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+            <TR>
+                <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/OutputParams.html"><B>FRAMES</B></A>  &nbsp;
 
             &nbsp;<A target="_top" HREF="OutputParams.html"><B>NO FRAMES</B></A>  &nbsp;
             &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
-<NOSCRIPT>
-<A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
-<TR ALIGN="center" VALIGN="top">
-<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+                        <NOSCRIPT>
+                            <A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
+                        </NOSCRIPT>
+                    </FONT></TD>
+            </TR>
+            <TR>
+                <TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+                    <TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+                        <TR ALIGN="center" VALIGN="top">
+                            <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.10.0.3</B></FONT></TD>
-</TR>
-</TABLE>
-</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
-</TR>
-</TABLE>
-<HR>
-<H2>
-<FONT SIZE="-1">apama.analyticsbuilder</FONT>
-<BR>Event OutputParams</H2>
-<HR>Parameters for describing a stream of events produced by an output block.<br>
-<br> The combination of event type, field values, and partition value identifies the output stream. Two or more blocks in a single or across multiple models cannot produce synchronous output to the single output stream.<br>
-<br> This is typically used as: <pre><br>OutputHandler outputHandler;<br>string modelName;<br>
-<br>action $validate() {<br>	modelName := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString(); <br>	OutputParams params := OutputParams.forSyncEventType(MyEvent.getName(), new dictionary<string,any>).withPartitionValue(source);<br>	outputHandler := $base.producesOutput(params);<br>}<br>action tagOutput(MyEvent e) {<br>	e.params[ABConstants.MODEL_NAME_IDENTIFIER] := modelName;<br>}<br></pre><DL>
-<DT>
-<B>See Also:</B>
-</DT>
-<DD>
-<A HREF="../../apama/analyticsbuilder/BlockBase.html#producesOutput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#producesOutput()</A>&nbsp;-&nbsp;To declare an output block.</DD>
-</DL>
-<HR>
-<A NAME="action_summary"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="OutputParams.html#forAsyncEventType()">forAsyncEventType</A></B>(string&nbsp;eventType)</CODE>
-<br>
-<br>Create a new <tt>OutputParams</tt> for asynchronous output values.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="OutputParams.html#forSyncEventType()">forSyncEventType</A></B>(string&nbsp;eventType,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;tagger)</CODE>
-<br>
-<br>Create a new <tt>OutputParams</tt> for synchronous output values.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="OutputParams.html#withPartitionFields()">withPartitionFields</A></B>(string&nbsp;partitionField)</CODE>
-<br>
-<br>Specify the name of the field on the output event which should be set with the current partition if output is partitioned.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="OutputParams.html#withPartitionValue()">withPartitionValue</A></B>(any&nbsp;partitionValue)</CODE>
-<br>
-<br>Specify the value that identifies a partition of events.</TD>
-</TR>
-</TABLE>&nbsp;<A NAME="action_detail"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
-</TR>
-</TABLE>
-<A NAME="forAsyncEventType()"></A>
-<H3>forAsyncEventType</H3>
-<PRE>
-<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;static <B>forAsyncEventType</B>(string&nbsp;eventType)</PRE>Create a new <tt>OutputParams</tt> for asynchronous output values.<br>
-<br> Asynchronous output values are value which do not have source timestamp and can only be consumed by another model in a time-asynchronous manner when they are received back from the external system.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>eventType</tt>&nbsp;-&nbsp;The fully-qualified type name of the output event block produces.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>A new <tt>OutputParams</tt>.</DD>
-</DL>
-<HR>
-<A NAME="forSyncEventType()"></A>
-<H3>forSyncEventType</H3>
-<PRE>
-<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;static <B>forSyncEventType</B>(string&nbsp;eventType,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;tagger)</PRE>Create a new <tt>OutputParams</tt> for synchronous output values.<br>
-<br> Synchronous output values are values which have source timestamp and can be consumed by another model in a time-synchronous manner and can be processed by the model with any other data from the same timestamp.<br>
-<br> The synchronous output values are routed internally for the consumption of any consumer model before sending it outside. The output value may be received back in future. The value was already processed and must be ignored. This is achieved by adding a tag to the output event which is sent outside. The input blocks check for the presence of such tag and ignore an input event if the tag is present.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>eventType</tt>&nbsp;-&nbsp;The fully-qualified type name of the output event block produces.</DD>
-<DD>
-<tt>fields</tt>&nbsp;-&nbsp;The field values that the block sends.</DD>
-<DD>
-<tt>tagger</tt>&nbsp;-&nbsp;The action to tag the output event before it is sent outside so that it is ignore by input blocks if received back in future. The action must take exactly one parameter of same type as <tt>eventType</tt> and must not return anything, for example, <tt>action tagOutput(MyEvent evt) {} </tt>.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>A new <tt>OutputParams</tt>.</DD>
-</DL>
-<HR>
-<A NAME="withPartitionFields()"></A>
-<H3>withPartitionFields</H3>
-<PRE>
-<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;<B>withPartitionFields</B>(string&nbsp;partitionField)</PRE>Specify the name of the field on the output event which should be set with the current partition if output is partitioned.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>partitionField</tt>&nbsp;-&nbsp;Name of the feild.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>The <tt>OutputParams</tt> with the partition field.</DD>
-</DL>
-<HR>
-<A NAME="withPartitionValue()"></A>
-<H3>withPartitionValue</H3>
-<PRE>
-<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;<B>withPartitionValue</B>(any&nbsp;partitionValue)</PRE>Specify the value that identifies a partition of events.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>partitionValue</tt>&nbsp;-&nbsp;The partition value.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>The <tt>OutputParams</tt> with the partition value.</DD>
-</DL>
-<HR>
-<HR>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/OutputParams.html"><B>FRAMES</B></A>  &nbsp;
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.11.0.1</B></FONT></TD>
+                        </TR>
+                    </TABLE>
+                </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+            </TR>
+            <TR>
+                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+            </TR>
+        </TABLE>
+        <HR>
+        <H2>
+            <FONT SIZE="-1">apama.analyticsbuilder</FONT>
+            <BR>
+            Event OutputParams
+        </H2>
+        <HR>
+        Parameters for describing a stream of events produced by an output block.
+        <br>
+        <br>
+         The combination of event type, field values, and partition value identifies the output stream. Two or more blocks in a single or across multiple models cannot produce synchronous output to the single output stream.
+        <br>
+        <br>
+         This is typically used as: <pre>
+        <br>
+        OutputHandler outputHandler;
+        <br>
+        string modelName;
+        <br>
+        <br>
+        action $validate() {
+        <br>
+        	modelName := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString(); 
+        <br>
+        	OutputParams params := OutputParams.forSyncEventType(MyEvent.getName(), new dictionary<string,any>).withPartitionValue(source);
+        <br>
+        	outputHandler := $base.producesOutput(params);
+        <br>
+        }
+        <br>
+        action tagOutput(MyEvent e) {
+        <br>
+        	e.params[ABConstants.MODEL_NAME_IDENTIFIER] := modelName;
+        <br>
+        }
+        <br>
+        </pre>
+        <DL>
+            <DT>
+                <B>See Also:</B>
+            </DT>
+            <DD>
+                <A HREF="../../apama/analyticsbuilder/BlockBase.html#producesOutput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#producesOutput()</A>&nbsp;-&nbsp;To declare an output block.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="action_summary"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="OutputParams.html#forAsyncEventType()">forAsyncEventType</A></B>(string&nbsp;eventType)</CODE>
+                    <br>
+                    <br>
+                    Create a new <tt>OutputParams</tt> for asynchronous output values.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="OutputParams.html#forSyncEventType()">forSyncEventType</A></B>(string&nbsp;eventType,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;tagger)</CODE>
+                    <br>
+                    <br>
+                    Create a new <tt>OutputParams</tt> for synchronous output values.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="OutputParams.html#withPartitionFields()">withPartitionFields</A></B>(string&nbsp;partitionField)</CODE>
+                    <br>
+                    <br>
+                    Specify the name of the field on the output event which should be set with the current partition if output is partitioned.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="OutputParams.html#withPartitionValue()">withPartitionValue</A></B>(any&nbsp;partitionValue)</CODE>
+                    <br>
+                    <br>
+                    Specify the value that identifies a partition of events.</TD>
+            </TR>
+        </TABLE>
+        &nbsp;<A NAME="action_detail"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
+            </TR>
+        </TABLE>
+        <A NAME="forAsyncEventType()"></A>
+        <H3>forAsyncEventType</H3>
+        <PRE>
+            <A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;static <B>forAsyncEventType</B>(string&nbsp;eventType)
+        </PRE>
+        Create a new <tt>OutputParams</tt> for asynchronous output values.
+        <br>
+        <br>
+         Asynchronous output values are value which do not have source timestamp and can only be consumed by another model in a time-asynchronous manner when they are received back from the external system.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>eventType</tt>&nbsp;-&nbsp;The fully-qualified type name of the output event block produces.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>A new <tt>OutputParams</tt>.</DD>
+        </DL>
+        <HR>
+        <A NAME="forSyncEventType()"></A>
+        <H3>forSyncEventType</H3>
+        <PRE>
+            <A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;static <B>forSyncEventType</B>(string&nbsp;eventType,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;tagger)
+        </PRE>
+        Create a new <tt>OutputParams</tt> for synchronous output values.
+        <br>
+        <br>
+         Synchronous output values are values which have source timestamp and can be consumed by another model in a time-synchronous manner and can be processed by the model with any other data from the same timestamp.
+        <br>
+        <br>
+         The synchronous output values are routed internally for the consumption of any consumer model before sending it outside. The output value may be received back in future. The value was already processed and must be ignored. This is achieved by adding a tag to the output event which is sent outside. The input blocks check for the presence of such tag and ignore an input event if the tag is present.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>eventType</tt>&nbsp;-&nbsp;The fully-qualified type name of the output event block produces.
+            </DD>
+            <DD>
+                <tt>fields</tt>&nbsp;-&nbsp;The field values that the block sends.
+            </DD>
+            <DD>
+                <tt>tagger</tt>&nbsp;-&nbsp;The action to tag the output event before it is sent outside so that it is ignore by input blocks if received back in future. The action must take exactly one parameter of same type as <tt>eventType</tt> and must not return anything, for example, <tt>action tagOutput(MyEvent evt) {} </tt>.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>A new <tt>OutputParams</tt>.</DD>
+        </DL>
+        <HR>
+        <A NAME="withPartitionFields()"></A>
+        <H3>withPartitionFields</H3>
+        <PRE>
+            <A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;<B>withPartitionFields</B>(string&nbsp;partitionField)
+        </PRE>
+        Specify the name of the field on the output event which should be set with the current partition if output is partitioned.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>partitionField</tt>&nbsp;-&nbsp;Name of the feild.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>The <tt>OutputParams</tt> with the partition field.</DD>
+        </DL>
+        <HR>
+        <A NAME="withPartitionValue()"></A>
+        <H3>withPartitionValue</H3>
+        <PRE>
+            <A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;<B>withPartitionValue</B>(any&nbsp;partitionValue)
+        </PRE>
+        Specify the value that identifies a partition of events.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>partitionValue</tt>&nbsp;-&nbsp;The partition value.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>The <tt>OutputParams</tt> with the partition value.</DD>
+        </DL>
+        <HR>
+        <HR>
+        <TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+            <TR>
+                <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/OutputParams.html"><B>FRAMES</B></A>  &nbsp;
 
             &nbsp;<A target="_top" HREF="OutputParams.html"><B>NO FRAMES</B></A>  &nbsp;
             &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
-<NOSCRIPT>
-<A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
-<TR ALIGN="center" VALIGN="top">
-<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+                        <NOSCRIPT>
+                            <A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
+                        </NOSCRIPT>
+                    </FONT></TD>
+            </TR>
+            <TR>
+                <TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+                    <TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+                        <TR ALIGN="center" VALIGN="top">
+                            <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.10.0.3</B></FONT></TD>
-</TR>
-</TABLE>
-</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
-</TR>
-</TABLE>
-<HR>
-</BODY>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.11.0.1</B></FONT></TD>
+                        </TR>
+                    </TABLE>
+                </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+            </TR>
+            <TR>
+                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;CONSTANT&nbsp;|&nbsp;MEMBER&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+            </TR>
+        </TABLE>
+        <HR>
+    </BODY>
 </HTML>

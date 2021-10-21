@@ -8,7 +8,7 @@ import argparse, tempfile, traceback
 
 sys.path.append(os.fspath(pathlib.Path(__file__).parent.joinpath('scripts')))
 
-import blockMetadataGenerator, buildExtension, configure_designer, jsonHelper, uploadExtension
+import blockMetadataGenerator, buildExtension, configure_designer, jsonHelper, uploadExtension,listExtensions
 
 class Command(object):
 	def __init__(self, name, help, sub_commands=None, required=True):
@@ -57,6 +57,10 @@ def main():
 					   'Upload a zip file of the Analytics Builder extension and optionally upload it to the Cumulocity inventory. ' +
 					   'You can also delete already uploaded extensions. After uploading or deleting an extension, ' +
 					   'you have to restart the Apama service for this to take effect.')
+		]),
+		Command('list', 'list all extensions', [
+			SubCommand('extensions', 'list extensions', listExtensions.add_arguments, listExtensions.run, False,
+					   'Lists all extensions installed on the given tenant. ')
 		])
 	]
 

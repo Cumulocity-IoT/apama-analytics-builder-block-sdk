@@ -1,581 +1,743 @@
-<HTML><!-- saved from url=(0014)about:internet -->
-
-
-<HEAD>
-<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>BlockBase</TITLE>
-<META NAME="keywords" CONTENT="BlockBase&nbsp;event">
-<LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
-<SCRIPT type="text/javascript">function windowTitle()
+<HTML>
+    <!-- saved from url=(0014)about:internet -->
+    
+    <HEAD>
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <TITLE>BlockBase</TITLE>
+        <META NAME="keywords" CONTENT="BlockBase&nbsp;event">
+        <LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+        <SCRIPT type="text/javascript">function windowTitle()
           {
           parent.document.title="BlockBase";
           }
           </SCRIPT>
-<NOSCRIPT></NOSCRIPT>
-</HEAD>
-<BODY BGCOLOR="white" onload="windowTitle();">
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/BlockBase.html"><B>FRAMES</B></A>  &nbsp;
+        <NOSCRIPT></NOSCRIPT>
+    </HEAD>
+    <BODY BGCOLOR="white" onload="windowTitle();">
+        <TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+            <TR>
+                <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/BlockBase.html"><B>FRAMES</B></A>  &nbsp;
 
             &nbsp;<A target="_top" HREF="BlockBase.html"><B>NO FRAMES</B></A>  &nbsp;
             &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
-<NOSCRIPT>
-<A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
-<TR ALIGN="center" VALIGN="top">
-<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+                        <NOSCRIPT>
+                            <A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
+                        </NOSCRIPT>
+                    </FONT></TD>
+            </TR>
+            <TR>
+                <TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+                    <TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+                        <TR ALIGN="center" VALIGN="top">
+                            <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.10.0.3</B></FONT></TD>
-</TR>
-</TABLE>
-</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_summary">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_detail">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
-</TR>
-</TABLE>
-<HR>
-<H2>
-<FONT SIZE="-1">apama.analyticsbuilder</FONT>
-<BR>Event BlockBase</H2>
-<HR>The base event for all blocks. Every block implementation must have a field named <tt>$base</tt> of this event type.<br>
-<br> This provides a number of methods for blocks to interact with the framework.<HR>
-<A NAME="constant_summary"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Constant summary</B></FONT></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;constant integer</CODE></FONT></TD><TD><CODE><B><A HREF="BlockBase.html#PROFILE_OUTPUT">PROFILE_OUTPUT</A> := 0</B></CODE>
-<br>
-<br>Pass to the profile action when a block generates an output external to the model.</TD>
-</TR>
-</TABLE>&nbsp;<A NAME="member_summary"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Member summary</B></FONT></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE><B><A HREF="BlockBase.html#sdkVersionOneMode">sdkVersionOneMode</A></B></CODE>
-<br>
-<br>If any of the IO blocks using version one APIs.@private</TD>
-</TR>
-</TABLE>&nbsp;<A NAME="action_summary"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#cancelTimer()">cancelTimer</A></B>(<A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A>&nbsp;handle)</CODE>
-<br>
-<br>Cancel the timer specified by the timer handle.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/InputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputHandler</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#consumesInput()">consumesInput</A></B>(<A HREF="../../apama/analyticsbuilder/InputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputParams</A>&nbsp;inputParams)</CODE>
-<br>
-<br>Declare this block is an input block that consumes input events described by the <tt>inputParams</tt> parameter.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#createTimer()">createTimer</A></B>(float&nbsp;durationSec,&nbsp;any&nbsp;payload)</CODE>
-<br>
-<br>Create a timer with the specified duration. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#createTimerWith()">createTimerWith</A></B>(<A HREF="../../apama/analyticsbuilder/TimerParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerParams</A>&nbsp;timerParams)</CODE>
-<br>
-<br>Create a timer with the specified parameters. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#droppedEvent()">droppedEvent</A></B>(any&nbsp;evt,&nbsp;float&nbsp;time)</CODE>
-<br>
-<br>Notify framework that this block has dropped an input event.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getBlockId()">getBlockId</A></B>()</CODE>
-<br>
-<br>Get the block identifier. Useful for debugging only.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;integer</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getCurrentWorkerId()">getCurrentWorkerId</A></B>()</CODE>
-<br>
-</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;integer</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getInputCount()">getInputCount</A></B>(string&nbsp;input)</CODE>
-<br>
-<br>Get the number of connections for an input.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getInputTypeName()">getInputTypeName</A></B>(string&nbsp;input)</CODE>
-<br>
-<br>Get the type name of an input.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getL10N_input()">getL10N_input</A></B>(string&nbsp;inputId)</CODE>
-<br>
-<br>Get a localized sub-message to identify an input.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getL10N_output()">getL10N_output</A></B>(string&nbsp;outputId)</CODE>
-<br>
-<br>Get a localized sub-message to identify an output.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="BlockBase.html#getL10N_param()">getL10N_param</A></B>(string&nbsp;parameterId,&nbsp;any&nbsp;blockOrParam)</CODE>
-<br>
-<br>Get a localized sub-message to identify a parameter.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getModelId()">getModelId</A></B>()</CODE>
-<br>
-<br>Get the unique model identifier.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;float</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getModelTime()">getModelTime</A></B>()</CODE>
-<br>
-<br>The current effective model time. This should be used instead of <tt>currentTime</tt> when access to the current time is required. The time for any absolute timer must be greater than this value.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#listensForInput()">listensForInput</A></B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)</CODE>
-<br>
-<br>Declare this block is an input block.<DL>
-<DT>
-<B>Deprecated:</B>
-</DT>
-<DD>
-<I>This action has been deprecated, use consumesInput action instead.</I>
-</DD>
-</DL>
-</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputHandler</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#producesOutput()">producesOutput</A></B>(<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;outputParams)</CODE>
-<br>
-<br>Declare this block is an output block that produces events described by the <tt>outputParams</tt> parameter.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#profile()">profile</A></B>(integer&nbsp;type)</CODE>
-<br>
-<br>Called by blocks to notify of an operation performed for profiling purposes.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#sendsAsyncOutput()">sendsAsyncOutput</A></B>(string&nbsp;eventTypeName,&nbsp;any&nbsp;partitionValue)</CODE>
-<br>
-<br>Declare this block is an output block that sends asynchronous output.<DL>
-<DT>
-<B>Deprecated:</B>
-</DT>
-<DD>
-<I>This action has been deprecated, use producesOutput action instead.</I>
-</DD>
-</DL>
-</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#sendsSyncOutput()">sendsSyncOutput</A></B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)</CODE>
-<br>
-<br>Declare this block is an output block that sends synchronous output.<DL>
-<DT>
-<B>Deprecated:</B>
-</DT>
-<DD>
-<I>This action has been deprecated, use producesOutput action instead.</I>
-</DD>
-</DL>
-</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="BlockBase.html#throwsOnEmpty()">throwsOnEmpty</A></B>(string&nbsp;value,&nbsp;string&nbsp;paramId,&nbsp;any&nbsp;blockOrParam)</CODE>
-<br>
-<br>Throw if the value is empty.</TD>
-</TR>
-</TABLE>&nbsp;<A NAME="constant_detail"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Constant detail</B></FONT></TH>
-</TR>
-</TABLE>
-<A NAME="PROFILE_OUTPUT"></A>
-<H3>PROFILE_OUTPUT</H3>
-<PRE>constant integer&nbsp;<B>PROFILE_OUTPUT := 0</B>
-</PRE>Pass to the profile action when a block generates an output external to the model.<HR>
-<A NAME="member_detail"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Member detail</B></FONT></TH>
-</TR>
-</TABLE>
-<A NAME="sdkVersionOneMode"></A>
-<H3>sdkVersionOneMode</H3>
-<PRE>boolean&nbsp;<B>sdkVersionOneMode</B>
-</PRE>If any of the IO blocks using version one APIs.@private<HR>
-<A NAME="action_detail"></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
-</TR>
-</TABLE>
-<A NAME="cancelTimer()"></A>
-<H3>cancelTimer</H3>
-<PRE>void&nbsp;<B>cancelTimer</B>(<A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A>&nbsp;handle)</PRE>Cancel the timer specified by the timer handle.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>handle</tt>&nbsp;-&nbsp;The handle to a previously created timer.</DD>
-</DL>
-<DL>
-<DT>
-<B>Throws:</B>
-</DT>
-<DD><tt>IllegalArgumentException</tt> if the timer is already canceled or triggered.</DD>
-</DL>
-<HR>
-<A NAME="consumesInput()"></A>
-<H3>consumesInput</H3>
-<PRE>
-<A HREF="../../apama/analyticsbuilder/InputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputHandler</A>&nbsp;<B>consumesInput</B>(<A HREF="../../apama/analyticsbuilder/InputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputParams</A>&nbsp;inputParams)</PRE>Declare this block is an input block that consumes input events described by the <tt>inputParams</tt> parameter.<br>
-<br> An input block receives events from outside the model, potentially from other models. This must be called during <tt>$validate</tt>, not afterward.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>inputParams</tt>&nbsp;-&nbsp;The parameters describing an input event stream.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>The input handler that should be used for scheduling input events for processing.</DD>
-</DL>
-<HR>
-<A NAME="createTimer()"></A>
-<H3>createTimer</H3>
-<PRE>void&nbsp;<B>createTimer</B>(float&nbsp;durationSec,&nbsp;any&nbsp;payload)</PRE>Create a timer with the specified duration. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>durationSec</tt>&nbsp;-&nbsp;The duration in seconds after which the timer should be triggered.</DD>
-<DD>
-<tt>payload</tt>&nbsp;-&nbsp;The payload value which will be supplied back when <tt>$timerTriggered</tt> action is called.</DD>
-</DL>
-<HR>
-<A NAME="createTimerWith()"></A>
-<H3>createTimerWith</H3>
-<PRE>
-<A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A>&nbsp;<B>createTimerWith</B>(<A HREF="../../apama/analyticsbuilder/TimerParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerParams</A>&nbsp;timerParams)</PRE>Create a timer with the specified parameters. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>timerParams</tt>&nbsp;-&nbsp;The parameters for specifying the timer type and other information about it.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>The handle to the created timer which can be used to cancel it.</DD>
-</DL>
-<DL>
-<DT>
-<B>See Also:</B>
-</DT>
-<DD>
-<A HREF="../../apama/analyticsbuilder/BlockBase.html#cancelTimer()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#cancelTimer()</A>&nbsp;-&nbsp;Use this action to cancel the timer.</DD>
-</DL>
-<HR>
-<A NAME="droppedEvent()"></A>
-<H3>droppedEvent</H3>
-<PRE>void&nbsp;<B>droppedEvent</B>(any&nbsp;evt,&nbsp;float&nbsp;time)</PRE>Notify framework that this block has dropped an input event.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>evt</tt>&nbsp;-&nbsp;The event that was dropped.</DD>
-<DD>
-<tt>time</tt>&nbsp;-&nbsp;The timestamp.</DD>
-</DL>
-<HR>
-<A NAME="getBlockId()"></A>
-<H3>getBlockId</H3>
-<PRE>string&nbsp;<B>getBlockId</B>()</PRE>Get the block identifier. Useful for debugging only.<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>Block identifier.</DD>
-</DL>
-<HR>
-<A NAME="getCurrentWorkerId()"></A>
-<H3>getCurrentWorkerId</H3>
-<PRE>integer&nbsp;<B>getCurrentWorkerId</B>()</PRE>
-<HR>
-<A NAME="getInputCount()"></A>
-<H3>getInputCount</H3>
-<PRE>integer&nbsp;<B>getInputCount</B>(string&nbsp;input)</PRE>Get the number of connections for an input.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>input</tt>
-</DD>
-</DL>
-<HR>
-<A NAME="getInputTypeName()"></A>
-<H3>getInputTypeName</H3>
-<PRE>string&nbsp;<B>getInputTypeName</B>(string&nbsp;input)</PRE>Get the type name of an input.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>input</tt>
-</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>Type name.</DD>
-</DL>
-<HR>
-<A NAME="getL10N_input()"></A>
-<H3>getL10N_input</H3>
-<PRE>any&nbsp;<B>getL10N_input</B>(string&nbsp;inputId)</PRE>Get a localized sub-message to identify an input.<br>
-<br> Get a sub-message object that can be passed as a member of parameters to <tt>getLocalizedException</tt> or <tt>getLocalizedSubMsg</tt>.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>inputId</tt>&nbsp;-&nbsp;The input (without <tt>$input_</tt> prefix).</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>Localized sub-message.</DD>
-</DL>
-<HR>
-<A NAME="getL10N_output()"></A>
-<H3>getL10N_output</H3>
-<PRE>any&nbsp;<B>getL10N_output</B>(string&nbsp;outputId)</PRE>Get a localized sub-message to identify an output.<br>
-<br> Get a sub-message that can be passed as a member of parameters to <tt>getLocalizedException</tt> or <tt>getLocalizedSubMsg</tt>.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>outputId</tt>&nbsp;-&nbsp;The output (without <tt>$setOutput_</tt> prefix).</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>Localized sub-message.</DD>
-</DL>
-<HR>
-<A NAME="getL10N_param()"></A>
-<H3>getL10N_param</H3>
-<PRE>any&nbsp;static <B>getL10N_param</B>(string&nbsp;parameterId,&nbsp;any&nbsp;blockOrParam)</PRE>Get a localized sub-message to identify a parameter.<br>
-<br> Get a sub-message that can be passed as a member of parameters to <tt>getLocalizedException</tt> or <tt>getLocalizedSubMsg</tt>.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>parameterId</tt>&nbsp;-&nbsp;The parameter.</DD>
-<DD>
-<tt>blockOrParam</tt>&nbsp;-&nbsp;The block or parameters object (or a <tt>BlockBase</tt> object).</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>Localized sub-message.</DD>
-</DL>
-<HR>
-<A NAME="getModelId()"></A>
-<H3>getModelId</H3>
-<PRE>string&nbsp;<B>getModelId</B>()</PRE>Get the unique model identifier.<br>
-<br> It is internal runtime identifier and is not guaranteed to remain same across multiple model deployments and un-deployments.<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>Model identifier.</DD>
-</DL>
-<HR>
-<A NAME="getModelTime()"></A>
-<H3>getModelTime</H3>
-<PRE>float&nbsp;<B>getModelTime</B>()</PRE>The current effective model time. This should be used instead of <tt>currentTime</tt> when access to the current time is required. The time for any absolute timer must be greater than this value.<HR>
-<A NAME="listensForInput()"></A>
-<H3>listensForInput</H3>
-<PRE>string&nbsp;<B>listensForInput</B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)</PRE>
-<DL>
-<DT>
-<B>Deprecated:</B>
-</DT>
-<DD>
-<I>This action has been deprecated, use consumesInput action instead.</I>
-</DD>
-</DL>Declare this block is an input block.<br>
-<br> An input block receives events from outside the model, potentially from other models. This must be called during <tt>$validate</tt>, not afterward.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>eventTypeName</tt>&nbsp;-&nbsp;The fully-qualified type name the block listens for.</DD>
-<DD>
-<tt>fields</tt>&nbsp;-&nbsp;The field values the block sends that, together with <tt>partitionValue</tt>, identify a stream of events.</DD>
-<DD>
-<tt>partitionValue</tt>&nbsp;-&nbsp;The value that identifies a partition of events.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>An inputId to identify this input that needs to be passed to <tt>TimerParams.withInputId</tt> (if there are mutliple inputs for this block).</DD>
-</DL>
-<DL>
-<DT>
-<B>See Also:</B>
-</DT>
-<DD>
-<A HREF="../../apama/analyticsbuilder/BlockBase.html#consumesInput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#consumesInput()</A>&nbsp;-&nbsp;To declare an input block.</DD>
-</DL>
-<HR>
-<A NAME="producesOutput()"></A>
-<H3>producesOutput</H3>
-<PRE>
-<A HREF="../../apama/analyticsbuilder/OutputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputHandler</A>&nbsp;<B>producesOutput</B>(<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;outputParams)</PRE>Declare this block is an output block that produces events described by the <tt>outputParams</tt> parameter.<br>
-<br> An output block sends events to outside the model, potentially to other models. This must be called during <tt>$validate</tt>, not afterward.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>outputParams</tt>&nbsp;-&nbsp;The parameters describing an output event stream.</DD>
-</DL>
-<DL>
-<DT>
-<B>Returns:</B>
-</DT>
-<DD>The output handler that should be used for sending output events.</DD>
-</DL>
-<HR>
-<A NAME="profile()"></A>
-<H3>profile</H3>
-<PRE>void&nbsp;<B>profile</B>(integer&nbsp;type)</PRE>Called by blocks to notify of an operation performed for profiling purposes.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>type</tt>&nbsp;-&nbsp;The type of the operation. See the constants starting with <tt>PROFILE</tt> for supported profiling operations.</DD>
-</DL>
-<HR>
-<A NAME="sendsAsyncOutput()"></A>
-<H3>sendsAsyncOutput</H3>
-<PRE>void&nbsp;<B>sendsAsyncOutput</B>(string&nbsp;eventTypeName,&nbsp;any&nbsp;partitionValue)</PRE>
-<DL>
-<DT>
-<B>Deprecated:</B>
-</DT>
-<DD>
-<I>This action has been deprecated, use producesOutput action instead.</I>
-</DD>
-</DL>Declare this block is an output block that sends asynchronous output.<br>
-<br> An output block sends events to outside the model, potentially to other models but cannot reliably participate in synchronous model-to-model communication. This must be called during <tt>$validate</tt>, not afterward.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>eventTypeName</tt>&nbsp;-&nbsp;The fully-qualified type name the block sends.</DD>
-<DD>
-<tt>partitionValue</tt>&nbsp;-&nbsp;The value that identifies a partition of events.</DD>
-</DL>
-<DL>
-<DT>
-<B>See Also:</B>
-</DT>
-<DD>
-<A HREF="../../apama/analyticsbuilder/BlockBase.html#producesOutput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#producesOutput()</A>&nbsp;-&nbsp;To declare an output block.</DD>
-</DL>
-<HR>
-<A NAME="sendsSyncOutput()"></A>
-<H3>sendsSyncOutput</H3>
-<PRE>void&nbsp;<B>sendsSyncOutput</B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)</PRE>
-<DL>
-<DT>
-<B>Deprecated:</B>
-</DT>
-<DD>
-<I>This action has been deprecated, use producesOutput action instead.</I>
-</DD>
-</DL>Declare this block is an output block that sends synchronous output.<br>
-<br> An output block sends events to outside the model, potentially to other models. This must be called during <tt>$validate</tt>, not afterward.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>eventTypeName</tt>&nbsp;-&nbsp;The fully-qualified type name the block sends.</DD>
-<DD>
-<tt>fields</tt>&nbsp;-&nbsp;The field values the block sends that, together with <tt>partitionValue</tt>, identify a stream of events.</DD>
-<DD>
-<tt>partitionValue</tt>&nbsp;-&nbsp;The value that identifies a partition of events.</DD>
-</DL>
-<DL>
-<DT>
-<B>See Also:</B>
-</DT>
-<DD>
-<A HREF="../../apama/analyticsbuilder/BlockBase.html#producesOutput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#producesOutput()</A>&nbsp;-&nbsp;To declare an output block.</DD>
-</DL>
-<HR>
-<A NAME="throwsOnEmpty()"></A>
-<H3>throwsOnEmpty</H3>
-<PRE>void&nbsp;static <B>throwsOnEmpty</B>(string&nbsp;value,&nbsp;string&nbsp;paramId,&nbsp;any&nbsp;blockOrParam)</PRE>Throw if the value is empty.<br>
-<br> Use to validate a string parameter that should not be empty.<DL>
-<DT>
-<B>Parameters:</B>
-</DT>
-<DD>
-<tt>value</tt>&nbsp;-&nbsp;The value that should not be empty.</DD>
-<DD>
-<tt>paramId</tt>&nbsp;-&nbsp;The name of the field (this will be translated).</DD>
-<DD>
-<tt>blockOrParam</tt>&nbsp;-&nbsp;The block or parameters object (or a <tt>BlockBase</tt> object).</DD>
-</DL>
-<HR>
-<HR>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/BlockBase.html"><B>FRAMES</B></A>  &nbsp;
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.11.0.1</B></FONT></TD>
+                        </TR>
+                    </TABLE>
+                </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+            </TR>
+            <TR>
+                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_summary">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_detail">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+            </TR>
+        </TABLE>
+        <HR>
+        <H2>
+            <FONT SIZE="-1">apama.analyticsbuilder</FONT>
+            <BR>
+            Event BlockBase
+        </H2>
+        <HR>
+        The base event for all blocks. Every block implementation must have a field named <tt>$base</tt> of this event type.
+        <br>
+        <br>
+         This provides a number of methods for blocks to interact with the framework.
+        <HR>
+        <A NAME="constant_summary"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Constant summary</B></FONT></TH>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;constant integer</CODE></FONT></TD><TD><CODE><B><A HREF="BlockBase.html#PROFILE_OUTPUT">PROFILE_OUTPUT</A> := 0</B></CODE>
+                    <br>
+                    <br>
+                    Pass to the profile action when a block generates an output external to the model.</TD>
+            </TR>
+        </TABLE>
+        &nbsp;<A NAME="member_summary"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Member summary</B></FONT></TH>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;boolean</CODE></FONT></TD><TD><CODE><B><A HREF="BlockBase.html#sdkVersionOneMode">sdkVersionOneMode</A></B></CODE>
+                    <br>
+                    <br>
+                    If any of the IO blocks using version one APIs.@private</TD>
+            </TR>
+        </TABLE>
+        &nbsp;<A NAME="action_summary"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2"><B>Action summary</B></FONT></TH>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#cancelTimer()">cancelTimer</A></B>(<A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A>&nbsp;handle)</CODE>
+                    <br>
+                    <br>
+                    Cancel the timer specified by the timer handle.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/InputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputHandler</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#consumesInput()">consumesInput</A></B>(<A HREF="../../apama/analyticsbuilder/InputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputParams</A>&nbsp;inputParams)</CODE>
+                    <br>
+                    <br>
+                    Declare this block is an input block that consumes input events described by the <tt>inputParams</tt> parameter.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#createTimer()">createTimer</A></B>(float&nbsp;durationSec,&nbsp;any&nbsp;payload)</CODE>
+                    <br>
+                    <br>
+                    Create a timer with the specified duration. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#createTimerWith()">createTimerWith</A></B>(<A HREF="../../apama/analyticsbuilder/TimerParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerParams</A>&nbsp;timerParams)</CODE>
+                    <br>
+                    <br>
+                    Create a timer with the specified parameters. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#droppedEvent()">droppedEvent</A></B>(any&nbsp;evt,&nbsp;float&nbsp;time)</CODE>
+                    <br>
+                    <br>
+                    Notify framework that this block has dropped an input event.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getBlockId()">getBlockId</A></B>()</CODE>
+                    <br>
+                    <br>
+                    Get the block identifier. Useful for debugging only.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;integer</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getCurrentWorkerId()">getCurrentWorkerId</A></B>()</CODE>
+                    <br>
+                </TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;integer</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getInputCount()">getInputCount</A></B>(string&nbsp;input)</CODE>
+                    <br>
+                    <br>
+                    Get the number of connections for an input.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getInputTypeName()">getInputTypeName</A></B>(string&nbsp;input)</CODE>
+                    <br>
+                    <br>
+                    Get the type name of an input.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getL10N_input()">getL10N_input</A></B>(string&nbsp;inputId)</CODE>
+                    <br>
+                    <br>
+                    Get a localized sub-message to identify an input.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getL10N_output()">getL10N_output</A></B>(string&nbsp;outputId)</CODE>
+                    <br>
+                    <br>
+                    Get a localized sub-message to identify an output.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;any</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="BlockBase.html#getL10N_param()">getL10N_param</A></B>(string&nbsp;parameterId,&nbsp;any&nbsp;blockOrParam)</CODE>
+                    <br>
+                    <br>
+                    Get a localized sub-message to identify a parameter.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getModelId()">getModelId</A></B>()</CODE>
+                    <br>
+                    <br>
+                    Get the unique model identifier.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;float</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getModelTime()">getModelTime</A></B>()</CODE>
+                    <br>
+                    <br>
+                    The current effective model time. This should be used instead of <tt>currentTime</tt> when access to the current time is required. The time for any absolute timer must be greater than this value.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#listensForInput()">listensForInput</A></B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)</CODE>
+                    <br>
+                    <br>
+                    Declare this block is an input block.
+                    <DL>
+                        <DT>
+                            <B>Deprecated:</B>
+                        </DT>
+                        <DD>
+                            <I>This action has been deprecated, use consumesInput action instead.</I>
+                        </DD>
+                    </DL>
+                </TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;<A HREF="../../apama/analyticsbuilder/OutputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputHandler</A></CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#producesOutput()">producesOutput</A></B>(<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;outputParams)</CODE>
+                    <br>
+                    <br>
+                    Declare this block is an output block that produces events described by the <tt>outputParams</tt> parameter.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#profile()">profile</A></B>(integer&nbsp;type)</CODE>
+                    <br>
+                    <br>
+                    Called by blocks to notify of an operation performed for profiling purposes.</TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#sendsAsyncOutput()">sendsAsyncOutput</A></B>(string&nbsp;eventTypeName,&nbsp;any&nbsp;partitionValue)</CODE>
+                    <br>
+                    <br>
+                    Declare this block is an output block that sends asynchronous output.
+                    <DL>
+                        <DT>
+                            <B>Deprecated:</B>
+                        </DT>
+                        <DD>
+                            <I>This action has been deprecated, use producesOutput action instead.</I>
+                        </DD>
+                    </DL>
+                </TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#sendsSyncOutput()">sendsSyncOutput</A></B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)</CODE>
+                    <br>
+                    <br>
+                    Declare this block is an output block that sends synchronous output.
+                    <DL>
+                        <DT>
+                            <B>Deprecated:</B>
+                        </DT>
+                        <DD>
+                            <I>This action has been deprecated, use producesOutput action instead.</I>
+                        </DD>
+                    </DL>
+                </TD>
+            </TR>
+            <TR BGCOLOR="white" CLASS="TableRowColor">
+                <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE>static </CODE><CODE><B><A HREF="BlockBase.html#throwsOnEmpty()">throwsOnEmpty</A></B>(string&nbsp;value,&nbsp;string&nbsp;paramId,&nbsp;any&nbsp;blockOrParam)</CODE>
+                    <br>
+                    <br>
+                    Throw if the value is empty.</TD>
+            </TR>
+        </TABLE>
+        &nbsp;<A NAME="constant_detail"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Constant detail</B></FONT></TH>
+            </TR>
+        </TABLE>
+        <A NAME="PROFILE_OUTPUT"></A>
+        <H3>PROFILE_OUTPUT</H3>
+        <PRE>
+            constant integer&nbsp;<B>PROFILE_OUTPUT := 0</B>
+        </PRE>
+        Pass to the profile action when a block generates an output external to the model.
+        <HR>
+        <A NAME="member_detail"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Member detail</B></FONT></TH>
+            </TR>
+        </TABLE>
+        <A NAME="sdkVersionOneMode"></A>
+        <H3>sdkVersionOneMode</H3>
+        <PRE>
+            boolean&nbsp;<B>sdkVersionOneMode</B>
+        </PRE>
+        If any of the IO blocks using version one APIs.@private
+        <HR>
+        <A NAME="action_detail"></A>
+        <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+            <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+                <TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2"><B>Action detail</B></FONT></TH>
+            </TR>
+        </TABLE>
+        <A NAME="cancelTimer()"></A>
+        <H3>cancelTimer</H3>
+        <PRE>
+            void&nbsp;<B>cancelTimer</B>(<A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A>&nbsp;handle)
+        </PRE>
+        Cancel the timer specified by the timer handle.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>handle</tt>&nbsp;-&nbsp;The handle to a previously created timer.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Throws:</B>
+            </DT>
+            <DD><tt>IllegalArgumentException</tt> if the timer is already canceled or triggered.</DD>
+        </DL>
+        <HR>
+        <A NAME="consumesInput()"></A>
+        <H3>consumesInput</H3>
+        <PRE>
+            <A HREF="../../apama/analyticsbuilder/InputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputHandler</A>&nbsp;<B>consumesInput</B>(<A HREF="../../apama/analyticsbuilder/InputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.InputParams</A>&nbsp;inputParams)
+        </PRE>
+        Declare this block is an input block that consumes input events described by the <tt>inputParams</tt> parameter.
+        <br>
+        <br>
+         An input block receives events from outside the model, potentially from other models. This must be called during <tt>$validate</tt>, not afterward.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>inputParams</tt>&nbsp;-&nbsp;The parameters describing an input event stream.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>The input handler that should be used for scheduling input events for processing.</DD>
+        </DL>
+        <HR>
+        <A NAME="createTimer()"></A>
+        <H3>createTimer</H3>
+        <PRE>
+            void&nbsp;<B>createTimer</B>(float&nbsp;durationSec,&nbsp;any&nbsp;payload)
+        </PRE>
+        Create a timer with the specified duration. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>durationSec</tt>&nbsp;-&nbsp;The duration in seconds after which the timer should be triggered.
+            </DD>
+            <DD>
+                <tt>payload</tt>&nbsp;-&nbsp;The payload value which will be supplied back when <tt>$timerTriggered</tt> action is called.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="createTimerWith()"></A>
+        <H3>createTimerWith</H3>
+        <PRE>
+            <A HREF="../../apama/analyticsbuilder/TimerHandle.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerHandle</A>&nbsp;<B>createTimerWith</B>(<A HREF="../../apama/analyticsbuilder/TimerParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.TimerParams</A>&nbsp;timerParams)
+        </PRE>
+        Create a timer with the specified parameters. The <tt>$timerTriggered</tt> action of the block is called when the timer is triggered.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>timerParams</tt>&nbsp;-&nbsp;The parameters for specifying the timer type and other information about it.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>The handle to the created timer which can be used to cancel it.</DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>See Also:</B>
+            </DT>
+            <DD>
+                <A HREF="../../apama/analyticsbuilder/BlockBase.html#cancelTimer()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#cancelTimer()</A>&nbsp;-&nbsp;Use this action to cancel the timer.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="droppedEvent()"></A>
+        <H3>droppedEvent</H3>
+        <PRE>
+            void&nbsp;<B>droppedEvent</B>(any&nbsp;evt,&nbsp;float&nbsp;time)
+        </PRE>
+        Notify framework that this block has dropped an input event.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>evt</tt>&nbsp;-&nbsp;The event that was dropped.
+            </DD>
+            <DD>
+                <tt>time</tt>&nbsp;-&nbsp;The timestamp.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="getBlockId()"></A>
+        <H3>getBlockId</H3>
+        <PRE>
+            string&nbsp;<B>getBlockId</B>()
+        </PRE>
+        Get the block identifier. Useful for debugging only.
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>Block identifier.</DD>
+        </DL>
+        <HR>
+        <A NAME="getCurrentWorkerId()"></A>
+        <H3>getCurrentWorkerId</H3>
+        <PRE>
+            integer&nbsp;<B>getCurrentWorkerId</B>()
+        </PRE>
+        <HR>
+        <A NAME="getInputCount()"></A>
+        <H3>getInputCount</H3>
+        <PRE>
+            integer&nbsp;<B>getInputCount</B>(string&nbsp;input)
+        </PRE>
+        Get the number of connections for an input.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>input</tt>
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="getInputTypeName()"></A>
+        <H3>getInputTypeName</H3>
+        <PRE>
+            string&nbsp;<B>getInputTypeName</B>(string&nbsp;input)
+        </PRE>
+        Get the type name of an input.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>input</tt>
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>Type name.</DD>
+        </DL>
+        <HR>
+        <A NAME="getL10N_input()"></A>
+        <H3>getL10N_input</H3>
+        <PRE>
+            any&nbsp;<B>getL10N_input</B>(string&nbsp;inputId)
+        </PRE>
+        Get a localized sub-message to identify an input.
+        <br>
+        <br>
+         Get a sub-message object that can be passed as a member of parameters to <tt>getLocalizedException</tt> or <tt>getLocalizedSubMsg</tt>.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>inputId</tt>&nbsp;-&nbsp;The input (without <tt>$input_</tt> prefix).
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>Localized sub-message.</DD>
+        </DL>
+        <HR>
+        <A NAME="getL10N_output()"></A>
+        <H3>getL10N_output</H3>
+        <PRE>
+            any&nbsp;<B>getL10N_output</B>(string&nbsp;outputId)
+        </PRE>
+        Get a localized sub-message to identify an output.
+        <br>
+        <br>
+         Get a sub-message that can be passed as a member of parameters to <tt>getLocalizedException</tt> or <tt>getLocalizedSubMsg</tt>.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>outputId</tt>&nbsp;-&nbsp;The output (without <tt>$setOutput_</tt> prefix).
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>Localized sub-message.</DD>
+        </DL>
+        <HR>
+        <A NAME="getL10N_param()"></A>
+        <H3>getL10N_param</H3>
+        <PRE>
+            any&nbsp;static <B>getL10N_param</B>(string&nbsp;parameterId,&nbsp;any&nbsp;blockOrParam)
+        </PRE>
+        Get a localized sub-message to identify a parameter.
+        <br>
+        <br>
+         Get a sub-message that can be passed as a member of parameters to <tt>getLocalizedException</tt> or <tt>getLocalizedSubMsg</tt>.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>parameterId</tt>&nbsp;-&nbsp;The parameter.
+            </DD>
+            <DD>
+                <tt>blockOrParam</tt>&nbsp;-&nbsp;The block or parameters object (or a <tt>BlockBase</tt> object).
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>Localized sub-message.</DD>
+        </DL>
+        <HR>
+        <A NAME="getModelId()"></A>
+        <H3>getModelId</H3>
+        <PRE>
+            string&nbsp;<B>getModelId</B>()
+        </PRE>
+        Get the unique model identifier.
+        <br>
+        <br>
+         It is internal runtime identifier and is not guaranteed to remain same across multiple model deployments and un-deployments.
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>Model identifier.</DD>
+        </DL>
+        <HR>
+        <A NAME="getModelTime()"></A>
+        <H3>getModelTime</H3>
+        <PRE>
+            float&nbsp;<B>getModelTime</B>()
+        </PRE>
+        The current effective model time. This should be used instead of <tt>currentTime</tt> when access to the current time is required. The time for any absolute timer must be greater than this value.
+        <HR>
+        <A NAME="listensForInput()"></A>
+        <H3>listensForInput</H3>
+        <PRE>
+            string&nbsp;<B>listensForInput</B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)
+        </PRE>
+        <DL>
+            <DT>
+                <B>Deprecated:</B>
+            </DT>
+            <DD>
+                <I>This action has been deprecated, use consumesInput action instead.</I>
+            </DD>
+        </DL>
+        Declare this block is an input block.
+        <br>
+        <br>
+         An input block receives events from outside the model, potentially from other models. This must be called during <tt>$validate</tt>, not afterward.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>eventTypeName</tt>&nbsp;-&nbsp;The fully-qualified type name the block listens for.
+            </DD>
+            <DD>
+                <tt>fields</tt>&nbsp;-&nbsp;The field values the block sends that, together with <tt>partitionValue</tt>, identify a stream of events.
+            </DD>
+            <DD>
+                <tt>partitionValue</tt>&nbsp;-&nbsp;The value that identifies a partition of events.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>An inputId to identify this input that needs to be passed to <tt>TimerParams.withInputId</tt> (if there are mutliple inputs for this block).</DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>See Also:</B>
+            </DT>
+            <DD>
+                <A HREF="../../apama/analyticsbuilder/BlockBase.html#consumesInput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#consumesInput()</A>&nbsp;-&nbsp;To declare an input block.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="producesOutput()"></A>
+        <H3>producesOutput</H3>
+        <PRE>
+            <A HREF="../../apama/analyticsbuilder/OutputHandler.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputHandler</A>&nbsp;<B>producesOutput</B>(<A HREF="../../apama/analyticsbuilder/OutputParams.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.OutputParams</A>&nbsp;outputParams)
+        </PRE>
+        Declare this block is an output block that produces events described by the <tt>outputParams</tt> parameter.
+        <br>
+        <br>
+         An output block sends events to outside the model, potentially to other models. This must be called during <tt>$validate</tt>, not afterward.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>outputParams</tt>&nbsp;-&nbsp;The parameters describing an output event stream.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>Returns:</B>
+            </DT>
+            <DD>The output handler that should be used for sending output events.</DD>
+        </DL>
+        <HR>
+        <A NAME="profile()"></A>
+        <H3>profile</H3>
+        <PRE>
+            void&nbsp;<B>profile</B>(integer&nbsp;type)
+        </PRE>
+        Called by blocks to notify of an operation performed for profiling purposes.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>type</tt>&nbsp;-&nbsp;The type of the operation. See the constants starting with <tt>PROFILE</tt> for supported profiling operations.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="sendsAsyncOutput()"></A>
+        <H3>sendsAsyncOutput</H3>
+        <PRE>
+            void&nbsp;<B>sendsAsyncOutput</B>(string&nbsp;eventTypeName,&nbsp;any&nbsp;partitionValue)
+        </PRE>
+        <DL>
+            <DT>
+                <B>Deprecated:</B>
+            </DT>
+            <DD>
+                <I>This action has been deprecated, use producesOutput action instead.</I>
+            </DD>
+        </DL>
+        Declare this block is an output block that sends asynchronous output.
+        <br>
+        <br>
+         An output block sends events to outside the model, potentially to other models but cannot reliably participate in synchronous model-to-model communication. This must be called during <tt>$validate</tt>, not afterward.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>eventTypeName</tt>&nbsp;-&nbsp;The fully-qualified type name the block sends.
+            </DD>
+            <DD>
+                <tt>partitionValue</tt>&nbsp;-&nbsp;The value that identifies a partition of events.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>See Also:</B>
+            </DT>
+            <DD>
+                <A HREF="../../apama/analyticsbuilder/BlockBase.html#producesOutput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#producesOutput()</A>&nbsp;-&nbsp;To declare an output block.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="sendsSyncOutput()"></A>
+        <H3>sendsSyncOutput</H3>
+        <PRE>
+            void&nbsp;<B>sendsSyncOutput</B>(string&nbsp;eventTypeName,&nbsp;dictionary&lt;string,&nbsp;any&gt;&nbsp;fields,&nbsp;any&nbsp;partitionValue)
+        </PRE>
+        <DL>
+            <DT>
+                <B>Deprecated:</B>
+            </DT>
+            <DD>
+                <I>This action has been deprecated, use producesOutput action instead.</I>
+            </DD>
+        </DL>
+        Declare this block is an output block that sends synchronous output.
+        <br>
+        <br>
+         An output block sends events to outside the model, potentially to other models. This must be called during <tt>$validate</tt>, not afterward.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>eventTypeName</tt>&nbsp;-&nbsp;The fully-qualified type name the block sends.
+            </DD>
+            <DD>
+                <tt>fields</tt>&nbsp;-&nbsp;The field values the block sends that, together with <tt>partitionValue</tt>, identify a stream of events.
+            </DD>
+            <DD>
+                <tt>partitionValue</tt>&nbsp;-&nbsp;The value that identifies a partition of events.
+            </DD>
+        </DL>
+        <DL>
+            <DT>
+                <B>See Also:</B>
+            </DT>
+            <DD>
+                <A HREF="../../apama/analyticsbuilder/BlockBase.html#producesOutput()" title="Action in apama.analyticsbuilder.">apama.analyticsbuilder.BlockBase#producesOutput()</A>&nbsp;-&nbsp;To declare an output block.
+            </DD>
+        </DL>
+        <HR>
+        <A NAME="throwsOnEmpty()"></A>
+        <H3>throwsOnEmpty</H3>
+        <PRE>
+            void&nbsp;static <B>throwsOnEmpty</B>(string&nbsp;value,&nbsp;string&nbsp;paramId,&nbsp;any&nbsp;blockOrParam)
+        </PRE>
+        Throw if the value is empty.
+        <br>
+        <br>
+         Use to validate a string parameter that should not be empty.
+        <DL>
+            <DT>
+                <B>Parameters:</B>
+            </DT>
+            <DD>
+                <tt>value</tt>&nbsp;-&nbsp;The value that should not be empty.
+            </DD>
+            <DD>
+                <tt>paramId</tt>&nbsp;-&nbsp;The name of the field (this will be translated).
+            </DD>
+            <DD>
+                <tt>blockOrParam</tt>&nbsp;-&nbsp;The block or parameters object (or a <tt>BlockBase</tt> object).
+            </DD>
+        </DL>
+        <HR>
+        <HR>
+        <TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+            <TR>
+                <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2"><A target="_top" HREF="../../index.html?apama/analyticsbuilder/BlockBase.html"><B>FRAMES</B></A>  &nbsp;
 
             &nbsp;<A target="_top" HREF="BlockBase.html"><B>NO FRAMES</B></A>  &nbsp;
             &nbsp;<SCRIPT type="text/javascript"></SCRIPT>
-<NOSCRIPT>
-<A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
-</NOSCRIPT>
-</FONT></TD>
-</TR>
-<TR>
-<TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
-<TR ALIGN="center" VALIGN="top">
-<TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
+                        <NOSCRIPT>
+                            <A HREF="../../alltypes-noframe.html"><B>All Classes</B></A>
+                        </NOSCRIPT>
+                    </FONT></TD>
+            </TR>
+            <TR>
+                <TD COLSPAN="2" BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+                    <TABLE BORDER="0" WIDTH="100%" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+                        <TR ALIGN="center" VALIGN="top">
+                            <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../..//apama/analyticsbuilder/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.10.0.3</B></FONT></TD>
-</TR>
-</TABLE>
-</TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_summary">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_detail">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
-</TR>
-</TABLE>
-<HR>
-</BODY>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.11.0.1</B></FONT></TD>
+                        </TR>
+                    </TABLE>
+                </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
+            </TR>
+            <TR>
+                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">SUMMARY:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_summary">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_summary">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_summary">ACTION</A></FONT></TD><TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">DETAIL:&nbsp;IMPORT&nbsp;|&nbsp;<A HREF="#constant_detail">CONSTANT</A>&nbsp;|&nbsp;<A HREF="#member_detail">MEMBER</A>&nbsp;|&nbsp;<A HREF="#action_detail">ACTION</A></FONT></TD>
+            </TR>
+        </TABLE>
+        <HR>
+    </BODY>
 </HTML>

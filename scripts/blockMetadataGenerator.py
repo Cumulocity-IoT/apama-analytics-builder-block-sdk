@@ -894,7 +894,6 @@ def run_metadata_generator(input, output, tmpDir, printMsg=False):
 	# assumes we're running with apama_env sourced
 	if 'APAMA_JRE' in os.environ:
 		java_home = os.environ['APAMA_JRE']
-		java_home = os.path.join(java_home, '..')
 	else:
 		# else in the docker image
 		java_home = os.path.join(apama_home,'..', 'jvm', 'jvm')

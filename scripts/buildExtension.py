@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+# $Copyright (c) 2019-2021 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
 # Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
 import shutil, json, os, subprocess, urllib
 import blockMetadataGenerator, buildVersions
@@ -10,7 +10,7 @@ import ssl, urllib.parse, urllib.request, base64, sys
 ENCODING = 'UTF8'
 BLOCK_METADATA_EVENT = 'apama.analyticsbuilder.BlockMetadata'
 BLOCK_MESSAGES_EVENT = 'apama.analyticsbuilder.BlockMessages'
-PAS_EXT_TYPE = 'pas_extension'  # Type of the ManagedObject containing information about extension zip.
+PAS_EXT_TYPE = 'pas_extension'	# Type of the ManagedObject containing information about extension zip.
 PAS_EXT_ID_FIELD = 'pas_extension_binary_id' # The field of the ManagedObject with id of the extension zip binary object.
 BLOCK_REGISTRY_CHANNEL = 'analyticsbuilder.metadata.requests'
 
@@ -19,6 +19,7 @@ def add_arguments(parser):
 	parser.add_argument('--input', metavar='DIR', type=str, required=False, help='the input directory containing extension files - required when not deleting an extension')
 	parser.add_argument('--cdp', action='store_true', default=False, required=False, help='package all EPL files into a single CDP file')
 	parser.add_argument('--priority', metavar='N', type=int, required=False, help='the priority of the extension')
+	parser.add_argument('--folderToSkip', action='append', required=False, help='the list of folders to skip from building extension.')
 
 	local = parser.add_argument_group('local save (requires at least the following arguments: --input, and --output)')
 	local.add_argument('--output', metavar='ZIP_FILE', type=str, required=False, help='the output zip file (requires the --input argument)')
@@ -48,7 +49,7 @@ def write_evt_file(ext_files_dir, name, event):
 
 def embeddable_json_str(json_str):
 	"""Return JSON string which could be included in a string literal of an event string."""
-	s = json.dumps(json.loads(json_str, encoding=ENCODING), separators=(',', ':'))
+	s = json.dumps(json.loads(json_str), separators=(',', ':'))
 	return json.dumps(s)
 
 def gen_messages_evt_file(name, input, ext_files_dir, messages_from_metadata):
@@ -65,7 +66,7 @@ def gen_messages_evt_file(name, input, ext_files_dir, messages_from_metadata):
 	msg_files = list(input.rglob('messages.json')) + list(input.rglob('*-messages.json'))
 	for f in msg_files:
 		try:
-			data = json.loads(f.read_text(encoding=ENCODING), encoding=ENCODING)
+			data = json.loads(f.read_text(encoding=ENCODING))
 			if not isinstance(data, dict):
 				print(f'Skipping JSON file with invalid messages format: {str(f)}')
 				continue
@@ -79,7 +80,7 @@ def gen_messages_evt_file(name, input, ext_files_dir, messages_from_metadata):
 			print(f'Skipping invalid JSON file: {str(f)}')
 
 	write_evt_file(ext_files_dir, f'{name}_messages.evt',
-	               f'"{BLOCK_REGISTRY_CHANNEL}",{BLOCK_MESSAGES_EVENT}("{name}", "EN", {embeddable_json_str(json.dumps(all_msgs))})')
+				   f'"{BLOCK_REGISTRY_CHANNEL}",{BLOCK_MESSAGES_EVENT}("{name}", "EN", {embeddable_json_str(json.dumps(all_msgs))})')
 
 
 def createCDP(name, mons, ext_files_dir):
@@ -98,7 +99,9 @@ def createCDP(name, mons, ext_files_dir):
 
 	subprocess.run(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE).check_returncode()
 
-def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=False):
+   
+
+def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=False,folderToSkip=None):
 	"""
 	Build an extension from specified input directory.
 	:param input: The input directory containing artifacts for the extension.
@@ -107,28 +110,30 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 	:param cdp: Package all monitors into a CDP file.
 	:param priority: The priority of the package.
 	:param printMsg: Print success message with location of the extension zip.
+	:param folderToSkip: The list of directories to skip from build.
 	:return:
 	"""
 	input = Path(input).resolve()
 	output = Path(output).resolve()
 	tmpDir = Path(tmpDir).resolve()
+	if folderToSkip is None: folderToSkip = list()
 
 	if not input.exists():
 		raise Exception(f'Input directory does not exist: {input.absolute()}')
 
-	name = output.name  # catalog name
+	name = output.name	# catalog name
 	if name.endswith('.zip'):
 		name = name[:-4]
 		output = output.with_name(name)
 
-	ext_dir = tmpDir / name             # '/' operator on Path object joins them
+	ext_dir = tmpDir / name				# '/' operator on Path object joins them
 	ext_files_dir = ext_dir / 'files'
 	ext_files_dir.mkdir(parents=True, exist_ok=True)
 
 	# Define priority of the extension if specified
 	if priority is not None:
 		ext_dir.joinpath('priority.txt').write_text(str(priority), encoding=ENCODING)
-		
+	
 	files_to_copy = list(input.rglob('*.evt'))
 
 	# Create CPD or copy mon files to extension directory while maintaining structure
@@ -141,8 +146,15 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 	files_to_copy.extend(list(input.rglob('*.so*')))
 	files_to_copy.extend(list(input.rglob('*.yaml')))
 	files_to_copy.extend(list(input.rglob('*.jar')))
-
-	for p in files_to_copy:
+	filtered_files = list() if len(folderToSkip) > 0 else files_to_copy
+	
+	if len(folderToSkip) > 0:
+		for f in files_to_copy:
+			if not any(folder in str(f.relative_to(input).parent) for folder in folderToSkip):
+				filtered_files.append(f)
+		
+			
+	for p in filtered_files:
 		target_file = ext_files_dir / p.relative_to(input)
 		target_file.parent.mkdir(parents=True, exist_ok=True)
 		shutil.copy2(p, target_file)
@@ -174,13 +186,13 @@ class C8yConnection(object):
 			url = 'https://' + url
 		auth_handler = urllib.request.HTTPBasicAuthHandler()
 		auth_handler.add_password(realm='Name of Your Realm',
-		                          uri=url,
-		                          user=username,
-		                          passwd=password)
+								  uri=url,
+								  user=username,
+								  passwd=password)
 		auth_handler.add_password(realm='Cumulocity',
-		                          uri=url,
-		                          user=username,
-		                          passwd=password)
+								  uri=url,
+								  user=username,
+								  passwd=password)
 		ctx = ssl.create_default_context()
 		ctx.check_hostname = False
 		ctx.verify_mode = ssl.CERT_NONE
@@ -446,10 +458,10 @@ def run(args):
 
 	zip_path = Path(args.tmpDir, args.name).with_suffix('.zip') if is_remote else args.output # Use the <name>.zip for the zip name which gets uploaded.
 	if not args.delete:
-		zip_path = build_extension(args.input, zip_path, args.tmpDir, args.cdp, args.priority, printMsg=bool(args.output))
+		zip_path = build_extension(args.input, zip_path, args.tmpDir, args.cdp, args.priority, printMsg=bool(args.output),folderToSkip=args.folderToSkip)
 	if is_remote:
 		if args.output and not args.delete:
 			output = args.output + ('' if args.output.endswith('.zip') else '.zip')
 			shutil.copy2(zip_path, output)
 		return upload_or_delete_extension(zip_path, args.cumulocity_url, args.username,
-		                                  args.password, args.name, args.delete, args.restart, args.ignoreVersion, printMsg=True)
+										  args.password, args.name, args.delete, args.restart, args.ignoreVersion, printMsg=True)
