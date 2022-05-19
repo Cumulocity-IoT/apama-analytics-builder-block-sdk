@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bundle name="Cumulocity Block Helpers" type="monitorscript" singleton="true">
 	<version>
-		<id>10.11.0.1</id>
+		<id>10.13.0.1</id>
 		<date>2020-06-29</date>
 		<author>Software AG</author>
 		<comments/>

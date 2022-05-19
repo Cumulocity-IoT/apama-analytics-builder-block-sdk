@@ -19,7 +19,7 @@ def add_arguments(parser):
     remote.add_argument('--password', help='the Cumulocity password')
     remote.add_argument('--delete', action='store_true', default=False, help='delete the extension from the inventory')
     remote.add_argument('--restart', action='store_true', default=False,
-                        help='restart the apama-ctrl after upload or delete operation')
+                        help='restart the apama-ctrl')
     remote.add_argument('--ignoreVersion', action='store_true', default=False, required=False,
                         help='ignore the analytics builder script version check')
 
@@ -30,7 +30,6 @@ def run(args):
 
     # checks if all manadatory remote options are provided
     buildExtension.isAllRemoteOptions(args,remote)
-
     if args.input:
         if not os.path.exists(args.input):
             raise Exception(f'Provide a valid path to the .zip file.')
@@ -49,11 +48,12 @@ def run(args):
             except Exception as ex:
                 raise Exception(
                     f'Unable to map input basename to --name, if not specified.')
+
     else:
-        if not args.delete:
+        # allowed restart with no other option 
+        if (args.restart and args.name and not args.delete) or (not args.restart and not args.delete):
             raise Exception(f'Argument --input is required when not deleting an extension.')
         if args.delete and not args.name:
             raise Exception(f'Arguments --input or --name is needed to delete an extension.')
-
     return buildExtension.upload_or_delete_extension(args.input, args.cumulocity_url, args.username, args.password, args.name,
                                       args.delete, args.restart, args.ignoreVersion, printMsg=True)

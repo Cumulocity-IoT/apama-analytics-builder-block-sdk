@@ -352,7 +352,7 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 	else:
 		if delete:
 			print('Extension already deleted')
-		else:
+		elif name:
 			upload_new_extension(connection, extension_zip, name)
 			if printMsg: print(f'Uploaded extension {name}')
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## License
-# Copyright (c) 2017-2020 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2017-2021 Software AG, Darmstadt, Germany and/or its licensors
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
 # file except in compliance with the License. You may obtain a copy of the License at
@@ -88,7 +88,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:param Xclock: Externally clock correlator (on by default).
 		:param numWorkers: Number of workers for Analytics Builder runtime (4 by default).
 		:param injectBlocks: if false, don't inject the actual block EPL (use if there are dependencies), returns blockOutput directory. Also skips applicationInitialized call.
-		:param \**kwargs: extra kwargs are passed to startCorrelator
+		:param \\**kwargs: extra kwargs are passed to startCorrelator
 		"""
 
 		# Build and extract the block extension:
@@ -266,7 +266,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		if isinstance(value, float):
 			value = self.formatFloat(value)
 
-		return f'apamax.analyticsbuilder.test.Output\("{name}","{id}","{partition}",{time},any\(.*,{value}\),{open}{properties}{end}\)'
+		return f'apamax.analyticsbuilder.test.Output\\("{name}","{id}","{partition}",{time},any\\(.*,{value}\\),{open}{properties}{end}\\)'
 
 	def sendEventStrings(self, corr, *events, **kwargs):
 		"""
