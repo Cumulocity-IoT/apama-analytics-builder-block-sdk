@@ -32,7 +32,7 @@
                             <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.14.0.3</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.15.0.2</B></FONT></TD>
                         </TR>
                     </TABLE>
                 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
@@ -48,7 +48,7 @@
             Event CumulocityOutputParams
         </H2>
         <HR>
-        Parameters for declaring Cumulocity events produced by an output block.
+        Parameters for declaring events produced by an output block.
         <br>
         <br>
          The combination of event type, field values, and device identifies the output stream.
@@ -79,7 +79,7 @@
                 <B>See Also:</B>
             </DT>
             <DD>
-                <A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityOutputHandler.html" title="type in apama.analyticsbuilder.cumulocity">apama.analyticsbuilder.cumulocity.CumulocityOutputHandler</A>&nbsp;-&nbsp;To send Cumulocity output events.
+                <A HREF="../../../apama/analyticsbuilder/cumulocity/CumulocityOutputHandler.html" title="type in apama.analyticsbuilder.cumulocity">apama.analyticsbuilder.cumulocity.CumulocityOutputHandler</A>&nbsp;-&nbsp;To send output events.
             </DD>
         </DL>
         <HR>
@@ -145,7 +145,7 @@
         Create a new <tt>CumulocityOutputParams</tt> for asynchronous output events.
         <br>
         <br>
-         Asynchronous output events are events that do not have source timestamps and can only be consumed by another model in a time-asynchronous manner when they are received back from Cumulocity IoT. Examples of asynchronous output events are <tt>Operation</tt> and <tt>ManagedObject</tt>.
+         Asynchronous output events are events that do not have source timestamps and can only be consumed by another model in a time-asynchronous manner when they are received back. Examples of asynchronous output events are <tt>Operation</tt> and <tt>ManagedObject</tt>.
         <DL>
             <DT>
                 <B>Parameters:</B>
@@ -157,7 +157,7 @@
                 <tt>block</tt>&nbsp;-&nbsp;The block object.
             </DD>
             <DD>
-                <tt>eventTypeName</tt>&nbsp;-&nbsp;The fully qualified name of the Cumulocity event produced.
+                <tt>eventTypeName</tt>&nbsp;-&nbsp;The fully qualified name of the event produced.
             </DD>
         </DL>
         <DL>
@@ -175,10 +175,10 @@
         Create a new <tt>CumulocityOutputParams</tt> for synchronous output events.
         <br>
         <br>
-         Synchronous output events are events that have source timestamps and can be consumed by another model in a time-synchronous manner and can be processed by the model with any other data from the same timestamp. Examples of synchronous output events are <tt>Alarm</tt>, <tt>Event</tt>, and <tt>Measurement</tt>.
+         Synchronous output events are events that have source timestamps and can be consumed by another model in a time-synchronous manner and can be processed by the model with any other data from the same timestamp. Examples of synchronous output events are <tt>Event</tt> and <tt>Measurement</tt>.
         <br>
         <br>
-         Synchronous output events are routed internally for consumption by any consumer model before being sent to Cumulocity IoT. These output events might be received back at some point in the future. In such cases, the value will already have been processed and so must be ignored. This is achieved by adding a tag to the output event when it is sent to Cumulocity IoT. Input blocks should check for the presence of such a tag and ignore an input event if the tag is present. Output Cumulocity events are tagged automatically if <tt>CumulocityOutputHandler</tt> is used for sending output events.
+         Synchronous output events are routed internally for consumption by any consumer model before being sent. These output events might be received back at some point in the future. In such cases, the value will already have been processed and so must be ignored. This is achieved by adding a tag to the output event when it is sent. Input blocks should check for the presence of such a tag and ignore an input event if the tag is present. Output events are tagged automatically if <tt>CumulocityOutputHandler</tt> is used for sending output events.
         <DL>
             <DT>
                 <B>Parameters:</B>
@@ -190,7 +190,7 @@
                 <tt>block</tt>&nbsp;-&nbsp;The block object.
             </DD>
             <DD>
-                <tt>eventTypeName</tt>&nbsp;-&nbsp;The fully qualified name of the Cumulocity event that block produces. The events sent by the block should be of this type only.
+                <tt>eventTypeName</tt>&nbsp;-&nbsp;The fully qualified name of the event that block produces. The events sent by the block should be of this type only.
             </DD>
             <DD>
                 <tt>fields</tt>&nbsp;-&nbsp;The field values that the block sends.
@@ -222,7 +222,7 @@
                             <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.14.0.3</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.15.0.2</B></FONT></TD>
                         </TR>
                     </TABLE>
                 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>

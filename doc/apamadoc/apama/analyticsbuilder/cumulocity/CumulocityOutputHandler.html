@@ -32,7 +32,7 @@
                             <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.14.0.3</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.15.0.2</B></FONT></TD>
                         </TR>
                     </TABLE>
                 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
@@ -48,7 +48,7 @@
             Event CumulocityOutputHandler
         </H2>
         <HR>
-        A handler that is used for sending Cumulocity output events to Cumulocity IoT and to other models.
+        A handler that is used for sending output events to models.
         <br>
         <br>
          It provides information about the source device identifier, for example, if the device is a broadcast device or the current device.
@@ -125,7 +125,7 @@
                 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;void</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="CumulocityOutputHandler.html#sendOutput()">sendOutput</A></B>(any&nbsp;outputEvent,&nbsp;string&nbsp;channel,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)</CODE>
                     <br>
                     <br>
-                    Send the output event to Cumulocity IoT by sending it to the specified channel.</TD>
+                    Send the output event to model by sending it to the specified channel.</TD>
             </TR>
         </TABLE>
         &nbsp;<A NAME="action_detail"></A>
@@ -243,7 +243,7 @@
         <PRE>
             void&nbsp;<B>sendOutput</B>(any&nbsp;outputEvent,&nbsp;string&nbsp;channel,&nbsp;<A HREF="../../../apama/analyticsbuilder/Activation.html" title="type in apama.analyticsbuilder">apama.analyticsbuilder.Activation</A>&nbsp;$activation)
         </PRE>
-        Send the output event to Cumulocity IoT by sending it to the specified channel.
+        Send the output event to model by sending it to the specified channel.
         <br>
         <br>
          If the output is synchronous then it is routed internally for consumption by other models. The output event is also tagged by putting the model name against the apama_analytics_modelName key in the params dictionary of the event. Any input block consuming the same event type must filter out any events that have the same key in the dictionary.
@@ -287,7 +287,7 @@
                             <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1"><A HREF="../../..//apama/analyticsbuilder/cumulocity/package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;
               </TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT>&nbsp;
-                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.14.0.3</B></FONT></TD>
+                </A></TD><TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1" WIDTH="100%" ALIGN="RIGHT"><FONT CLASS="NavBarFont1"><B>Apama Analytics Builder 10.15.0.2</B></FONT></TD>
                         </TR>
                     </TABLE>
                 </TD><TD ALIGN="right" VALIGN="top" ROWSPAN="3"><EM></EM></TD>
