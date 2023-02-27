@@ -1,5 +1,5 @@
 /*
- * $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * $Copyright (c) 2019-2022 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
  * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
  */
 //*****************************************************************************
@@ -57,6 +57,7 @@ event Input {
 	string modelId;
 	string partitionId;
 	any value;
+	dictionary<string,any> properties;
 }
 
 /**
@@ -113,10 +114,16 @@ event TestInput {
 		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
 		on all Input(inputId = $parameters.inputId, modelId = modelId) as i {
 			log i.toString() +" @ "+currentTime.toString();
+			any currentPayload := i.value;
+			if(i.properties.size() != 0){
+				currentPayload := Value(i.value, currentTime, i.properties);
+			}
+			
 			if i.partitionId = "" then {			
-				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(i.value));
+				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(currentPayload));
+				
 			}else {
-				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(i.value).withPartition(i.partitionId));
+				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(currentPayload).withPartition(i.partitionId));
 			}
 		}
 	}

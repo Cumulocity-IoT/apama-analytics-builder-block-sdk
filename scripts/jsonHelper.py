@@ -27,8 +27,8 @@ def run_json_extract(args):
 		with open(filename, encoding=ENCODING) as f:
 			for line in f:
 				suffix=None
-				if line.startswith(BLOCK_METADATA_EVENT): suffix=''
-				if line.startswith(BLOCK_MESSAGES_EVENT): suffix='-messages'
+				if line.find(BLOCK_METADATA_EVENT) != -1: suffix=''
+				if line.find(BLOCK_MESSAGES_EVENT) != -1: suffix='-messages'
 				if suffix != None:
 					jsonversion = '['+line.split('(', 1)[1][0:-1]+']'
 					(name, lang, jsonstr) = json.loads(jsonversion)

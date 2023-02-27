@@ -21,6 +21,9 @@ package apamax.sampleblock;
 using apama.analyticsbuilder.BlockBase;
 using apama.analyticsbuilder.Activation;
 
+/**
+ * @$blockCategory Calculations
+ */
 event Offset {
     BlockBase $base;
     action $process(Activation $activation, float $input_value) {
@@ -29,7 +32,10 @@ event Offset {
     action<Activation, float> $setOutput_output;
 }
 ```
-**Note:** A block must be defined inside a package.
+> **Hints:**
+> - A block must be defined inside a package.
+> - Setting the `@$blockCategory` ApamaDoc tag is mandatory.  For more information, see [Naming and Documenting Blocks](020-NamingAndDoc.md).
+
 
 This block simply adds 100 to every input value. The `$process` action has parameters for the inputs, and the output is sent by calling the `$setOutput_output` action field. The framework takes care of creating an instance of the block when it is required for a model, initializing the `$base` and `$setOutput_output` fields and calling the `$process` action when the block receives input.
 

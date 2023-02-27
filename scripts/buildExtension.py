@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# $Copyright (c) 2019-2021 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+# $Copyright (c) 2019-2022 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
 # Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
 import shutil, json, os, subprocess, urllib
 import blockMetadataGenerator, buildVersions
@@ -13,6 +13,7 @@ BLOCK_MESSAGES_EVENT = 'apama.analyticsbuilder.BlockMessages'
 PAS_EXT_TYPE = 'pas_extension'	# Type of the ManagedObject containing information about extension zip.
 PAS_EXT_ID_FIELD = 'pas_extension_binary_id' # The field of the ManagedObject with id of the extension zip binary object.
 BLOCK_REGISTRY_CHANNEL = 'analyticsbuilder.metadata.requests'
+UNSUPPORTED_FILE_TYPES = ('.log','.classpath','.dependencies','.project','.deploy','.launch','.out','.o') # Files to exclude
 
 def add_arguments(parser):
 	""" Add parser arguments. """
@@ -134,7 +135,7 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 	if priority is not None:
 		ext_dir.joinpath('priority.txt').write_text(str(priority), encoding=ENCODING)
 	
-	files_to_copy = list(input.rglob('*.evt'))
+	files_to_copy = []
 
 	# Create CPD or copy mon files to extension directory while maintaining structure
 	mons = list(input.rglob('*.mon'))
@@ -143,9 +144,14 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 	else:
 		files_to_copy.extend(mons)
 	
-	files_to_copy.extend(list(input.rglob('*.so*')))
-	files_to_copy.extend(list(input.rglob('*.yaml')))
-	files_to_copy.extend(list(input.rglob('*.jar')))
+	# Adding all the files
+	all_files = list(input.rglob('*.*'))
+
+	# Excluding UNSUPPORTED_FILE_TYPES from all_files
+	for file in all_files:
+		if not str(file).endswith(UNSUPPORTED_FILE_TYPES + ('.mon',)):# mon files are already included in files_to_copy
+			files_to_copy.append(file)
+
 	filtered_files = list() if len(folderToSkip) > 0 else files_to_copy
 	
 	if len(folderToSkip) > 0:

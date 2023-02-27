@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## License
-# Copyright (c) 2017-2021 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2017-2022 Software AG, Darmstadt, Germany and/or its licensors
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
 # file except in compliance with the License. You may obtain a copy of the License at
@@ -25,7 +25,7 @@ class Waiter:
 		self.corr = corr
 		self.stdouterr = self.parent.allocateUniqueStdOutErr('waiter')
 
-		corr.receive(self.stdouterr[0], channels=channels)
+		corr.receive(self.stdouterr[0], channels=channels, utf8=True)
 	def waitFor(self, expr, count=5, errorExpr=None):
 		self.corr.flush(count=count)
 		if errorExpr==None:
@@ -209,13 +209,39 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		"""
 		return f'&TIME({t})'
 
-	def inputEvent(self, name, value=0.0, id='model_0', partition='', eplType = 'string'):
+	def _toAnyType (self, value):
+		""" Generate Apama 'any' representation of the given value. """
+		if value is None:
+			return 'any()'
+
+		typeName = 'float'
+		if isinstance(value, bool):
+			typeName = 'boolean'
+			value = str(value).lower()
+		elif isinstance(value, int) or isinstance(value, float):
+			typeName = 'float'
+		elif isinstance(value, str):
+			typeName = 'string'
+			value = f'"{value}"'
+		elif isinstance(value, list):
+			typeName = 'sequence<any>'
+			value = '[' + ','.join([self._toAnyType(v) for v in value]) + ']'
+		elif isinstance(value, dict):
+			typeName = 'dictionary<any,any>'
+			value = '{' + ','.join([f'{self._toAnyType(k)}:{self._toAnyType(v)}' for (k,v) in value.items()]) + '}'
+		else:
+			raise Exception(f'Unexpected type of value {value}')
+
+		return f'any({typeName},{value})'
+
+	def inputEvent(self, name, value=0.0, id='model_0', partition='', eplType = 'string', properties=None):
 		"""
 		Generate the string form of an input event.
 		:param name: The identifier of the input to send to.
 		:param value: The value to send. Default to 0, but can be string or boolean.
 		:param id: The model to test, or model_0 by default.
 		:param partition: The partition to send input.
+		:param properties: The Properties to send. Default is empty dictionary.
 		"""
 		if isinstance(value, float) or isinstance(value, int): eplType = 'float'
 		if isinstance(value, bool): 
@@ -223,7 +249,16 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			value = str(value).lower()
 		if eplType == 'string':
 			value = json.dumps(value)
-		return f'apamax.analyticsbuilder.test.Input("{name}", "{id}", "{partition}", any({eplType}, {value}))'
+
+		if properties is None:
+			properties = {}
+		if not isinstance(properties, dict):
+			raise Exception('The properties parameter must be a dictionary.')
+		props = []
+		for k,v in properties.items():
+			props.append(f'"{k}":{self._toAnyType(v)}')
+		properties = '{' + ','.join(props) + '}'
+		return f'apamax.analyticsbuilder.test.Input("{name}","{id}","{partition}",any({eplType},{value}),{properties})'
 	
 	def outputFromBlock(self, outputId, modelId='model_0', partitionId=None,time=None):
 		"""
