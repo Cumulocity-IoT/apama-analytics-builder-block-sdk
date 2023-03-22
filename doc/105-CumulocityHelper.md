@@ -1,7 +1,5 @@
 # Cumulocity-specific helpers
 
-> **Note:** The previous version 1 API for writing custom input and output blocks is deprecated. Input and output blocks will require changes to continue to work properly and use multiple devices in a model with the concurrency level set to more than 1. See [Migration Guide](150-MigrateInputOutputBlocks.md) for more details.
-
 There are several functions specific to blocks that input or output data associated with a Cumulocity IoT device or device group. To avoid repeating this functionality, a set of helper events is provided to use in Cumulocity IoT input and output blocks.
 
 These helper events handle the following functionality:

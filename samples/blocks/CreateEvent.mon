@@ -28,9 +28,9 @@ using apama.analyticsbuilder.cumulocity.CumulocityOutputParams;
 */
 event CreateEvent_$Parameters {
 	/**
-	 * Device or Trigger Device.
+	 * Output Destination.
 	 *
-	 * The device (or for models handling groups, Trigger Device) to which the event is to be sent.
+	 * The device (or for models handling group of devices, trigger device or asset) to which the event is to be sent. Assets can be used only for sending cross-device aggregates.
 	 *
 	 * The model editor uses the current device name. This is mapped internally to the device identifier.
 	 * @$semanticType c8y_deviceIdOrCurrentDevice

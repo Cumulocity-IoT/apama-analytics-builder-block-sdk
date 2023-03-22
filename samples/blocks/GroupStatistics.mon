@@ -1,5 +1,5 @@
 ﻿/*
- * $Copyright (c) 2020-2021 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * $Copyright (c) 2020-2021, 2023 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
  * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
  */
 
@@ -13,6 +13,7 @@ package apamax.analyticsbuilder.samples;
 
 using apama.analyticsbuilder.Activation;
 using apama.analyticsbuilder.Partition_Broadcast;
+using apama.analyticsbuilder.Partition_Asset;
 using apama.analyticsbuilder.Partition_Default;
 using apama.analyticsbuilder.Partitioner;
 using apama.analyticsbuilder.BlockBase;
@@ -269,6 +270,14 @@ event GroupStatistics {
 		// can identify the type of the triggered timer. Use Partition_Broadcast as partition so that timer is triggered for each device and output generated.
 		TimerHandle genOutputHandle := $base.createTimerWith(TimerParams.recurring($parameters.outputPeriod).withPayload(TIMERTYPE_GENOUTPUT).withPartition(new Partition_Broadcast)); 		
 	
+		//3) Create a single-timer for a special partition Partition_Asset so that the runtime creates and initialises the partition. This causes the 
+		// broadcast timer to (created above) also trigger for this special partition. When the timer is triggered, the aggregate values will be published 
+		// to this special partition as well.
+		if $base.getWorkerId() = 0 {
+			// Create this timer for only the first worker so that the aggregate values are published to this partition on only one worker.
+			// Partition for the timer is set to "-1" so that it is not acted upon as it is needed only for initialising the partition.
+			TimerHandle outputHandle := $base.createTimerWith(TimerParams.relative(0.0).withPayload(-1).withPartition(new Partition_Asset));
+		}
 		// Listen for aggregate data from all workers but only for the correct block in the correct model by filtering on the blockId and modelId.
 		on all GroupStatistics_WorkerData(blockId=$base.getBlockId(), modelId=$base.getModelId()) as data {
 			$workerState.workerSnapshot[data.workerId] := data;

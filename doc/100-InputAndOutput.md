@@ -1,6 +1,5 @@
 # Input and output blocks
 
-> **Note:** The previous version 1 API for writing custom input and output blocks is deprecated. Input and output blocks will require changes to continue to work properly and use multiple devices in a model with the concurrency level set to more than 1. See [Migration Guide](150-MigrateInputOutputBlocks.md) for more details.
 
 ## Input blocks
 
@@ -130,9 +129,9 @@ Output blocks should construct the event to send, typically using block inputs a
 To send the output event, call the `sendOutput` action of the output handler object with the output event to send and the output channel as parameters. The `sendOutput` action sends the event to the specified channel and notifies the framework about the output event for profiling purposes. If the output event is synchronous, the `sendOutput` action routes the event and calls the tagger action to tag the output event before sending it to the output channel.
 
 ```Java
-action $process(Activation $activation, string $input_source,string $input_type) {
+action $process(Activation $activation, string $input_source, string $input_type, float $input_value) {
     /* Creating an event to send to Cumulocity IoT.*/
-    MyEvent m := MyEvent($input_source, $input_type, 0.0 , new dictionary<string, any>);
+    MyEvent m := MyEvent($input_source, $input_type, $input_value, 0.0, new dictionary<string, any>);
     // Ask the framework to send the output to the output channel.
     // If output is synchronous, then it is tagged before sending it to the channel.
     outputHandler.sendOutput(m, MyEvent.SEND_CHANNEL, $activation);
@@ -153,19 +152,20 @@ When using the `InputHandler` and `OutputHandler` API, profiling is taken care o
 
 ## Semantic types
 
-For input and output blocks that have a parameter that refers to a Cumulocity device or device group, a block must declare that the parameter is selecting a Cumulocity device identifier by adding an ApamaDoc `@$semantictype` tag. Values for the tag can be:
+For input and output blocks that have a parameter that refers to a Cumulocity device or group of devices, a block must declare that the parameter is selecting a Cumulocity device identifier by adding an ApamaDoc `@$semanticType` tag. Values for the tag can be:
 
 * `c8y_deviceId` - to select a single device.
-* `c8y_deviceOrGroupId` - to select a device or a device group.
-* `c8y_deviceIdOrCurrentDevice` - to select a single device or the special "current device" (or "trigger device").
+* `c8y_deviceOrGroupId` - to select a device or group of devices.
+* `c8y_deviceIdOrCurrentDevice` - to select a single device, asset or the special "current device" (or "trigger device").
+
 
 For example:
 
 ```Java
 /**
- * Device or Trigger Device.
+ * Output Destination.
  *
- * The device (or for models handling groups, Trigger Device) to which the operation is to be sent.
+ * The device (or for models handling group of devices, trigger device or asset) to which the operation is to be sent.
  *
  * The model editor uses the device name. This is mapped internally to the device identifier.
  * @$semanticType c8y_deviceIdOrCurrentDevice
@@ -175,9 +175,9 @@ any deviceId;
 
 For `c8y_deviceOrCurrentDevice`, the parameter (`deviceId` in the above) should be of the `any` type and will be either a `string` for a device or a dictionary with a `currentDevice` entry for the "current device" case.
 
-Input and output blocks that are handling a Cumulocity device or device group, must declare the type of the block by adding an ApamaDoc `@$blockType` tag. Values for the tag can be:
+Input and output blocks that are handling a Cumulocity device or group of devices must declare the type of the block by adding an ApamaDoc `@$blockType` tag. Values for the tag can be:
 
-* `c8y_Input` - receives data from a Cumulocity device or device group.
+* `c8y_Input` - receives data from a Cumulocity device or group of devices.
 * `c8y_Output` - sends data to a Cumulocity device.
 
 For example:
