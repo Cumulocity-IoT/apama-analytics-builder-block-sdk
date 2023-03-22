@@ -1,0 +1,120 @@
+﻿/*
+ * $Copyright (c) 2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.TimerParams;
+using com.apama.exceptions.Exception;
+using apama.analyticsbuilder.L10N;
+using apama.analyticsbuilder.Promise;
+using apama.analyticsbuilder.cumulocity.CumulocityInputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityInputParams;
+
+/**
+ * Parameters
+ * The parameters for the Event Input Block.
+ */
+event TimeTicker_$Parameters {
+	/**
+	 * Device or Device Group.
+	 *
+	 * The device or device group from which the event has been received.
+	 *
+	 * The model editor uses the current device or group name. This is mapped internally to the inventory identifier.
+	 * @$semanticType c8y_deviceOrGroupId
+	 */
+	string deviceId;
+	
+	/**
+	 * Time period.
+	 *
+	 * Time between outputs in seconds.
+	 */
+	float periodSecs;
+	
+	/** Validate that values for all paramters have been provided. */
+	action $validate() {
+		BlockBase.throwsOnEmpty(deviceId, "deviceId", self);
+	}
+}
+
+event TimeTicker_$State {
+	float counter;
+}
+
+/**Fake input event to declare input block. */
+event TimeTickerFakeInputEvent {
+	string source;
+}
+
+/**
+ * Time ticker.
+ *
+ * Generates output periodically.
+ *
+ * Generates an increasing output starting from 1 and increasing by 1 every time period.
+ *
+ * The output is associated with the device or devices in deviceId.
+ *
+ * @$blockCategory Utilities
+ * @$consumesInput
+ * @$derivedName Time ticker $periodSecs
+ */
+event TimeTicker{
+	BlockBase $base;
+	/**The parameters for the block. */
+	TimeTicker_$Parameters $parameters;
+	CumulocityInputHandler handler;
+
+	action $validate(dictionary<string, any> $modelScopeParameters) returns Promise {
+		CumulocityInputParams params := CumulocityInputParams.create($parameters.deviceId, self, TimeTickerFakeInputEvent.getName());
+		return params.declare(saveInputHandler);
+	}
+	
+	action saveInputHandler(CumulocityInputHandler handler) {
+		self.handler := handler;
+	}
+	
+	/**
+	 * Create recurring timers for all devices to periodically generate output.
+	 */
+	action $init() {
+		string id;
+		for id in handler.getDevices() {
+			try {
+				TimerParams tp := TimerParams.recurring($parameters.periodSecs)
+									.withPartition(handler.partitionForTimer(id));
+				any discard := $base.createTimerWith(tp);
+			} catch(Exception e) {}
+		}
+	}
+	
+	/**
+	 * Sets output on the current activation.
+	 * @param $activation The current activation.
+	 * @param value value to be put on the wire.
+	 */
+	action $timerTriggered(Activation $activation, TimeTicker_$State $blockState) {
+		$blockState.counter := $blockState.counter + 1.0;
+		$setOutput_value($activation, $blockState.counter);
+	}
+
+	/**
+	 * Ticker value
+	 *
+	 * Generates a new output every periodSecs
+	 */
+	action<Activation,float> $setOutput_value;
+
+}

@@ -1,0 +1,168 @@
+/*
+ * $Copyright (c) 2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+ */
+
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.Partition_Broadcast;
+using apama.analyticsbuilder.L10N;
+
+using com.apama.cumulocity.Event;
+using com.apama.exceptions.Exception;
+using apama.analyticsbuilder.Promise;
+
+using apama.analyticsbuilder.cumulocity.CumulocityOutputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityOutputParams;
+
+/**
+* Event definition of the parameters for the Create Event Output block.
+*/
+event CreateEvent_$Parameters {
+	/**
+	 * Output Destination.
+	 *
+	 * The device (or for models handling group of devices, trigger device or asset) to which the event is to be sent. Assets can be used only for sending cross-device aggregates.
+	 *
+	 * The model editor uses the current device name. This is mapped internally to the device identifier.
+	 * @$semanticType c8y_deviceIdOrCurrentDevice
+	 */
+	any deviceId;
+
+	/**
+	 * Event Type.
+	 *
+	 * Identifies the type of this event.
+	 */
+	string eventType;
+
+	/**
+	 * Message.
+	 *
+	 * The text that will be displayed when the event is created.
+	 *
+	 * This requires that the Text Input input is not connected. If neither are set, the model name is used as the text.
+	 */
+	 optional<string>eventText;
+
+	 /** Validate that a value for deviceId and  eventType been provided. */
+	action $validate() {
+		switch(deviceId) {
+			case string: { BlockBase.throwsOnEmpty(deviceId, "deviceId", self); }
+			default: {
+				if deviceId = any() or deviceId.getEntry("currentDevice") != <any> true {
+					throw Exception("Expected a device Id or a currentDevice object", "IllegalArgumentException"); // NON-L10N-DEV
+				}
+			}
+		}
+		BlockBase.throwsOnEmpty(eventType, "eventType", self);
+	}
+}
+
+/**
+ * Event Output.
+ *
+ * Creates a new <tt>Event</tt> object for the associated device or the triggering device.
+ *
+ * This block sends a new event to the current device or the device specified. The text of the event
+ * is determined by the Text Input input or by the Message parameter. You must not set both.
+ * If neither are set, the model name is used as the text.
+ *
+ * @$blockCategory Output
+ * @$producesOutput
+ * @$blockType c8y_Output
+ * @$derivedName $eventType Event
+ * @$titleIsDerived true
+ */
+event CreateEvent {
+	/**BlockBase object.*/
+	BlockBase $base;
+	
+	/** The parameters for the block. */
+	CreateEvent_$Parameters $parameters;
+	
+	/**
+	 * The text that will be displayed when the event is created.
+	 */
+	string eventText;
+	
+	/* Model name to be tagged. */
+	string modelName;
+
+	/** The handler object which is responsible to send actual output to a channel*/
+	CumulocityOutputHandler cumulocityOutputHandler;
+	
+	
+	/** Call back action to hold CumulocityOutputHandler object 
+	*	@param cumOuputHandler the handler object
+	*/
+	action handlerCreated(CumulocityOutputHandler cumOuputHandler)
+	{
+		cumulocityOutputHandler := cumOuputHandler;
+	}
+	
+	/**
+	 * Validates that the device exists in the inventory.
+	 *
+	 * See - Asynchronous validations in the block-sdk guide for more details.
+	 *
+	 * @param $modelScopeParameters  Dictionary containing information about the model.
+	 * @return a <tt>Promise</tt> object, validation of the model will be suspended until the Promise is fulfilled.
+	*/
+	action $validate(dictionary<string, any> $modelScopeParameters) returns Promise {
+		/* Extract the model name to be tagged. */
+		modelName := $modelScopeParameters[apama.analyticsbuilder.ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
+		/* If event Text is not provided, take model name as event Text*/
+		eventText := $parameters.eventText.getOr(modelName);
+		
+		/* The field values the block sends that, together with partitionFields, identifies a stream of events.*/
+		dictionary<string, any> fields := {"type":<any>$parameters.eventType};
+		
+		/* Declaring output streams, (See - Cumulocity specific helpers in the block-sdk guide for more details).*/
+		/* Creating an CumulocityOutputParams object */
+		CumulocityOutputParams cumulocityOutputParams := CumulocityOutputParams.forSyncEventType( $parameters.deviceId, self, Event.getName(), fields );
+		
+		/* Declare the output stream and provide callback action to save the output handler object.
+	       Return the Promise returned from the declare call.*/
+		return cumulocityOutputParams.declare(handlerCreated);
+	}
+	
+	/**
+	 * Create and send an event to the device.
+	 * @param $input_createEvent Creates an event when a signal is received.
+	 * @param $input_textInput Sets the text of the event. The Message parameter must not be set if this is used.
+	 * @$inputName createEvent Create Event
+	 * @$inputName textInput Text Input
+	 */
+	action $process(Activation $activation, dictionary<string,any>$modelScopeParameters,
+			boolean $input_createEvent, optional<string> $input_textInput) {
+		if $input_createEvent {
+			string text := $parameters.eventText.toString();
+			
+			// if text provided as input to block , use it
+			ifpresent $input_textInput {
+				text := $input_textInput;
+			}
+			/* Get the current device to which the output will be sent.*/
+			ifpresent cumulocityOutputHandler.deviceToOutput($activation) as device {
+				
+				/* Creating an event to send to cumulocity.*/
+				Event evt := Event("", $parameters.eventType, device, $activation.timestamp, text,  new dictionary<string,any>);
+				
+				// Ask the framework to send the output to the output channel.
+	            // If output is synchronous, then it is tagged before sending it to the channel.
+				cumulocityOutputHandler.sendOutput(evt,Event.SEND_CHANNEL,$activation);
+			}
+		}
+	}
+	/** The basic type of the event input. */
+	constant string $INPUT_TYPE_createEvent := "pulse";
+}
