@@ -1,6 +1,6 @@
 # Migrating input and output blocks to the version 2 API
 
-The version 1 API for writing custom input and output blocks has been deprecated and will be removed in a future release. Support for multiple devices within a single model is disabled if there are blocks using the version 1 API with the concurrency level set to more than 1. To use multiple devices in a model and to continue to work in the future, you must update the blocks to  the version 2 API.
+The previous version 1 API for writing custom input and output blocks was deprecated in version 10.7 and has been removed in version 10.17. To continue to work, you must update any blocks using the old API to the version 2 API as shown in this migration guide.
 
 The following actions and events are part of the deprecated version 1 API:
  - `BlockBase.listensForInput` 
@@ -107,11 +107,14 @@ An example of using the version 1 API for scheduling input events is shown below
 ```java
 action $init() {
     // Listen for events of type MyEvent and filter them by type.
-    on all MyEvent(type = $parameters.type) as e {
+    on all MyEvent(source = $parameters.source, type = $parameters.type) as e {
         try{
             // Try to find the next available time to schedule when ignoreTimestamp is
             // enabled.
             Value value := new Value;
+            value.value := e.value;
+            value.properties["source"] = e.source;
+            value.properties["type"] = e.type;
             
             if ignoreTimestamp {
                 // Either use the model time or use the next possible time after the timeValue.
@@ -136,10 +139,14 @@ action $init() {
         }
     } 
 }
+
+action $timerTriggered(Activation $activation, any $payload) {
+    $setOutput_value($activation, $payload);
+}
 ```
 
-When using the handler API, the input block need not worry about calculating the time to schedule an input value to process, or handling and reporting dropped events to the framework.
-To schedule an input event, call the `schedule` action on the `InputHandler` object by providing the input value, the source timestamp of the value, and the partition to which the input value belongs. Then the framework is responsible for scheduling the input event by calculating the time and reporting about dropped events to the framework.
+When using the handler API, the input block need not worry about calculating the time to schedule an input value to process, nor identifying events to drop.
+To schedule an input event, call the `schedule` action on the `InputHandler` object providing the input value, the source timestamp of the value, and the partition to which the input value belongs. The framework will drop the event if necessary, reporting this.
 
 An example of using the handler API to schedule an input event is shown below.
 
@@ -160,6 +167,16 @@ action $init() {
         // $timerTriggered action as $payload parameter.
         TimerHandle handle := inputHandler.schedule(e, timeValue, e.source);
     }
+}
+
+action $timerTriggered(Activation $activation, any $payload) {
+    MyEvent e := <MyEvent> $payload;
+    Value value := new Value;
+    value.value := e.value;
+    value.timestamp := $activation.timestamp;
+    value.properties["source"] = e.source;
+    value.properties["type"] = e.type;
+    $setOutput_value($activation, value);
 }
 ```
 
@@ -232,11 +249,18 @@ event MyOutputBlock {
     }
 }
 ```
+
+For asynchronous output, you must declare this in the `OutputParams` object by using the `forAsyncEventType` action instead and you do not need to supply a `tagger` action.
+
+```java
+OutputParams params := OutputParams.forAsyncEventType(MyEvent.getName()).withPartitionValue($parameters.source);
+```
+
 ### Sending output 
 
 When using the version 1 API, an output block is responsible for routing events if the output is time-synchronous, tagging the event before sending it to the external source. 
 ```java
-action $process(Activation $activation,string $input_source,string $input_type) {
+action $process(Activation $activation, string $input_source, string $input_type, float $input_value) {
     /* Creating an event to send to Cumulocity IoT.*/
     MyEvent m := MyEvent($input_source, $input_type, 0.0, new dictionary<string, any>);
     // Routing the event so that any other models can consume it.
@@ -251,7 +275,7 @@ action $process(Activation $activation,string $input_source,string $input_type) 
 ```
 To send output using the handler API, call the `sendoutput` action on the handler objects which get saved in the `$validate` action.
 ```java
-action $process(Activation $activation, string $input_source,string $input_type) {
+action $process(Activation $activation, string $input_source, string $input_type, float $input_value) {
     /* Creating an event to send to Cumulocity IoT.*/
     MyEvent m := MyEvent($input_source, $input_type, 0.0, new dictionary<string, any>);
     // Ask the framework to send the output to the output channel.
@@ -282,7 +306,7 @@ event AlarmInput {
 }
 ```
 
-Using the handle API, the input block need not worry about declaring these variables. Instead, declare a `CumulocityInputHandler` object which gets initialized while declaring inputs.
+Using the handler API, the input block need not worry about declaring these variables. Instead, declare a `CumulocityInputHandler` object which gets initialized while declaring inputs.
 ```java
 event AlarmInput {
     BlockBase $base;
@@ -338,7 +362,7 @@ action inputHandlerCreated(CumulocityInputHandler inputHandler) {
 ```
 #### Scheduling input
 
-Using the version 1 API, the input block used to calculate the time for scheduling input events, handling of the broadcast device type and reporting of dropped events.
+Using the version 1 API, the input block used to be responsible for calculating the time to schedule input events, handling of the broadcast device type and reporting dropped events.
 
 Using the version 1 API, scheduling input for a custom Cumulocity IoT block is as follows:
 ```java
@@ -385,7 +409,7 @@ action $init() {
     }
 }
 ```
-Using the new handler API, scheduling an input event is done by calling the `schedule` action on the Cumulocity IoT handler object. The handler takes care of creating the correct partition value and reporting dropped events.
+Using the new handler API, scheduling an input event is done by calling the `schedule` action on the Cumulocity IoT handler object. The handler will determine the correct partition value and will check for you if the event should be dropped. Events dropped by the framework when `schedule` is called do not need to be reported using the `droppedEvent` action.
 ```java
 /**
  * Method starts listening for alarms from Cumulocity IoT.
@@ -709,4 +733,4 @@ action $validate() returns Promise {
 ```
 See the **DualMeasurementIO.mon** sample for a complete example on multiple outputs in a block.
 
-[< Prev: Asynchronous validations](110-AsynchronousValidations.md) | [Contents](000-contents.md) | [Next: Sharing data across partitions and workers >](160-SharingDataAcrossPartition.md) 
+[< Prev: Asynchronous validations](110-AsynchronousValidations.md) | [Contents](000-contents.md) | [Next: Update Cumulocity IoT input blocks to receive from assets >](151-MigrateInputBlocksForAssetInput.md) 

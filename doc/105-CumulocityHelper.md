@@ -1,12 +1,10 @@
 # Cumulocity-specific helpers
 
-> **Note:** The previous version 1 API for writing custom input and output blocks is deprecated. Input and output blocks will require changes to continue to work properly and use multiple devices in a model with the concurrency level set to more than 1. See [Migration Guide](150-MigrateInputOutputBlocks.md) for more details.
-
 There are several functions specific to blocks that input or output data associated with a Cumulocity IoT device or device group. To avoid repeating this functionality, a set of helper events is provided to use in Cumulocity IoT input and output blocks.
 
 These helper events handle the following functionality:
 
-* Looking up the source/target object and determining if it is a group of devices and if it is, finding all of the devices within it.
+* Looking up the source/destination object and determining if it is a group of devices and if it is, finding all of the devices within it.
 * Determining if the object is a broadcast device.
 * Declaring input or output with correct partition value (see also [Partition values](070-Partitions.md)).
 * Adding a list of devices used within the model to the `$modelScopeParameters`, which can then be used by other blocks.
@@ -14,13 +12,29 @@ These helper events handle the following functionality:
 * Forwarding outputs to models consuming the output values.
 * Reporting dropped events. 
 
-The main event types are `CumulocityInputHandler` and `CumulocityOutputHandler`. They internally use the `InventoryLookup` event type, which returns a Promise of a result of looking up an object in the inventory.
+The main event types are `CumulocityInputHandler` and `CumulocityOutputHandler`. They internally use the `InventoryLookup` event type, which returns a `Promise` of a result of looking up an object in the inventory.
 
 If using Software AG Designer, add the bundle **Cumulocity Block helpers (Support for Cumulocity input and output blocks)**.
 
 ## Input blocks
 
-For input blocks, create a `CumulocityInputParams` object by calling the `create` static action, providing a reference to the block object, the device identifier and the type of the Cumulocity IoT event the block is listening for. Update the `CumulocityInputParams` object to include the fields the block is filtering on by calling `withFields`, providing a dictionary describing the input stream. Then declare the input by calling the `declare` action on the `CumulocityInputParams` object, providing a callback action to receive a `CumulocityInputHandler` object for the input. This is an asynchronous operation that returns a Promise. The callback action is called before the returned Promise is fulfilled. The action should be called from the `$validate` action and the Promise returned from this action should be returned from the `$validate` action.
+Define a parameter of `any` type to hold the identifier of the source device from which inputs are received.
+
+```java
+/**
+ * Input Source.
+ *
+ * Defines the device or group of devices from which the alarm has been received.
+ *
+ * This can be a single device, or an object that references or contains a group of devices.
+ * @$semanticType c8y_deviceOrGroupId
+ */
+any deviceId;
+```
+
+The value of the parameter (`deviceId` in the above) will be either a `string` or a `dictionary` with an `id` entry for the selected source. Pass the value of the parameter to the `CumulocityInputParams` object, which can validate the value and determine the ID of the input source.
+
+In the `$validate` action, create a `CumulocityInputParams` object by calling the `create` static action, providing a reference to the block object, the device identifier (the `deviceId` parameter in the above example), and the type of the Cumulocity IoT event the block is listening for. Update the `CumulocityInputParams` object to include the fields the block is filtering on by calling `withFields`, providing a dictionary describing the input stream. Then declare the input by calling the `declare` action on the `CumulocityInputParams` object, providing a callback action to receive a `CumulocityInputHandler` object for the input. This is an asynchronous operation that returns a `Promise`. The `Promise` returned from this action must be returned from the `$validate` action. The callback action is called before the returned `Promise` is fulfilled.
 
 ```Java
 /**The parameters for the block. */
@@ -91,11 +105,26 @@ For an example, see the **DeviceLocationInput.mon** sample.
 
 For blocks consuming multiple input types, create multiple input handlers to schedule corresponding input values. See the **DualMeasurementIO.mon** sample for an example.
 
-Note: The `InputHelper` API is now deprecated.
-
 ## Output blocks
 
-For output blocks, create a `CumulocityOutputParams` object by calling either the `forSyncEventType` or `forAsyncEventType` static action depending on if the output event is synchronous or asynchronous. Pass a reference to the block object, the event type of the Cumulocity IoT event to output and a dictionary describing the output stream (if the output event is synchronous). See [Input and output blocks](100-InputAndOutput.md) for more information about synchronous and asynchronous output events. Examples of synchronous output events are `Alarm`, `Event`, and `Measurement` and examples of asynchronous output events are `Operation` and `ManagedObject`. Then declare the output by calling the `declare` action on the `CumulocityOutputParams` object, providing a callback action to receive a `CumulocityOutputHandler` object for the output. This is an asynchronous operation that returns a promise. The callback action is called before the returned promise is fulfilled. The action should be called from the `$validate` action and the promise returned from this action should be returned from the `$validate` action.
+Define a parameter of `any` type to hold the identifier of the destination device to which outputs are to be sent.
+
+```java
+/**
+ * Output Destination.
+ *
+ * The device (or for models handling group of devices, trigger device or asset) 
+ * that the alarm is associated with. Assets can be used only for sending cross-device aggregates.
+ * 
+ * The model editor uses the device name. This is mapped internally to the device identifier.
+ * @$semanticType c8y_deviceIdOrCurrentDevice
+ */
+any deviceId;
+```
+
+The value of the parameter (`deviceId` in the above) will be either a `string`, a `dictionary` with an `id` entry for the selected source, or a `dictionary` with a `currentDevice` entry for the "trigger device" case. Pass the value of the parameter to the `CumulocityOutputParams` object, which can validate the value and determine the ID of the output destination.
+
+In the `$validate` action, create a `CumulocityOutputParams` object by calling either the `forSyncEventType` or `forAsyncEventType` static action depending on if the output event is synchronous or asynchronous. Pass the device identifier (the `deviceId` parameter in the above example), a reference to the block object, the event type of the Cumulocity IoT event to output, and a dictionary describing the output stream (if the output event is synchronous). See [Input and output blocks](100-InputAndOutput.md) for more information about synchronous and asynchronous output events. Examples of synchronous output events are `Alarm`, `Event`, and `Measurement` and examples of asynchronous output events are `Operation` and `ManagedObject`. Then declare the output by calling the `declare` action on the `CumulocityOutputParams` object, providing a callback action to receive a `CumulocityOutputHandler` object for the output. This is an asynchronous operation that returns a `Promise`. The `Promise` returned from this action must be returned from the `$validate` action. The callback action is called before the returned `Promise` is fulfilled.
 
 ```Java
 /** The handler object which is responsible to send actual output to a channel*/
@@ -149,8 +178,6 @@ action $process(Activation $activation, boolean $input_createAlarm) {
 The `CumulocityOutputHandler` object has actions to check if the output device is a broadcast device, or is a trigger device, and for getting the devices for which output is to be produced.
 
 For an example, see the **CreateEvent.mon** sample.
-
-Note: The `OutputHelper` API is now deprecated.
 
 ### Multiple outputs
 

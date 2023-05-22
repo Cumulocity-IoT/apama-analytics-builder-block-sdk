@@ -74,6 +74,13 @@ A parameter can be defined as one of a number of available options. In the model
 
 Note that the ApamaDoc on each option gives the name for the option that is used in the model editor.
 
+## Semantic types
+In addition to the semantic types listed in [Input and output blocks](100-InputAndOutput.md#semantic-types), you can define some more semantic type tags to indicate special handling of types for the block parameters in the model editor:
+
+* `pab_multiLine` - shown as multi-line text.
+* `pab_geofence`  - shown as a map area on the surface of the earth.
+* `c8y_fragmentSeries_KPI_supportedMeasurements_DataPoints` - shown as a drop-down list with the data points.
+
 ## Validating parameters
 
 The block may wish to perform some checking of the block's parameters; not all values or combinations of values are necessarily valid. The block can do this by implementing a `$validate` action on either the `$Parameters` type or the block itself. The `$validate` method should check the values of the `$Parameters` and throw an exception if the parameters are invalid. (A `$validate` method on the block may also check things such as which inputs are connected, or what type they are). The `BlockBase` type includes a `throwsOnEmpty` method that will throw if a string value is empty, as this is a common validation.

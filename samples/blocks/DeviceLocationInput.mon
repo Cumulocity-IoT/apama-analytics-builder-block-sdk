@@ -38,7 +38,7 @@ event DeviceLocationInput_$Parameters {
 	 * The model editor uses the current device or group name. This is mapped internally to the inventory identifier.
 	 * @$semanticType c8y_deviceOrGroupId
 	 */
-	string deviceId;
+	any deviceId;
 
 	/** Validate that a value for deviceId has been provided. */
 	action $validate() {

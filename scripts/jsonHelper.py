@@ -12,11 +12,11 @@ BLOCK_METADATA_EVENT = buildExtension.BLOCK_METADATA_EVENT
 BLOCK_MESSAGES_EVENT = buildExtension.BLOCK_MESSAGES_EVENT
 
 def add_arguments_extract(parser):
-	parser.add_argument('--input', metavar='INPUT', type=str, required=True, help='the input directory (should contain <name>-messages.json and <name>.json)')
+	parser.add_argument('--input', metavar='INPUT', type=str, required=True, help='the input directory (should contain <name>_messages.evt and <name>_metadata.evt)')
 	parser.add_argument('--output', metavar='OUTPUT', type=str, required=True, help='the output directory')
 
 def add_arguments_pack(parser):
-	parser.add_argument('--input', metavar='INPUT', type=str, required=True, help='the input directory (should contain <name>_messages.evt and <name>_metadata.evt)')
+	parser.add_argument('--input', metavar='INPUT', type=str, required=True, help='the input directory (should contain <name>-messages.json and <name>.json)')
 	parser.add_argument('--output', metavar='OUTPUT', type=str, required=True, help='the output directory')
 	parser.add_argument('--name', metavar='NAME', type=str, required=True, help='the name of the block catalog')
 

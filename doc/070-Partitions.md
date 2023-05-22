@@ -18,6 +18,6 @@ Partition values can be used in timers or when a block declares an external [inp
 
 For normal value partitions, it is only legal to create a timer with that partition in the worker context that is associated with that partition. These are typically created from listeners from events, which the framework's forwarding monitor will send to the appropriate context.
 
-For examples, see the **ManagedObjectInput.mon** sample.
+For examples, see the **GroupStatistics.mon** sample.
 
 [< Prev: Timers](060-Timers.md) | [Contents](000-contents.md) | [Next: Dynamic types >](080-DynamicTypes.md) 

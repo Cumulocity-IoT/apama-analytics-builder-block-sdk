@@ -264,7 +264,7 @@ defaultValueXPath = "./Member[@name=\'{0}\']"
 dollarFieldsXPath = "./DollarFields/DollarField"
 genericTagXPath = "./DollarFields/DollarField[@name='$%s']/Description"
 typeFieldsXPath = "./Package/Type"
-vanillaFieldTags = ['semanticType', 'displayType', 'minNumEntries']
+vanillaFieldTags = ['semanticType', 'displayType', 'minNumEntries', 'optional']
 headerFieldTags = [('displayHeaderName', 'name'), ('displayHeaderValue', 'value')]
 validFieldTags = vanillaFieldTags + [x[0] for x in headerFieldTags]
 
@@ -470,8 +470,15 @@ class BlockGenerator:
 
 						for extraTag in vanillaFieldTags:
 							tag = member.find(genericTagXPath % extraTag)
-							if tag is not None and tag.text is not None:
-								parameterObject.set(extraTag, tag.text.strip())
+							
+							if tag is not None:
+								if extraTag == 'optional':
+									# If $optional tag is set, make the parameter optional in the UI by
+									# setting the optional property to true. Useful for `any` type parameters.
+									parameterObject.set(extraTag, True)
+								elif tag.text is not None:
+									parameterObject.set(extraTag, tag.text.strip())
+
 						for extraTag, name in headerFieldTags:
 							tag = member.find(genericTagXPath % extraTag)
 							if tag is not None and tag.text is not None:

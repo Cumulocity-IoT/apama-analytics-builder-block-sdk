@@ -53,7 +53,7 @@ event DualMeasurementIO_$Parameters{
 	 * The model editor uses the current device or device group name. This is mapped internally to the inventory identifier.
 	 * @$semanticType c8y_deviceOrGroupId
 	 */
-	string deviceId;
+	any deviceId;
 
 	/**
 	 * Input Numerator Fragment.
