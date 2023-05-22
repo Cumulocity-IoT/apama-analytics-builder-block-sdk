@@ -1,0 +1,36 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+/**
+ * Window contents.
+ *
+ * This is a single value in the <tt>sequence&lt;WindowContents&gt;</tt> property <tt>timeWindow</tt> provided by the <tt>TimeWindow</tt> block.
+ */
+event WindowContents {
+	/** Value.
+	 *
+	 * While typically a float, this can be any type that is valid for an Analytics Builder wire.
+	 */
+	any	value;
+	/** Time of this data point.
+	 *
+	 * The timestamp of this data point, in standard Apama form (i.e. seconds since the Unix epoch)
+	 */
+	float timestamp;
+	/** Property name for <tt>timeWindow</tt>.
+	 *
+	 * For convenience, the property on the Value on which that <tt>timeWindow</tt> is stored. The value of this property should be
+	 * <tt>sequence&lt;WindowContents&gt;</tt>
+	 */
+	constant string WINDOW_PROPERTY_NAME := "timeWindow"; // value will be sequence<WindowContents>
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="yes"?>
+<pysystest type="auto" state="runnable">
+
+  <description>
+    <title>Difference block: To check the basic working of the block</title>
+    <purpose><![CDATA[
+    To check that the blocks is able calculate the difference between the two inputs correctly.
+]]>
+    </purpose>
+  </description>
+
+  <classification>
+    <groups>
+      <group></group>
+    </groups>
+  </classification>
+
+  <data>
+    <class name="PySysTest" module="run"/>
+  </data>
+  
+  <traceability>
+    <requirements>
+      <requirement id=""/>     
+    </requirements>
+  </traceability>
+</pysystest>
