@@ -29,10 +29,10 @@ class Waiter:
 	def waitFor(self, expr, count=5, errorExpr=None):
 		self.corr.flush(count=count)
 		if errorExpr==None:
-			self.parent.waitForSignal(self.stdouterr[0], expr=expr)
+			self.parent.waitForSignal(self.stdouterr[0], expr=expr, encoding='utf-8')
 		else:
-			self.parent.waitForSignal(self.stdouterr[0], expr=f'({expr})|({errorExpr})')
-			self.parent.assertGrep(self.stdouterr[0], expr=errorExpr, contains=False)
+			self.parent.waitForSignal(self.stdouterr[0], expr=f'({expr})|({errorExpr})', encoding='utf-8')
+			self.parent.assertGrep(self.stdouterr[0], expr=errorExpr, contains=False, encoding='utf-8')
 
 class AnalyticsBuilderBaseTest(ApamaBaseTest):
 	"""
