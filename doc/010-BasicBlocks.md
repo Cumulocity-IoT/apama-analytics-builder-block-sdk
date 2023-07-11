@@ -47,7 +47,7 @@ Inputs and outputs can be one of the following types:
 
 * `float`
 * `string`
-* `boolean` \(used for both `boolean` and `pulse` wire types - see [later](080-DynamicTypes.md) and the Analytics Builder documentation topic "The pulse type" for the difference between `boolean` and `pulse` types\)
+* `boolean` \(used for both `boolean` and `pulse` wire types - see [later](080-DynamicTypes.md) and the Streaming Analytics documentation topic "The pulse type" for the difference between `boolean` and `pulse` types\)
 * `any`
 * `Value`
 
