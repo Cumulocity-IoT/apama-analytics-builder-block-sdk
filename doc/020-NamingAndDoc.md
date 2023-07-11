@@ -39,7 +39,7 @@ If a field of the block or a parameter of the `$process` method has a `$` prefix
 
 The block's name and description are also provided in ApamaDoc comments, before the event definition of the block. In the block's ApamaDoc comment, the supported extended tags include:
 
-* `@$blockCategory <Category>` - (***required***) identifies the category in the model editor's palette in which the block should appear. See [Allowed categories](020-NamingAndDoc.md#Allowed-categories) for more information.
+* `@$blockCategory <Category>` - (***required***) identifies the category in the model editor's palette in which the block should appear. See [Allowed categories](020-NamingAndDoc.md#allowed-categories) for more information.
 * `@$derivedName` - provides a name which can include a parameter value by using `${parameterId}` or `$parameterId`. Use `$$` for a literal dollar sign.
 * `@$titleIsDerived` - if set and true, use the derived name in the block parameters dialog as well; typically only set for input/output blocks.
 
@@ -94,7 +94,9 @@ As a good practice, you may wish to provide ApamaDoc comments for other elements
 The description (after the name in ApamaDoc blocks) should be a standalone summary of what the element is, and may be displayed in tooltips or in the block reference. For a number of elements, only the first paragraph of the description is displayed in a tooltip, but the block reference will include all paragraphs of the description, so this can be used to distinguish the key aspects of a block from more detailed information or examples.
 
 ## Allowed categories
-The following table lists the allowed values for `@$blockCategory` and the category names that are shown in the model editor's palette: 
+The following table lists the allowed values for `@$blockCategory` and the category names that are shown in the model editor's palette:
+
+
  | Value               | Name in the palette    |
  | -------------------- | -----------------------| 
 | Input|Input |
