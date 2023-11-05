@@ -163,7 +163,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		pass
 
 
-	def createTestModel(self, blockUnderTest, parameters={}, id=None, corr=None, inputs={}, isDeviceOrGroup=None, wiring=[]):
+	def createTestModel(self, blockUnderTest, parameters={}, id=None, corr=None, inputs={}, outputs={}, isDeviceOrGroup=None, wiring=[]):
 		"""
 		Create a test model.
 
@@ -173,6 +173,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:param id: An identifier for the model. Uses the sequence model_0 model_1, etc. if not specified.
 		:param corr: The correlator object to use - defaults to the last correlator started by startAnalyticsBuilderCorrelator.
 		:param inputs: A map of input identifiers and corresponding type names. If the type name is empty, that input is not connected.
+		:param outputs: A map of ouzput identifiers and corresponding type names. If the type name is empty, that ouzput is not connected.
 		:param isDeviceOrGroup: Cumulocity device or group identifier.
 		:param if more than one block supplied, then this contains the wiring as a list of strings in the form source block index:output id:target block index:input id - e.g. ['0:timeWindow:1:window', '0:timeWindow:1:otherInput']
 		:return: The identifier of the created model.
@@ -185,7 +186,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		waiter = Waiter(self, corr)
 		if not isinstance(blockUnderTest, list):
 			blockUnderTest=[blockUnderTest]
-		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(wiring), '{"isDeviceOrGroup":any(string, "%s")}'%isDeviceOrGroup])
+		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(json.dumps(outputs)), json.dumps(wiring), '{"isDeviceOrGroup":any(string, "%s")}'%isDeviceOrGroup])
 		corr.sendEventStrings(f'apamax.analyticsbuilder.test.Test({testParams})')
 		waiter.waitFor(expr='com.apama.scenario.Created', errorExpr='CreateFailed')
 		return id

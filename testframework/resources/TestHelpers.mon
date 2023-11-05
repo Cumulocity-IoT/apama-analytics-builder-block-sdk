@@ -43,6 +43,7 @@ event Test {
 	string modelId;
 	string jsonParams;
 	string jsonInputs;
+	string jsonOutputs;
 	sequence<string> wiring;
 	dictionary<string, any> extraParams;
 }
@@ -270,6 +271,7 @@ monitor TestHelper {
 	action createModel(Test t, sequence<any> blocks) {
 		dictionary<any, any> params := <dictionary<any, any> > JSONPlugin.fromJSON(t.jsonParams);
 		dictionary<any, any> inputs := <dictionary<any, any> > JSONPlugin.fromJSON(t.jsonInputs);
+		dictionary<any, any> outputs := <dictionary<any, any> > JSONPlugin.fromJSON(t.jsonOutputs);
 		ModelCreator c := ModelCreator.init(t.modelId);
 		
 		dictionary<string,string> wiredInputs := {};
@@ -355,6 +357,22 @@ monitor TestHelper {
 				string name := <string> outputInfo.getEntry("id");
 				string prefixedName := prefix+name;
 				string blockOut := "output_"+prefixedName;
+				string specificType := "float"; // by default
+				if outputs.hasKey(prefix + name) {
+					ifpresent outputs[prefix + name] as outputType {
+						specificType := outputType.valueToString();
+					} else {
+						specificType := "";
+					}
+				}
+				if outputs.hasKey(name) {
+					ifpresent outputs[name] as outputType {
+						specificType := outputType.valueToString();
+					} else {
+						specificType := "";
+					}
+				}
+				if specificType = "" { continue; }
 				c.block(blockOut, TestOutput.getName(), {"outputId":prefixedName});
 				c.wire(blockKey, name, blockOut, "input");
 			}

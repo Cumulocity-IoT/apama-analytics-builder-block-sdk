@@ -14,10 +14,11 @@ Both `createTestModel` and `inputEvent` take an optional argument: `id` - an ide
 * `id` (optional) - identifier of the model
 * `corr` (optional) - correlator to use; defaults to using the last correlator started by `startAnalyticsBuilderCorrelator`.
 * `inputs` (optional) - a dictionary that maps the input names to their types.  For example `{ "input1" : "string", "input2" : "integer" }`. If an input identifier is not specified, the input defaults to the `float` type. If the value for the identifier is set to `None` or an empty string, that input is not connected.
+* `outputs` (optional) - a dictionary that maps the output names to their types.  For example `{ "output1" : None}`. If the value for the identifier is set to `None` or an empty string, that output is not connected to a TestOutput block. As a consequence this output will not be logged and it cannot be used in assertions.
 * `wiring` (optional unless testing multiple blocks) - list of strings containing source block index, output port identifier, target block index, input port identifier separated by colons - e.g. `['0:timeWindow:1:window']`
 
 
-The following methods can be used to check the output of the block is as expected:
+The following methods can be used to check the output of the block is as expected (unless the output has been mapped to `None` or an empty string):
 
 * `assertBlockOutput` checks that the series of outputs generated from a given outputId are as supplied in a list of values.  (optional parameters for partitionId and modelId)
 * `outputFromBlock` returns a list of the values sent to the named outputId (optional parameter for partitionId and modelId)
