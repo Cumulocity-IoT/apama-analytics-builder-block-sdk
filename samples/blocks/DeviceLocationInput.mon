@@ -1,0 +1,168 @@
+/*
+ * $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.TimerHandle;
+using apama.analyticsbuilder.L10N;
+using com.apama.cumulocity.ManagedObject;
+using com.apama.exceptions.Exception;
+
+using apama.analyticsbuilder.Promise;
+using apama.analyticsbuilder.cumulocity.CumulocityInputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityInputParams; 
+using apama.analyticsbuilder.Partition_Broadcast;
+
+/**
+ * Event definition of the parameters for the Device Location Input block.
+ */
+event DeviceLocationInput_$Parameters {
+
+	/**
+	 * Input Source.
+	 *
+	 * The input source from which the location has been received.
+	 *
+	 * @$semanticType c8y_deviceOrGroupId
+	 */
+	any deviceId;
+
+	/** Validate that a value for deviceId has been provided. */
+	action $validate() {
+		BlockBase.throwsOnEmpty(deviceId, "deviceId", self);
+	}
+}
+
+/**
+ * Location Input.
+ *
+ * Receives <tt>ManagedObject</tt> events from Cumulocity and extracts device location information.
+ *
+ * The output is a pulse that is triggered on every update of the managed object.  This will contain
+ * properties such as 'alt', 'lng' and 'lat' - see https://cumulocity.com/guides/concepts/domain-model/
+ *
+ * @$blockCategory Input
+ * @$consumesInput
+ * @$blockType c8y_Input
+ */
+event DeviceLocationInput {
+	
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when block is required for a model.
+	 */
+	BlockBase $base;
+	
+	/** The parameters for the block. */
+	DeviceLocationInput_$Parameters $parameters;
+	
+	/** The input handler to schedule input events for processing at the specified time. */
+	CumulocityInputHandler inputHandler;
+	
+	/**
+	 * Asynchronously validates that the device exists in the inventory and create an input handler for getting the device information and scheduling the input events for processing.
+	 *
+	 * See - Asynchronous validations in the block-sdk guide for more details.
+	 *
+	 * @return a <tt>Promise</tt> object, validation of the model will be suspended until the Promise is fulfilled.
+	*/
+	action $validate() returns Promise {		
+		// Create input parameters describing the Cumulocity input stream being consumed (See - Input and Output blocks and 
+		// Cumulocity specific helpers in the block-sdk guide for more details).
+		CumulocityInputParams c8yInputParams := CumulocityInputParams.create($parameters.deviceId, self, ManagedObject.getName());
+		
+		// Look for the device and declare the input stream being consumed, specifying the callback action to save 
+		// the input handler created.
+		return c8yInputParams.declare(saveInputHandler);
+	}
+	
+	/** Callback action with the created input handler. @private */
+	action saveInputHandler(CumulocityInputHandler inputHandler) {
+		self.inputHandler := inputHandler;
+	}
+	
+	/**
+	 * Method to create listeners using CumulocityInputHandlerfor the events from Cumulocity IoT.
+	 */
+	action $init() {
+		
+		// provide all the necessary info required to set up the listeners
+		inputHandler.createListeners(ManagedObject.getName(), new dictionary<string,any>, handleMO);	
+	}
+
+	/**
+	 * Callback received from the CumulocityInputHandler when an Alarm event is received
+	 * @param e The incoming ManagedObject event.
+	 * @private
+	 */
+	action handleMO(any e) {
+
+		ManagedObject managedObject := <ManagedObject> e;		
+		extractLocation(managedObject);
+	}
+	
+	/**
+	 * Schedule the event to be processed as soon as possible.
+	 * 
+	 * @param managedObject The incoming <tt>ManagedObject</tt> from Cumulocity.
+	 */
+	action extractLocation(ManagedObject managedObject) {
+		if managedObject.position.size() > 0 {
+			// Individual updates to ManagedObjects do not have a timestamp, so schedule 
+			// them to be processed as soon as possible. 
+			// This creates a timer which when triggered, calls the $timerTriggered action providing the managed object as payload.
+			any discard := inputHandler.scheduleNow(managedObject);
+		}
+	}	
+	
+	/**
+	 * This action is called by the framework when a timer is triggered. The framework provides the value of the payload 
+	 * which was passed while creating the timer (i.e. the input managed object in this case).
+	 * 
+	 * Extracts the location information from payload value <tt>$payload</tt>, and sets the output.
+	 * @param $activation The current activation.
+	 * @param $payload The payload value.
+	 */
+	action $timerTriggered(Activation $activation, any $payload) {
+		ManagedObject mo := <ManagedObject>$payload;
+		any positionValue := mo.position;
+		
+		// Collect position values in a dictionary to set them as properties of the Value object.
+		dictionary<string, any> valueProperties := {};
+		any k;
+		for k in positionValue.getKeys() {
+			valueProperties[k.valueToString()] := positionValue.getEntry(k);
+		}
+		// Call the $setOutput_location action to set the output.
+		$setOutput_location($activation, Value(true, $activation.timestamp, valueProperties));
+	}
+
+	/**
+	* This action is called by the framework when the timer is too old.
+	*/
+	action $timerRejected(TimerHandle $timerHandle, string $reason) {
+		log "TimerRejected: " + $timerHandle.toString() + " reason: "+ $reason + " for blockId: " + $base.getBlockId() + " of type: " + self.getName();
+	}
+	
+	/**
+	 * Location.
+	 *
+	 * The location from the <tt>ManagedObject</tt>.
+	 */
+	action<Activation,Value> $setOutput_location;	// This is initialized and called by the framework. It sets the output of the block which is sent to the block connected to the output.
+	
+	/** The basic type of the location output. */
+	constant string  $OUTPUT_TYPE_location := "pulse";
+}

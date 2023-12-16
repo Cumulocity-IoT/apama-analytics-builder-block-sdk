@@ -1,0 +1,386 @@
+/*
+ * $Copyright (c) 2019-2022 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+ */
+//*****************************************************************************
+// Title:         TestHelpers
+// Description:   EPL monitors and events used for testing blocks.
+// Dependencies:  Analytics Builder
+// Author:        CREE
+//
+//*****************************************************************************
+package apamax.analyticsbuilder.test;
+
+using apama.analyticsbuilder.ABConstants;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.RequestForwarding;
+
+using apama.analyticsbuilder.CreateModel;
+using apama.analyticsbuilder.BlockConfiguration;
+using apama.analyticsbuilder.ModelState;
+using apama.analyticsbuilder.Wire;
+using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.TimerHandle;
+using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.InputParams;
+using apama.analyticsbuilder.Partition_Wildcard;
+
+
+using apama.analyticsbuilder.BlockInfoRequest;
+using apama.analyticsbuilder.BlockInfoResponse;
+
+using com.apama.json.JSONPlugin;
+using com.apama.exceptions.Exception;
+
+/**
+ * Request to create a test model.
+ *
+ * Sent by AnalyticsBuilderBaseTest.createTestModel pysys method.
+ */
+event Test {
+	sequence<string> blocksUnderTest;
+	string modelId;
+	string jsonParams;
+	string jsonInputs;
+	string jsonOutputs;
+	sequence<string> wiring;
+	dictionary<string, any> extraParams;
+}
+
+/**
+ * Test Input.
+ *
+ * Returned by AnalyticsBuilderBaseTest.inputEvent pysys method.  Listened to by TestInput
+ */
+event Input {
+	string inputId;
+	string modelId;
+	string partitionId;
+	any value;
+	dictionary<string,any> properties;
+}
+
+/**
+ * Test Output.
+ *
+ * Sent by TestOutput and logged by the testEventLogger helper.
+ */
+event Output {
+	string outputId;
+	string modelId;
+	string partitionId;
+	float time;
+	any value;
+	dictionary<string,any> properties;
+}
+
+/** TestInput parameters */
+event TestInput_$Parameters {
+	/** Id of the test input this is connected to */
+	string inputId;
+	/** Type of the input */
+	string type;
+	constant string type_float := "float";
+	constant string type_boolean := "boolean";
+	constant string type_string := "string";
+	constant string type_pulse := "pulse";
+	string isGroup;
+	constant string $DEFAULT_isGroup := "c8y_IsDevice";
+}
+
+/** Test block for supplying input to a block under test */
+event TestInput {
+	BlockBase $base;
+	TestInput_$Parameters $parameters;
+	string modelId;
+	boolean isGroup;
+	
+	action $validate(){
+		isGroup := false;
+	    if $parameters.isGroup = "c8y_IsDeviceGroup" {
+	    	isGroup := true;
+	    }
+		RequestForwarding.byKey(new Input, "partitionId");
+	    InputParams inputParams := InputParams.forEventType(Input.getName());
+			if isGroup {
+				inputParams := inputParams.withPartition(new Partition_Wildcard);
+			} else {
+				inputParams := inputParams.withPartition("");
+			}
+		any _ := $base.consumesInput(inputParams);
+	}
+
+	action $init(dictionary<string, any> $modelScopeParameters) {
+		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
+		on all Input(inputId = $parameters.inputId, modelId = modelId) as i {
+			log i.toString() +" @ "+currentTime.toString();
+			any currentPayload := i.value;
+			if(i.properties.size() != 0){
+				currentPayload := Value(i.value, currentTime, i.properties);
+			}
+			
+			if i.partitionId = "" then {			
+				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(currentPayload));
+				
+			}else {
+				TimerHandle id := $base.createTimerWith(TimerParams.absolute(currentTime).withPayload(currentPayload).withPartition(i.partitionId));
+			}
+		}
+	}
+	action $timerTriggered(Activation $activation, any $payload) {
+		log "TEST: Input "+modelId+"."+$parameters.inputId+" = "+$payload.valueToString() at INFO;
+		$setOutput_output($activation, $payload);
+	}
+
+	/**
+	* This action is called by the framework when the absolute timer is too old.
+	*/
+	action $timerRejected(TimerHandle $timerHandle, string $reason) {
+		log "TimerRejected: " + $timerHandle.toString() + " reason: "+ $reason + " for blockId: " + $base.getBlockId() + " of type: " + self.getName();
+	}
+
+	action $outputType_output() returns string {
+		return $parameters.type;
+	}
+
+	action<Activation, any> $setOutput_output;
+}
+
+
+
+/** TestOutput parameters */
+event TestOutput_$Parameters {
+	string outputId;
+}
+/** Test block for getting output from a block under test */
+event TestOutput {
+	BlockBase $base;
+	TestOutput_$Parameters $parameters;
+	string modelId;
+	action $init(dictionary<string, any> $modelScopeParameters) {
+		modelId := $modelScopeParameters[ABConstants.MODEL_NAME_IDENTIFIER].valueToString();
+		log "Model "+ modelId + " output "+$parameters.outputId +" is type " + $base.getInputTypeName("input");
+	}
+	action $process(Activation $activation, Value $input_input) {
+		switch($input_input.value as v) {
+			case string: {}
+			case float: {}
+			case boolean: {}
+			default: {
+				log "Invalid type "+v.getTypeName()+" - should be one of string, float, boolean, Value (other types can be packed into the property of a Value)" at ERROR;
+			}
+		}
+		log "TEST: Output "+modelId+"."+$parameters.outputId+" = "+$input_input.value.valueToString() at INFO;
+		send Output($parameters.outputId, modelId, $activation.partition.valueToString(), $activation.timestamp, $input_input.value, $input_input.properties) to "TestOutput";
+	}
+}
+
+/**
+ * Model creation helper
+ */
+event ModelCreator {
+	ModelState model;
+	static action init(string modelId) returns ModelCreator {
+		ModelCreator mc := new ModelCreator;
+		mc.model.modelId := modelId;
+		return mc;
+	}
+	action create() {
+		CreateModel cm := new CreateModel;
+
+		cm.state := model;
+
+		route cm;
+	}
+
+	action wire(string sourceBlock, string sourceOutput, string targetBlock, string targetInput) {
+		Wire a_b := new Wire;
+		a_b.sourceBlockId := sourceBlock;
+		a_b.sourceOutputName := sourceOutput;
+		a_b.targetBlockId := targetBlock;
+		a_b.targetInputName := targetInput;
+		model.wires.append(a_b);
+	}
+
+	action block(string name, string type, any params) {
+		BlockConfiguration block := new BlockConfiguration;
+		block.type := type;
+		string s;
+		for s in params.getFieldNames() {
+			block.parameters[s] := params.getEntry(s);
+		}
+		model.blocks[name] := block;
+	}
+}
+
+event CreateFailed{
+	string reason;
+}
+
+/** Test helper.
+ *
+ * Creates models from Test requests, to test a block under test and connect to TestInput/ TestOutput blocks.
+ */
+monitor TestHelper {
+	action onload() {
+		on all Test() as t {
+			// lookup block metadata:
+			integer blockReq := integer.getUnique();
+			string channel := "blockInfo-"+blockReq.toString();
+			monitor.subscribe(channel);
+			send BlockInfoRequest(blockReq, "EN", channel) to BlockInfoRequest.REQUEST_CHANNEL;
+			on BlockInfoResponse(requestId = blockReq) as ir {
+				monitor.unsubscribe(channel);
+				string cat;
+				sequence<any> blocks := [];
+				string blockId;
+				for blockId in t.blocksUnderTest {
+					boolean found := false;
+					for cat in ir.blocks.keys() {
+						any block;
+						for block in ir.blocks[cat] {
+							if block.getEntry("id").valueToString() = blockId {
+								blocks.append(block);
+								found := true;
+								break;
+							}
+						}
+					}
+					if not found {
+						// failed to find block:
+						log "Could not find block "+blockId at ERROR;
+						send CreateFailed("Could not find block "+blockId) to "output";
+						if blockId.find(".") = -1 {
+							log "Hint: have you remembered the package name of the block?" at INFO;
+						}
+						return;
+					}
+				}
+				try {
+					createModel(t, blocks);
+				} catch(Exception e) {
+					log e.toStringWithStackTrace() at WARN;
+				}
+			}
+		}
+		RequestForwarding.byKey(new Input, "partitionId");
+	}
+
+	/** Create a model for the given block metadata. */
+	action createModel(Test t, sequence<any> blocks) {
+		dictionary<any, any> params := <dictionary<any, any> > JSONPlugin.fromJSON(t.jsonParams);
+		dictionary<any, any> inputs := <dictionary<any, any> > JSONPlugin.fromJSON(t.jsonInputs);
+		dictionary<any, any> outputs := <dictionary<any, any> > JSONPlugin.fromJSON(t.jsonOutputs);
+		ModelCreator c := ModelCreator.init(t.modelId);
+		
+		dictionary<string,string> wiredInputs := {};
+		string wire;
+		for wire in t.wiring {
+			sequence<string> wireDetails := ":".split(wire);
+			if wireDetails.size() != 4 {
+				log "Ignoring wire "+wire at WARN;
+				continue;
+			}
+			c.wire(wireDetails[0], wireDetails[1], wireDetails[2], wireDetails[3]);
+			wiredInputs[wireDetails[2]+":"+wireDetails[3]] := "used";
+		}
+
+		integer blockIdx := 0;
+		any block;
+		for block in blocks {
+			string prefix; 
+			if blocks.size() > 1 {
+				prefix := blockIdx.toString()+":"; // if more than one block, each block is prefixed with the index.
+			} else {
+				prefix := ""; // if only one block, no prefix
+			}
+			string blockId := t.blocksUnderTest[blockIdx];
+			string blockKey := blockIdx.toString();
+			// create parameters from default or specified values:
+			sequence<any> blockParams := <sequence<any> > block.getEntry("parameters");
+			dictionary<string, any> paramValues:= {};
+			any paramInfo;
+			for paramInfo in blockParams {
+				string name := <string> paramInfo.getEntry("id");
+				if params.hasKey(name) {
+					paramValues[name] := params[name];
+				} else {
+					string idxName := blockIdx.toString()+":"+name;
+					if params.hasKey(idxName) {
+						paramValues[name] := params[idxName];
+					}
+					// if not specified and not optional, the framework will use default or log an error.
+				}
+			}
+			c.block(blockKey, blockId, paramValues);
+			// create inputs, providing their type if specified (or not connected if specified as empty string):
+			sequence<any> blockInputs := <sequence<any> > block.getEntry("inputs");
+			any inputInfo;
+			for inputInfo in blockInputs {
+				string name := <string> inputInfo.getEntry("id");
+				string specificType := "float"; // by default
+				if inputs.hasKey(prefix + name) {
+					ifpresent inputs[prefix + name] as inputType {
+						specificType := inputType.valueToString();
+					} else {
+						specificType := "";
+					}
+				}
+				if inputs.hasKey(name) {
+					ifpresent inputs[name] as inputType {
+						specificType := inputType.valueToString();
+					} else {
+						specificType := "";
+					}
+				}
+				string prefixedName := prefix+name;
+				if wiredInputs.hasKey(prefixedName) {
+					// a specified wire connects to this, so don't connect another input:
+					continue;
+				}
+				if specificType = "" { continue; }
+				string blockIn := "input_"+prefixedName;
+				string isGroup :=  "c8y_IsDevice";
+				if t.extraParams.hasKey("isDeviceOrGroup"){
+					isGroup := <string> t.extraParams["isDeviceOrGroup"];
+				}
+					
+				c.block(blockIn, TestInput.getName(), {"inputId":prefixedName, "type":specificType,"isGroup":isGroup });
+				c.wire(blockIn, "output", blockKey, name);
+			}
+
+			// create outputs:
+			sequence<any> blockOutputs := <sequence<any> > block.getEntry("outputs");
+			any outputInfo;
+			for outputInfo in blockOutputs {
+				string name := <string> outputInfo.getEntry("id");
+				string prefixedName := prefix+name;
+				string blockOut := "output_"+prefixedName;
+				string specificType := "float"; // by default
+				if outputs.hasKey(prefix + name) {
+					ifpresent outputs[prefix + name] as outputType {
+						specificType := outputType.valueToString();
+					} else {
+						specificType := "";
+					}
+				}
+				if outputs.hasKey(name) {
+					ifpresent outputs[name] as outputType {
+						specificType := outputType.valueToString();
+					} else {
+						specificType := "";
+					}
+				}
+				if specificType = "" { continue; }
+				c.block(blockOut, TestOutput.getName(), {"outputId":prefixedName});
+				c.wire(blockKey, name, blockOut, "input");
+			}
+		
+			blockIdx := blockIdx + 1;
+		}
+		log c.toString();
+		c.create();
+	}
+}
+		

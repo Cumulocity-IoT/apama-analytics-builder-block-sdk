@@ -1,0 +1,73 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+ */
+//*****************************************************************************
+// Title:         SendC8YObjects
+// Description:   EPL monitors and events used for testing blocks.
+// Dependencies:  Analytics Builder
+// Author:        SISA
+//
+//*****************************************************************************
+package apamax.analyticsbuilder.test;
+
+using com.apama.cumulocity.ManagedObject;
+using com.apama.json.JSONPlugin;
+using com.apama.cumulocity.FindManagedObject;
+using com.apama.cumulocity.FindManagedObjectResponse;
+using com.apama.cumulocity.FindManagedObjectResponseAck;
+
+/**
+ *
+ * Mocked Cumulocity inventory to resolve a device or device group.
+ */
+monitor MockedInventory {
+	action onload() {
+		spawn mockInventory to context("cumulocity_sim");
+	}
+	/**
+	 * Check if a given string starts with another given substring.
+	 * @param str The string which need to be checked if it starts with the given string.
+	 * @param fragment The string fragment which the given string might starts with.
+	 */
+	action startsWith(string str, string fragment) returns boolean {
+		if str.length() < fragment.length() {
+			return false;
+		}
+		return str.substring(0, fragment.length()) = fragment;
+	}
+
+
+	/**
+	 * Mocks c8y inventory, listens for FindManaged object and sends out a response for that.
+	 */
+	action mockInventory() {
+		monitor.subscribe(FindManagedObject.SEND_CHANNEL);
+
+		on all FindManagedObject() as fmo {
+			log "Request:"+fmo.toString();
+			ManagedObject mo := new ManagedObject;
+			mo.id := fmo.deviceId;
+			mo.name := "name-" + mo.id; // set name of the object to be "name-<id>".
+			dictionary<any,any> dps := {};
+			mo.params["c8y_DataPoint"] := dps;
+
+			if startsWith(fmo.deviceId, "group"){				// if deviceId starts with 'group', treat it as a group otherwise a device.
+				mo.params["c8y_IsDeviceGroup"] := dps;
+				mo.childAssetIds := ["1","2","3","4"];
+			}
+			else{
+				mo.params["c8y_IsDevice"] := dps;
+			}
+			// Preparing and sending back the response.
+			FindManagedObjectResponse fmor := new FindManagedObjectResponse;
+			fmor.reqId := fmo.reqId;
+			fmor.managedObject := mo;
+			FindManagedObjectResponseAck fmorAck := new FindManagedObjectResponseAck;
+			fmorAck.reqId := fmo.reqId;
+
+			send fmor to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
+			send fmorAck to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
+		}
+	}
+}

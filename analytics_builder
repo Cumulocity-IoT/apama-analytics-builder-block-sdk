@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+
+# $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+# Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+
+import sys, os, pathlib, shutil
+import argparse, tempfile, traceback
+
+sys.path.append(os.fspath(pathlib.Path(__file__).parent.joinpath('scripts')))
+
+import blockMetadataGenerator, buildExtension, configure_designer, jsonHelper, uploadExtension,listExtensions
+
+class Command(object):
+	def __init__(self, name, help, sub_commands=None, required=True):
+		self.name = name
+		self.help = help
+		self.sub_commands = sub_commands or []
+		self.required = required
+
+class SubCommand(object):
+	def __init__(self, name, help, args_provider=None, runner=None, need_tmp_dir=False, description=None):
+		self.name = name
+		self.help = help.rstrip('.')
+		self.args_provider = args_provider
+		self.runner = runner
+		self.need_tmp_dir = need_tmp_dir
+		if description is None:
+			self.description = self.help[0].upper() + self.help[1:] + '.'
+		else:
+			self.description = description
+
+def main():
+	commands = [
+		Command('build', 'build artifacts', [
+			SubCommand('metadata', 'build block metadata', blockMetadataGenerator.add_arguments, blockMetadataGenerator.run, True,
+			           'build a JSON file with block metadata for a set of blocks'),
+			SubCommand('extension', 'build an extension', buildExtension.add_arguments, buildExtension.run, True,
+			           'Build a zip file of the Analytics Builder extension and optionally upload it to the Cumulocity inventory. ' +
+			           'You can also delete already uploaded extensions. After uploading or deleting an extension, ' +
+			           'you have to restart the Apama service for this to take effect.'),
+		]),
+		Command('json', 'JSON helper', [
+			SubCommand('extract', 'extract JSON from extracted extensions', jsonHelper.add_arguments_extract, jsonHelper.run_json_extract),
+			SubCommand('pack', 'pack JSON into events in an extension directory', jsonHelper.add_arguments_pack, jsonHelper.run_json_pack),
+		]),
+		Command('configure', 'configure tools', [
+			SubCommand('designer', 'configure Software AG Designer for Analytics Builder', None, configure_designer.run, False,
+			           'Configure Software AG Designer for Analytics Builder block development. After configuration, you have to restart Designer.')
+		]),
+		Command('upload', 'uploads a zip file', [
+			SubCommand('extension', 'uploads an extension', uploadExtension.add_arguments, uploadExtension.run, False,
+					   'Upload a zip file of the Analytics Builder extension and optionally upload it to the Cumulocity inventory. ' +
+					   'You can also delete already uploaded extensions. After uploading or deleting an extension, ' +
+					   'you have to restart the Apama service for this to take effect.')
+		]),
+		Command('list', 'list all extensions', [
+			SubCommand('extensions', 'list extensions', listExtensions.add_arguments, listExtensions.run, False,
+					   'Lists all extensions installed on the given tenant. ')
+		])
+	]
+
+	mainparser = argparse.ArgumentParser(description='Analytics Builder Command Line Tool')
+	cmd_parser = mainparser.add_subparsers(title='commands', dest='command')
+	cmd_parser.required = True
+
+	cmd_map = {} # runners map for dispatching the call
+	for c in commands:
+		argsp = cmd_parser.add_parser(c.name, help=c.help)
+		subparser = argsp.add_subparsers(title='subcommands', dest='subcommand')
+		subparser.required = c.required
+		if c.name in cmd_map:
+			raise Exception(f'Duplicate command {c.name}')
+
+		sub_cmd_map = {}
+		cmd_map[c.name] = sub_cmd_map
+
+		for sc in c.sub_commands:
+			if sc.name in sub_cmd_map:
+				raise Exception(f'Duplicate sub command {sc.name} for command {c.name}')
+			if not sc.runner:
+				raise Exception(f'No runner provided for {c.name} {sc.name}')
+
+			sub_cmd_map[sc.name] = sc
+			sc_parser = subparser.add_parser(sc.name, help=sc.help, description=sc.description)
+			if sc.args_provider:
+				sc.args_provider(sc_parser)
+			if sc.need_tmp_dir:
+				sc_parser.add_argument('--tmpDir', metavar='DIR', help='the directory to use for any temporary files')
+
+	args = mainparser.parse_args(sys.argv[1:])
+	cmd = cmd_map[args.command][args.subcommand]
+	if cmd.need_tmp_dir:
+		if args.tmpDir:
+			if os.path.exists(args.tmpDir):
+				shutil.rmtree(args.tmpDir)
+			cmd.runner(args)
+		else:
+			with tempfile.TemporaryDirectory(prefix='analytics_builder_') as d: # clean it after we are done
+				args.tmpDir = d
+				cmd.runner(args)
+	else:
+		cmd.runner(args)
+
+if __name__ == "__main__":
+	try:
+		main()
+	except Exception as e:
+		print(f'Command failed: {e}', file=sys.stderr)
+		traceback.print_tb(sys.exc_info()[2], file=sys.stderr)
+		sys.exit(1)

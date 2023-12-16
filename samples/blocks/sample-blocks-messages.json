@@ -1,0 +1,7 @@
+{
+	"sample_blk_apamax.analyticsbuilder.samples.HTTPOutput_unexpected_port_value":"Invalid value for Port '{{0}}'. It should be between 1 and 65535.",
+	"sample_blk_apamax.analyticsbuilder.samples.DeviceLocationInput_no_devices":"No devices found in group '{{0}}'",
+	"sample_blk_apamax.analyticsbuilder.samples.Percentile_invalidValue":"Invalid value for '{{0}}' - '{{1}}' must be in the range 0 to 100 inclusive.",
+	"blk_apamax.analyticskit.samples.DualMeasurementInput_no_devices":"No devices found in group '{{0}}'"
+
+}
