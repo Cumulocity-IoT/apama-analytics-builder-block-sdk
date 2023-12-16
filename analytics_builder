@@ -29,11 +29,6 @@ class SubCommand(object):
 		else:
 			self.description = description
 
-def check_apama_home():
-	apama_home = os.getenv('APAMA_HOME', None)
-	if not apama_home: raise Exception('Please run this script from an apama_env shell or Apama Command Prompt.')
-	if not os.path.exists(apama_home): raise Exception('APAMA_HOME path does not exist: %s' % apama_home)
-
 def main():
 	commands = [
 		Command('build', 'build artifacts', [
@@ -108,7 +103,6 @@ def main():
 
 if __name__ == "__main__":
 	try:
-		check_apama_home()
 		main()
 	except Exception as e:
 		print(f'Command failed: {e}', file=sys.stderr)

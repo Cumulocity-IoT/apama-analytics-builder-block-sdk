@@ -2,7 +2,7 @@
 
 # $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
 # Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
-import json, os
+import json, os, sys, re
 from pathlib import Path
 
 import buildExtension
@@ -10,6 +10,8 @@ import buildExtension
 ENCODING = 'UTF8'
 BLOCK_METADATA_EVENT = buildExtension.BLOCK_METADATA_EVENT
 BLOCK_MESSAGES_EVENT = buildExtension.BLOCK_MESSAGES_EVENT
+BLOCK_REGISTRY_CHANNEL = buildExtension.BLOCK_REGISTRY_CHANNEL
+LOCALES = 'EN,DE,PL,PT_BR,ZH_CN,ZH_TW,NL,FR,JA_JP,KO,RU,ES'
 
 def add_arguments_extract(parser):
 	parser.add_argument('--input', metavar='INPUT', type=str, required=True, help='the input directory (should contain <name>_messages.evt and <name>_metadata.evt)')
@@ -30,7 +32,9 @@ def run_json_extract(args):
 				if line.find(BLOCK_METADATA_EVENT) != -1: suffix=''
 				if line.find(BLOCK_MESSAGES_EVENT) != -1: suffix='-messages'
 				if suffix != None:
-					jsonversion = '['+line.split('(', 1)[1][0:-1]+']'
+					#Get all characters between first and last parenthesis
+					pattern = r'\((.*)\)'
+					jsonversion = '['+ re.search(pattern,line).group(1) + ']'
 					(name, lang, jsonstr) = json.loads(jsonversion)
 					(output / Path(lang)).mkdir(parents=True, exist_ok=True)
 					with open(output / Path(lang) / Path(name+suffix+'.json'), 'w', encoding=ENCODING) as w:
@@ -41,7 +45,18 @@ def run_json_pack(args):
 	output = Path(args.output).resolve()
 	name = args.name
 	buildExtension.gen_messages_evt_file(name, input, output, {})
-	metadata = Path(input / ('EN/' + name + '.json')).read_text(encoding=ENCODING)
-	buildExtension.write_evt_file(output, f'{name}_metadata.evt', f'{BLOCK_METADATA_EVENT}("{name}", "EN", {buildExtension.embeddable_json_str(metadata)})')
+	packed = False
+	for locale in LOCALES.split(','):
+		if os.path.exists(Path(input / (f'{locale}/'))):
+			if not packed:
+				# First time writing to evt file, clear existing contents, so that each locale can be appended.
+				packed = True
+				outFile = Path(output / 'events' / f'{name}_metadata.evt')
+				if os.path.exists(outFile):
+					os.remove(outFile)
+			metadata = Path(input / (f'{locale}/' + name + '.json')).read_text(encoding=ENCODING)
+			buildExtension.write_evt_file(output, f'{name}_metadata.evt', f'"{BLOCK_REGISTRY_CHANNEL}",{BLOCK_METADATA_EVENT}("{name}", "{locale}", {buildExtension.embeddable_json_str(metadata)})')
 
+	if not packed:
+		print(f"Error during pack: Failed to find a directory with supported locales at '{input}/'. Supported locales: {LOCALES}", file=sys.stderr)
 

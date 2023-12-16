@@ -29,7 +29,7 @@ action $validate() {
     }
 ```
 
-> **Note:** Same sets of `fields` should be used in the Input and Output blocks consuming and producing the same event. Otherwise, incorrect events might get delivered or connection between models will be formed incorrectly.
+> **Note:** Same sets of `fields` should be used in the input and output blocks consuming and producing the same event. Otherwise, incorrect events might get delivered or connection between models will be formed incorrectly.
 
 The `fields` provided to `BlockBase.consumesInput` through the `InputParams` object do not have to reflect the exact fields of an event type but they should be consistent in fields used across all input and output blocks handling the events of the same type. For example, when listening to Cumulocity `Measurement` objects, a `fragment` and `series` are specified, but these do not correspond to fields of an event type (instead, the values are keys in the measurements dictionary and sub-dictionary).
 
@@ -85,7 +85,7 @@ For an example, see the **DeviceLocationInput.mon** sample.
 
 An output block is a block that sends data to an external target. An output block will typically have block *inputs* only (the value to send), but it may have block outputs as well.
 
-### Declaring Output streams
+### Declaring output streams
 
 An output block needs to declare what event types and fields it is sending and whether the generated output is time synchronous or asynchronous. Synchronous output values are values which have a source timestamp and can be consumed by another model in a time-synchronous manner and can be processed by the model with any other data with the same timestamp. Asynchronous output values are values which do not have a source timestamp and can only be consumed by another model in a time-asynchronous manner when they are received back from the external system.
 
@@ -120,9 +120,9 @@ action tagOutputEvent(MyEvent e) {
 
 
 ```
-> **Note:** Same sets of `fields` should be used in the Input and Output blocks consuming and producing the same event. From above examples, both Input and Output blocks for `MyEvent` event type are using same value for `fields`
+> **Note:** Same sets of `fields` should be used in the input and output blocks consuming and producing the same event. From above examples, both Input and Output blocks for `MyEvent` event type are using same value for `fields`
 
-### Sending Output events
+### Sending output events
 
 Output blocks should construct the event to send, typically using block inputs and parameters. The event should be routed (using the `route` statement) if synchronous and sent (using the `send` statement) to the appropriate channel. The event is routed so that other models can pick up the same event and process it.
 
@@ -131,13 +131,25 @@ To send the output event, call the `sendOutput` action of the output handler obj
 ```Java
 action $process(Activation $activation, string $input_source, string $input_type, float $input_value) {
     /* Creating an event to send to Cumulocity IoT.*/
-    MyEvent m := MyEvent($input_source, $input_type, $input_value, 0.0, new dictionary<string, any>);
+    MyEvent m := MyEvent($input_source, $input_type, $input_value, $activation.timestamp, new dictionary<string, any>);
     // Ask the framework to send the output to the output channel.
     // If output is synchronous, then it is tagged before sending it to the channel.
     outputHandler.sendOutput(m, MyEvent.SEND_CHANNEL, $activation);
 }
 ```
+### Setting the timestamp of an output event
+To ensure that the timestamp of the input event matches the timestamp of the output event, obtain the timestamp from the `timestamp` field of the `Activation` object which is passed as a parameter to the `$process` and `$timerTriggered` actions and attach it to the output event.
 
+```Java
+action $process(Activation $activation, string $input_source, string $input_type, float $input_value) {
+    /* Creating an event to send to Cumulocity IoT.*/
+    MyEvent m := new MyEvent;
+    ...
+    // Set the timestamp of the output event from activation object.
+    m.time := $activation.timestamp;
+    ...
+}
+```
 
 To handle Cumulocity output events, refer to the `CumulocityOutputHandler` API in [Cumulocity Helper](105-CumulocityHelper).
 

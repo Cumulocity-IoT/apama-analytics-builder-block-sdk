@@ -117,4 +117,4 @@ event Block {
 
 See the **GroupStatistics.mon** sample for a complete example on sharing data across partitions and workers.
 
-[< Prev: Update Cumulocity IoT input blocks to receive from assets](151-MigrateInputBlocksForAssetInput.md) | [Contents](000-contents.md)
+[< Prev: Update Cumulocity IoT input blocks to receive from all input sources](152-MigrateInputBlocksForAllInputs.md) | [Contents](000-contents.md)

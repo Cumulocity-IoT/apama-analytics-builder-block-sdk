@@ -81,13 +81,14 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-forward-events.cdp')
 		
-	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, injectBlocks = True, **kwargs):
+	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, injectBlocks = True, initialCorrelatorTime = None, **kwargs):
 		"""
 		Start a correlator with the EPL for Analytics Builder loaded.
 		:param blockSourceDir: A location of blocks to include, or a list of locations
 		:param Xclock: Externally clock correlator (on by default).
 		:param numWorkers: Number of workers for Analytics Builder runtime (4 by default).
 		:param injectBlocks: if false, don't inject the actual block EPL (use if there are dependencies), returns blockOutput directory. Also skips applicationInitialized call.
+		:param initialCorrelatorTime: Set the initial time of the correlator when the correlator is externally clocked. The parameter is ignored if the correlator is not externally clocked. The value of the parameter should specify the time in seconds since the epoch (midnight, 1 Jan 1970 UTC).
 		:param \\**kwargs: extra kwargs are passed to startCorrelator
 		"""
 
@@ -112,7 +113,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		kwargs['logfile']=logfile
 		corr.start(Xclock=Xclock, **kwargs)
 		corr.logfile = logfile
-		corr.injectEPL([self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['ScenarioService', 'data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional']])
+		corr.injectEPL([self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['ScenarioService', 'data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface']])
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK+'/block-api/framework/analyticsbuilder-framework.cdp')
 		self.injectCumulocityEvents(corr)
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-inventoryLookup-events.cdp')
@@ -136,6 +137,8 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			corr.send(sorted(list(blockOutput.rglob('*.evt'))))
 		# now done
 		corr.sendEventStrings('com.apama.connectivity.ApplicationInitialized()')
+		if Xclock and initialCorrelatorTime is not None:
+			corr.sendEventStrings(f'&SETTIME({initialCorrelatorTime})')
 		corr.flush(count=10)
 		return corr
 
@@ -163,7 +166,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		pass
 
 
-	def createTestModel(self, blockUnderTest, parameters={}, id=None, corr=None, inputs={}, isDeviceOrGroup=None, wiring=[]):
+	def createTestModel(self, blockUnderTest, parameters={}, id=None, corr=None, inputs={}, outputs={}, isDeviceOrGroup=None, wiring=[]):
 		"""
 		Create a test model.
 
@@ -173,6 +176,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		:param id: An identifier for the model. Uses the sequence model_0 model_1, etc. if not specified.
 		:param corr: The correlator object to use - defaults to the last correlator started by startAnalyticsBuilderCorrelator.
 		:param inputs: A map of input identifiers and corresponding type names. If the type name is empty, that input is not connected.
+		:param outputs: A map of output identifiers and corresponding type names. If the type name is empty, that output is not connected.
 		:param isDeviceOrGroup: Cumulocity device or group identifier.
 		:param if more than one block supplied, then this contains the wiring as a list of strings in the form source block index:output id:target block index:input id - e.g. ['0:timeWindow:1:window', '0:timeWindow:1:otherInput']
 		:return: The identifier of the created model.
@@ -185,7 +189,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		waiter = Waiter(self, corr)
 		if not isinstance(blockUnderTest, list):
 			blockUnderTest=[blockUnderTest]
-		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(wiring), '{"isDeviceOrGroup":any(string, "%s")}'%isDeviceOrGroup])
+		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(json.dumps(outputs)), json.dumps(wiring), '{"isDeviceOrGroup":any(string, "%s")}'%isDeviceOrGroup])
 		corr.sendEventStrings(f'apamax.analyticsbuilder.test.Test({testParams})')
 		waiter.waitFor(expr='com.apama.scenario.Created', errorExpr='CreateFailed')
 		return id
@@ -313,7 +317,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		events.insert(0, '&FLUSHING(50)')
 		corr.sendEventStrings(*events, **kwargs)
 
-	def checkLogs(self, logfile=None):
+	def checkLogs(self, logfile=None, warnIgnores=[], errorIgnores=[]):
 		"""
 		Check the correlator log files for errors/warnings.
 
@@ -322,8 +326,12 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		"""
 		if logfile == None:
 			logfile = self.analyticsBuilderCorrelator.logfile
-		self.assertGrep(logfile, expr=' ERROR .*', contains=False)
-		self.assertGrep(logfile, expr=' WARN .*', contains=False, ignores=['RLIMIT.* is not unlimited'])
+		self.assertGrep(logfile, expr=' ERROR .*', contains=False, ignores=errorIgnores+[
+			'Unknown dynamicChain HTTPClientGenericJSONChain',
+			'apama.analyticsbuilder.BlockCatalogRegistry \[\d\] Stack dump:', # Stack dump output with 'Unknown dynamicChain HTTPClientGenericJSONChain'
+			'ERROR \[\d+\] - \t'
+		])
+		self.assertGrep(logfile, expr=' WARN .*', contains=False, ignores=warnIgnores+['RLIMIT.* is not unlimited'])
 
 	def formatFloatExponent(self, num):
 		e = math.floor(math.log10(abs(num)))

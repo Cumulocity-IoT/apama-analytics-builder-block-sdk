@@ -9,9 +9,9 @@ event AlarmInput_$Parameters {
     /**
      * Input Source.
      *
-     * Defines the device or group of devices from which the alarm has been received.
+     * Defines the source from which the alarm has been received.
      *
-     * This can be a single device, or an object that references or contains a group of devices.
+     * This can be a single device, an asset, an object that references or contains a group of devices, or all input sources.
      *
      * @$semanticType c8y_deviceOrGroupId
      */
@@ -42,9 +42,9 @@ event AlarmInput_$Parameters {
     /**
      * Input Source.
      *
-     * Defines the device or group of devices from which the alarm has been received.
+     * Defines the source from which the alarm has been received.
      *
-     * This can be a single device, or an object that references or contains a group of devices.
+     * This can be a single device, an asset, an object that references or contains a group of devices, or all input sources.
      *
      * @$semanticType c8y_deviceOrGroupId
      */
@@ -72,4 +72,4 @@ event AlarmInput {
 }
 ```
 
-[< Prev: Migrating input and output blocks to the version 2 API](150-MigrateInputOutputBlocks.md) | [Contents](000-contents.md) | [Next: Sharing data across partitions and workers >](160-SharingDataAcrossPartition.md) 
+[< Prev: Migrating input and output blocks to the version 2 API](150-MigrateInputOutputBlocks.md) | [Contents](000-contents.md) | [Next: Update Cumulocity IoT input blocks to receive from all input sources >](152-MigrateInputBlocksForAllInputs.md) 

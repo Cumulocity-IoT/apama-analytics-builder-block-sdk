@@ -14,7 +14,13 @@ This excludes the Analytics Framework 'CDP' file, which is provided in binary fo
 
 ## Analytics Builder version
 
-This version of the SDK supports Analytics Builder 10.18.0.  To make use of this, you will require an installation of Apama 10.15.3. If you do not already have access, then you can download the 'community' edition from [Apama Downloads](https://apamacommunity.com/downloads) (shortly after the official Software AG release date).
+Use the 'main' branch for the current release or switch to the appropriate branch for Long-term support (LTS) / Maintenance releases.
+
+## System requirements
+
+This script requires an installation of Python 3.7+ and runs on either Windows or Linux. To build extensions or configure Software AG Designer, a full installation of Apama 10.15.4 is required. If you do not already have access, then you can download the Apama Community Edition from [Apama Downloads](https://apamacommunity.com/downloads) (shortly after the official Software AG release date). If you choose to install Apama, you can skip the manual installation of Python, as it is shipped with Apama.
+
+The [apama-builder](https://hub.docker.com/r/softwareag/apama-builder) Docker image from Docker Hub can also be used for building and managing extensions.
 
 Note that Analytics Builder requires your Cumulocity IoT tenant to be subscribed to an 'apama-ctrl' microservice.  The 'apama-ctrl-starter' microservice offers only restricted functionality and does not support custom blocks.
 

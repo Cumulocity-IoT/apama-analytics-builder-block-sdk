@@ -5,9 +5,9 @@ Timers can be used by processing blocks (for example, the **Delay** block) to ex
 * Models executing in simulation mode, which run at some offset from real time.
 * Multiple timers firing at the same time from different blocks executing a single model "activation".
 
-The runtime thus knows what the current time of evaluation is. This is available from the `BlockBase.getModelTime()` action. Blocks should not use the `currentTime` variable.
-
 To create a timer, use the `BlockBase` methods `createTimer` and `createTimerWith`. The `createTimer` takes a relative offset time and a `payload`. The `createTimerWith` allows passing a `TimerParams` object to give more control.
+
+Blocks should not use the `currentTime` variable to get the current model time. The current model time depends on the duration of the reorder buffer used by the input blocks. If required, the current model time can be obtained from the `timestamp` field of the `Activation` object which is passed as a parameter to the `$process` and `$timerTriggered` actions.
 
 When the timer fires, it will call a method named `$timerTriggered` on the block. This can take parameters including:
 
@@ -20,7 +20,9 @@ When the timer fires, it will call a method named `$timerTriggered` on the block
 
 From this `$timerTriggered`, it is thus possible to call the `$setOutput` actions with the provided `$activation` value.
 
-The `$payload` is the value provided to `createTimer` or added to the `TimerParams`.
+The `$payload` is the value provided to `createTimer` or added to the `TimerParams`. If the `$payload` is not provided, the value of the `$payload` will be the empty.
+
+The `$input_value` is one of the inputs of the block. When the timer triggers and the `$timerTriggered` action is called, `$input_value` will have the latest value that the block received and not the value when the timer was created.
 
 The following is a simple example of timers, to delay float values by 1 second:
 
@@ -28,10 +30,10 @@ The following is a simple example of timers, to delay float values by 1 second:
 event Delay1Sec {
     BlockBase $base;
     action $process(float $input_value) {
-        any discard := $base.createTimerWith(TimerParams.relative(1.0));
+        any discard := $base.createTimerWith(TimerParams.relative(1.0).withPayload($input_value));
     }
-    action $timerTriggered(Activation $activation, float $input_value) {
-        $setOutput_delayed($activation, $input_value);
+    action $timerTriggered(Activation $activation, any $payload) {
+        $setOutput_delayed($activation,<float>$payload);
     }
     action<Activation, float> $setOutput_delayed;
 }

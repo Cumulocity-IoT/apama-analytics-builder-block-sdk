@@ -32,20 +32,38 @@ class PySysTest(AnalyticsBuilderBaseTest):
 	
 	def execute(self):
 		# Start Correlator and extract blocks n=and inject to correlator.
-		correlator = self.startAnalyticsBuilderCorrelator(blockSourceDir=f'{self.project.SOURCE}/blocks/')
+		correlator = self.startAnalyticsBuilderCorrelator(blockSourceDir=f'{self.project.SOURCE}/blocks/', initialCorrelatorTime='1693388803.554')
 		
 		# correlator.receive('c8y.evt', channels=['CumulocityIoTGenericChain'])
 		# Inject custom monitor to correlator.
 		correlator.injectEPL(self.input + '/SendC8yObjects.mon')
 		
 		# Set device ID
-		deviceId = '100'
+		deviceId1 = '99'
+		deviceId2 = '100'
 		
-		#Create a test model which has both input and output blocks
-		modelId = self.createTestModel(['apamax.analyticsbuilder.samples.DeviceLocationInput','apamax.analyticsbuilder.samples.CreateEvent'], 
+		#Create a test model which has both input and output blocks for device1
+		modelId1 = self.createTestModel(['apamax.analyticsbuilder.samples.DeviceLocationInput','apamax.analyticsbuilder.samples.CreateEvent'], 
 						parameters={
-							'0:deviceId':deviceId,
-							"1:deviceId":deviceId, 
+							'0:deviceId':deviceId1,
+							"1:deviceId":deviceId1, 
+							"1:eventType":"c8y_Event",
+							"1:eventText":"LocationFound"
+						}, 
+		wiring=['0:location:1:createEvent']
+		, isDeviceOrGroup='c8y_IsDevice'
+		)
+
+		# Send managedObjects to DeviceLocationInput block and expect it to be create an event with external time set in correlator.
+		self.sendEventStrings(correlator,
+							self.inputManagedObject(deviceId1, 'com_test_device_99' ,'Device_99',[],[],[],[],[],[],
+													{'alt':99.5,'lat':19.426479,'lng':71.33123},{'c8y_IsDevice':{}}))
+
+		#Create a test model which has both input and output blocks device2
+		modelId2 = self.createTestModel(['apamax.analyticsbuilder.samples.DeviceLocationInput','apamax.analyticsbuilder.samples.CreateEvent'], 
+						parameters={
+							'0:deviceId':deviceId2,
+							"1:deviceId":deviceId2, 
 							"1:eventType":"c8y_Event",
 							"1:eventText":"LocationFound"
 						}, 
@@ -53,11 +71,11 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		, isDeviceOrGroup='c8y_IsDevice'
 		)
 		
-		# Send managedObjects to DeviceLocationInput block and expect it to be create an Event
+		# Send managedObjects to DeviceLocationInput block and expect it to be create an Event.
 		self.sendEventStrings(correlator,
 							self.timestamp(1),
 							self.timestamp(2.6),
-							self.inputManagedObject(deviceId, 'com_test_device_100' ,'Device_100',[],[],[],[],[],[],
+							self.inputManagedObject(deviceId2, 'com_test_device_100' ,'Device_100',[],[],[],[],[],[],
 													{'alt':93.5,'lat':17.426479,'lng':78.33123},{'c8y_IsDevice':{}}),
 							self.timestamp(3),
 							self.timestamp(4))
@@ -66,7 +84,9 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		
 	def validate(self):
 		# Verifying that there are no errors in log file.
-		self.checkLogs()
+		self.checkLogs(warnIgnores=[f'Set time back to.*'])
 		
+		#Verify external correlator time set.
+		self.assertLineCount("correlator.log",expr=f'Set time to.*', condition='==2')
 		#Verify CreateEvent Output block creates an event
-		self.assertGrep("correlator.log",expr='Received Event: com.apama.cumulocity.Event\(.*,"c8y_Event".*LocationFound')
+		self.assertLineCount("correlator.log",expr='Received Event: com.apama.cumulocity.Event\(.*,"c8y_Event".*LocationFound', condition='==2')

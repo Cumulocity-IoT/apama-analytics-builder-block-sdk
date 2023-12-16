@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bundle name="Analytics Builder" type="monitorscript" singleton="true">
 	<version>
-		<id>10.18.0.4</id>
+		<id>24.0.0</id>
 		<date>2019-06-07</date>
 		<author>Software AG</author>
 		<comments/>
@@ -17,6 +17,7 @@
 		</fileset>
 	</monitors>
 	<dependencies>
+		<dependency bundle-filename="CumulocityUtilities.bnd" catalog="${APAMA_HOME}/catalogs/bundles"/>
 		<dependency bundle-filename="JSONPlugin.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="MemoryStore.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="ScenarioService.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>

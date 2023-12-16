@@ -24,9 +24,9 @@ Define a parameter of `any` type to hold the identifier of the source device fro
 /**
  * Input Source.
  *
- * Defines the device or group of devices from which the alarm has been received.
+ * Defines the source from which the alarm has been received.
  *
- * This can be a single device, or an object that references or contains a group of devices.
+ * This can be a single device, an asset, an object that references or contains a group of devices, or all input sources.
  * @$semanticType c8y_deviceOrGroupId
  */
 any deviceId;
@@ -58,7 +58,7 @@ action $validate() returns Promise {
     return params.declare(inputHandlerCreated);
 }
 
-/** Call back action to receive and save the handler object.*/
+/** Callback action to receive and save the handler object.*/
 action inputHandlerCreated(CumulocityInputHandler inputHandler) {
     self.inputHandler := inputHandler;
 }
@@ -70,29 +70,34 @@ Call the `schedule` action on the `CumulocityInputHandler` object to schedule an
 
 ```Java
 /**
- * Method starts listening for alarms from Cumulocity IoT.
+ * Method to set up listeners using CumulocityInputHandler and start listening for alarms from Cumulocity IoT.
  */
 action $init() {
-    string id;
-    // List of devices for which input events should be listened can be accessed
-    // via the getDevices() action.
-    for id in inputHandler.getDevices() {
-        on all Alarm(type = $parameters.alarmType, source = id) as alm {
-            // If ignoreTimestamp is enabled, use an empty timestamp
-            // so that the framework will calculate the next timestamp to process the event.
-            optional<float> timeValue := new optional<float>;
-            
-            // If ignoreTimestamp is disabled, use the event time.
-            if not ignoreTimestamp {
-                timeValue := alm.time;
-            }
-            // Schedule events to be processed as per the timeValue, passing the input event
-            // as payload, it will be received back in the $timerTriggered action as the $payload parameter.
-            // The inputHandler is the one that got saved from the callback of
-            // the CumulocityInputParams.declare action.
-            TimerHandle handle := inputHandler.schedule(alm, timeValue);
-        }
-    }
+	// provide all the necessary info required to set up the listeners
+	inputHandler.createListeners(Alarm.getName(), {"type" : <any>$parameters.alarmType}, handleAlarm);	
+}
+
+/**
+ * Callback received from the CumulocityInputHandler when an Alarm event is received
+ * @param a The incoming Alarm event.
+ */
+action handleAlarm(any a) {
+	
+	Alarm alm := <Alarm> a;
+	
+	// If ignoreTimestamp is enabled, use an empty timestamp
+	// so that the framework will calculate the next timestamp to process the event.
+	optional<float> timeValue := new optional<float>;
+	
+	// If ignoreTimestamp is disabled, use the event time.
+	if not ignoreTimestamp {
+		timeValue := alm.time;
+	}
+	// Schedule events to be processed as per the timeValue, passing the input event
+	// as payload, it will be received back in the $timerTriggered action as the $payload parameter.
+	// The inputHandler is the one that got saved from the callback of
+	// the CumulocityInputParams.declare action.
+	TimerHandle handle := inputHandler.schedule(alm, timeValue);
 }
 ```
 Note: To schedule an input event to be processed as soon as possible, call the `scheduleNow` action on the `CumulocityInputHandler` object or call the `schedule` action with an empty timestamp value.
@@ -162,19 +167,29 @@ action $process(Activation $activation, boolean $input_createAlarm) {
     if $input_createAlarm {
         /* Get the current device to which the output will be sent.*/
         ifpresent outputHandler.deviceToOutput($activation) as device {
-            /* Creating an event to send to cumulocity.*/
-            Alarm al := Alarm("", $parameters.alarmType, device, 
+            /* Creating an event to send to Cumulocity IoT.*/
+            Alarm alarm := Alarm("", $parameters.alarmType, device, 
                             $activation.timestamp, alarmText, "ACTIVE",
                             $parameters.alarmSeverity, 1, new dictionary<string,any>);
 
             // Ask the framework to send the output to the output channel.
             // If output is synchronous, then it is tagged before sending it to the channel.
-            outputHandler.sendOutput(al, Alarm.CHANNEL, $activation);
+            outputHandler.sendOutput(alarm, Alarm.CHANNEL, $activation);
         }
     }
 }
 ```
+### Setting the timestamp of an output event
+To ensure that the timestamp of the output event matches the timestamp of the input event (if the `ignoreTimestamp` parameter is false in the input block), obtain the timestamp from the `timestamp` field of the `Activation` object which is passed as a parameter to the `$process` and `$timerTriggered` actions and attach it to the output event.
 
+```Java
+action $process(Activation $activation, boolean $input_createAlarm) {
+    ...
+    // Set the timestamp of the output event from activation object.
+    alarm.time := $activation.timestamp;
+    ...
+}
+```
 The `CumulocityOutputHandler` object has actions to check if the output device is a broadcast device, or is a trigger device, and for getting the devices for which output is to be produced.
 
 For an example, see the **CreateEvent.mon** sample.

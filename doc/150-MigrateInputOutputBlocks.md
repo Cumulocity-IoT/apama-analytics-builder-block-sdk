@@ -106,38 +106,39 @@ Using the version 1 API, an input block explicitly calculates the time after whi
 An example of using the version 1 API for scheduling input events is shown below.
 ```java
 action $init() {
-    // Listen for events of type MyEvent and filter them by type.
-    on all MyEvent(source = $parameters.source, type = $parameters.type) as e {
-        try{
-            // Try to find the next available time to schedule when ignoreTimestamp is
-            // enabled.
-            Value value := new Value;
-            value.value := e.value;
-            value.properties["source"] = e.source;
-            value.properties["type"] = e.type;
-            
-            if ignoreTimestamp {
-                // Either use the model time or use the next possible time after the timeValue.
-                timeToScheduleInput := float.max(timeToScheduleInput, $base.getModelTime())
-                                        .nextAfter(float.INFINITY);
-                value.timestamp := timeToScheduleInput;
-            } else { 
-                // Use timestamp present in the event.
-                timeToScheduleInput := e.time;
-                value.timestamp := e.time;
-            }
-            // Creating time params.
-            TimerParams tp := TimerParams.absolute(timeToScheduleInput)
-                                .withPayload(value)
-                                .withPartition(e.source);
-            // Create timer to process input event.
-            any timerHandle := $base.createTimerWith(tp);
-        }
-        catch(Exception exp) {
-            // Exception handling and reporting about dropped events to the framework.
-            $base.droppedEvent(e, e.time);
-        }
-    } 
+
+	// Listen for events of type MyEvent and filter them by type.
+	on all MyEvent(source = $parameters.source, type = $parameters.type) as e {
+		try{
+			// Try to find the next available time to schedule when ignoreTimestamp is
+			// enabled.
+			Value value := new Value;
+			value.value := e.value;
+			value.properties["source"] = e.source;
+			value.properties["type"] = e.type;
+
+			if ignoreTimestamp {
+				// Either use the model time or use the next possible time after the timeValue.
+				timeToScheduleInput := float.max(timeToScheduleInput, $base.getModelTime())
+										.nextAfter(float.INFINITY);
+				value.timestamp := timeToScheduleInput;
+			} else { 
+				// Use timestamp present in the event.
+				timeToScheduleInput := e.time;
+				value.timestamp := e.time;
+			}
+			// Creating time params.
+			TimerParams tp := TimerParams.absolute(timeToScheduleInput)
+								.withPayload(value)
+								.withPartition(e.source);
+			// Create timer to process input event.
+			any timerHandle := $base.createTimerWith(tp);
+		}
+		catch(Exception exp) {
+		// Exception handling and reporting about dropped events to the framework.
+		$base.droppedEvent(e, e.time);
+		}
+	}
 }
 
 action $timerTriggered(Activation $activation, any $payload) {
@@ -152,32 +153,32 @@ An example of using the handler API to schedule an input event is shown below.
 
 ```java
 action $init() {
-    // Listen for events of type MyEvent and filter them by type.
-    on all MyEvent(source = $parameters.source, type = $parameters.type) as e {
-        // If ignoreTimestamp is enabled, use an empty timestamp
-        // so that the framework will calculate the next timestamp to process the event.
-        optional<float> timeValue := new optional<float>;
-        
-        // If ignoreTimestamp is disabled, use the event time.
-        if not ignoreTimestamp {
-            timeValue := e.time;
-        }
-        // Schedule events to be processed as per their timestamp.
-        // Pass the input event as payload, it will be received back in 
-        // $timerTriggered action as $payload parameter.
-        TimerHandle handle := inputHandler.schedule(e, timeValue, e.source);
-    }
-}
 
-action $timerTriggered(Activation $activation, any $payload) {
-    MyEvent e := <MyEvent> $payload;
-    Value value := new Value;
-    value.value := e.value;
-    value.timestamp := $activation.timestamp;
-    value.properties["source"] = e.source;
-    value.properties["type"] = e.type;
-    $setOutput_value($activation, value);
-}
+	// Listen for events of type MyEvent and filter them by type.
+	on all MyEvent(source = $parameters.source, type = $parameters.type) as e {
+		// If ignoreTimestamp is enabled, use an empty timestamp
+		// so that the framework will calculate the next timestamp to process the event.
+		optional<float> timeValue := new optional<float>;
+
+		// If ignoreTimestamp is disabled, use the event time.
+		if not ignoreTimestamp {
+			timeValue := e.time;
+		}
+		// Schedule events to be processed as per their timestamp.
+		// Pass the input event as payload, it will be received back in 
+		// $timerTriggered action as $payload parameter.
+		TimerHandle handle := inputHandler.schedule(e, timeValue, e.source);
+	}
+
+	action $timerTriggered(Activation $activation, any $payload) {
+		MyEvent e := <MyEvent> $payload;
+		Value value := new Value;
+		value.value := e.value;
+		value.timestamp := $activation.timestamp;
+		value.properties["source"] = e.source;
+		value.properties["type"] = e.type;
+		$setOutput_value($activation, value);
+	}
 ```
 
 ### Multiple inputs
@@ -329,13 +330,13 @@ For example, as shown below, the input block declares that it consumes events of
  * @return a <tt>Promise</tt> object. Validation of the model will be suspended until the Promise is fulfilled.
  */
 action $validate(dictionary<string, any> $modelScopeParameters) returns Promise {
-        // Create an `InputHelper` object by calling the `forBlock` static action
-        InputHelper ihelper := InputHelper.forBlock(self, $modelScopeParameters);
-        // Call the `setInput` method on the `InputHelper` object
-        ihelper.setInput($parameters.deviceId, Alarm.getName(), {"type":<any>$parameters.alarmType});
-        // Chain a call to process the result of InventoryLookup.lookup and return the `Promise`
-        return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput);
-    }
+	// Create an `InputHelper` object by calling the `forBlock` static action
+	InputHelper ihelper := InputHelper.forBlock(self, $modelScopeParameters);
+	// Call the `setInput` method on the `InputHelper` object
+	ihelper.setInput($parameters.deviceId, Alarm.getName(), {"type":<any>$parameters.alarmType});
+	// Chain a call to process the result of InventoryLookup.lookup and return the `Promise`
+	return InventoryLookup.lookup($parameters.deviceId).andThen(ihelper.declareInput);
+    
 }
 ```
 Declaring an input block using the handler API is simplified. Create a `CumulocityInputParams` object and call `declare` on it, providing a callback action to pass a `CumulocityInputHandler` object to the block. The framework internally handles the lookup of the device in the inventory. This is an asynchronous operation that returns a `Promise`.
@@ -345,14 +346,14 @@ Declaring an input block using the handler API is simplified. Create a `Cumuloci
  * See - "Asynchronous validations" in the Block SDK documentation for more details.
  */
 action $validate(dictionary<string, any> $modelScopeParameters) returns Promise {
-    // Create a CumulocityInputParams object to declare that the input block consumes events of 
-    // type Alarm and filter the alarms further for the type specified by the block parameter alarmType.
-    CumulocityInputParams params := CumulocityInputParams
-                                        .create($parameters.deviceId, self, Alarm.getName())
-                                        .withFields({"type":<any>$parameters.alarmType});
-    // Declare the input stream and provide the callback action to save the input handler. 
-    // Return the Promise returned from the declare call.
-    return params.declare(inputHandlerCreated);
+	// Create a CumulocityInputParams object to declare that the input block consumes events of 
+	// type Alarm and filter the alarms further for the type specified by the block parameter alarmType.
+	CumulocityInputParams params := CumulocityInputParams
+										.create($parameters.deviceId, self, Alarm.getName())
+										.withFields({"type":<any>$parameters.alarmType});
+	// Declare the input stream and provide the callback action to save the input handler. 
+	// Return the Promise returned from the declare call.
+	return params.declare(inputHandlerCreated);
 }
 
 /** Call back action to receive and save the handler object.*/
@@ -370,43 +371,43 @@ Using the version 1 API, scheduling input for a custom Cumulocity IoT block is a
  * Method starts listening for alarms from Cumulocity IoT.
  */
 action $init() {
-    string id;
-    // Devices set by reflection
-    for id in devices {
-        on all Alarm(type = $parameters.alarmType, source = id) as alm {
-            try {
-                // Create payload to create timer params
-                Value value := new Value;
-                // ... fill value object
-                
-                // If ignoreTimestamp enabled, calculating the next time to schedule input.
-                float timerDelay;
-                if ignoreTimestamp {
-                    timeValue := float.max(timeValue, $base.getModelTime()).nextAfter(float.INFINITY);
-                    timerDelay := timeValue;
-                    value.timestamp := timeValue;
-                }
-                else { // Calculate the time to schedule the input to process.
-                    timerDelay := alm.time;
-                    value.timestamp := alm.time;
-                }
-                // Creating timer params.
-                TimerParams tp := TimerParams.absolute(timerDelay).withPayload(value);
-                // Updating timer params with partition.
-                if isGroup {
-                    tp := tp.withPartition(alm.source);
-                } else if isBroadcastDevice { 
-                    // Updating timer params with Broadcast partition.
-                    tp := tp.withPartition(Partition_Broadcast(alm.source));
-                }
-                // Scheduling the input event.
-                any discard := $base.createTimerWith(tp);
-            } catch (Exception e) {
-                // Notifying about the dropped event.
-                $base.droppedEvent(alm, alm.time);
-            }
-        }
-    }
+	string id;
+	// Devices set by reflection
+	for id in devices {
+		on all Alarm(type = $parameters.alarmType, source = id) as alm {
+			try {
+				// Create payload to create timer params
+				Value value := new Value;
+				// ... fill value object
+				
+				// If ignoreTimestamp enabled, calculating the next time to schedule input.
+				float timerDelay;
+				if ignoreTimestamp {
+					timeValue := float.max(timeValue, $base.getModelTime()).nextAfter(float.INFINITY);
+					timerDelay := timeValue;
+					value.timestamp := timeValue;
+				}
+				else { // Calculate the time to schedule the input to process.
+					timerDelay := alm.time;
+					value.timestamp := alm.time;
+				}
+				// Creating timer params.
+				TimerParams tp := TimerParams.absolute(timerDelay).withPayload(value);
+				// Updating timer params with partition.
+				if isGroup {
+					tp := tp.withPartition(alm.source);
+				} else if isBroadcastDevice { 
+					// Updating timer params with Broadcast partition.
+					tp := tp.withPartition(Partition_Broadcast(alm.source));
+				}
+				// Scheduling the input event.
+				any discard := $base.createTimerWith(tp);
+			} catch (Exception e) {
+				// Notifying about the dropped event.
+				$base.droppedEvent(alm, alm.time);
+			}
+		}
+	}
 }
 ```
 Using the new handler API, scheduling an input event is done by calling the `schedule` action on the Cumulocity IoT handler object. The handler will determine the correct partition value and will check for you if the event should be dropped. Events dropped by the framework when `schedule` is called do not need to be reported using the `droppedEvent` action.
@@ -415,26 +416,31 @@ Using the new handler API, scheduling an input event is done by calling the `sch
  * Method starts listening for alarms from Cumulocity IoT.
  */
 action $init() {
-    string id;
-    // List of devices for which input events should be listened can be accessed
-    // via the getDevices() action.
-    for id in inputHandler.getDevices() {
-        on all Alarm(type = $parameters.alarmType, source = id) as alm {
-            // If ignoreTimestamp is enabled, use an empty timestamp
-            // so that the framework will calculate the next timestamp to process the event.
-            optional<float> timeValue := new optional<float>;
-            
-            // If ignoreTimestamp is disabled, use the event time.
-            if not ignoreTimestamp {
-                timeValue := alm.time;
-            }
-            // Schedule events to be processed as per the timeValue, passing the input event
-            // as payload, it will be received back in the $timerTriggered action as the $payload parameter.
-            // The inputHandler is the one that got saved from the callback of
-            // the CumulocityInputParams.declare action.
-            TimerHandle handle := inputHandler.schedule(alm, timeValue);
-        }
-    }
+
+	// provide all the necessary info required to set up the listeners
+	inputHandler.createListeners(Alarm.getName(), {"type" : <any>$parameters.alarmType}, handleAlarm);	
+}
+/**
+ * Callback received from the CumulocityInputHandler when an Alarm event is received
+ * @param a The incoming Alarm event.
+ */
+action handleAlarm(any a) {
+	Alarm alm := <Alarm> a;
+	
+	// If ignoreTimestamp is enabled, use an empty timestamp
+	// so that the framework will calculate the next timestamp to process the event.
+	optional<float> timeValue := new optional<float>;
+
+	// If ignoreTimestamp is disabled, use the event time.
+	if not ignoreTimestamp {
+		timeValue := alm.time;
+	}
+
+	// Schedule events to be processed as per the timeValue, passing the input event
+	// as payload, it will be received back in the $timerTriggered action as the $payload parameter.
+	// The inputHandler is the one that got saved from the callback of
+	// the CumulocityInputParams.declare action.
+	TimerHandle handle := inputHandler.schedule(alm, timeValue);
 }
 ```
 
@@ -655,13 +661,13 @@ action $process(Activation $activation, boolean $input_createAlarm) {
         /* Get the current device to which the output will be sent.*/
         ifpresent outputHandler.deviceToOutput($activation) as device {
             /* Creating an event to send to Cumulocity IoT.*/
-            Alarm al := Alarm("", $parameters.alarmType, device, 
+            Alarm alarm := Alarm("", $parameters.alarmType, device, 
                             $activation.timestamp, alarmText, "ACTIVE",
                             $parameters.alarmSeverity, 1, new dictionary<string,any>);
 
             // Ask the framework to send the output to the output channel.
             // If output is synchronous, then it is tagged before sending it to the channel.
-            outputHandler.sendOutput(al, Alarm.CHANNEL, $activation);
+            outputHandler.sendOutput(alarm, Alarm.CHANNEL, $activation);
         }
     }
 }

@@ -16,6 +16,7 @@
 15. [Asynchronous validations](110-AsynchronousValidations.md)
 16. [Migrating input and output blocks to the version 2 API](150-MigrateInputOutputBlocks.md)
 17. [Update Cumulocity IoT input blocks to receive from assets](151-MigrateInputBlocksForAssetInput.md)
-18. [Sharing data across partitions and workers](160-SharingDataAcrossPartition.md)
+18. [Update Cumulocity IoT input blocks to receive from all input sources](152-MigrateInputBlocksForAllInputs.md)
+19. [Sharing data across partitions and workers](160-SharingDataAcrossPartition.md)
 
 [Next: Introduction >](005-Intro.md) 

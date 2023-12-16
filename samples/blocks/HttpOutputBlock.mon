@@ -170,7 +170,7 @@ event HTTPOutput {
 		for k in response.payload.data.getKeys() {
 			propertyValues[k.valueToString()] := response.payload.data.getEntry(k);
 		}
-		$setOutput_responseBody($activation, Value(true, $base.getModelTime(), propertyValues));
+		$setOutput_responseBody($activation, Value(true, $activation.timestamp, propertyValues));
 		$setOutput_statusCode($activation, response.statusCode.toFloat());
 	}
 	

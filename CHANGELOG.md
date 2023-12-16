@@ -1,5 +1,11 @@
 # Change Log
 
+## 24.0.0
+* The Analytics Builder Block SDK is now moving to a continuous delivery (CD) model.
+
+## 10.18.1.0
+* .git and .github subdirectories are now skipped when building extensions. See [Building a block into an extension](doc/030-BuildingExtensions.md) for more details.
+
 ## 10.18.0.0
 * Cumulocity IoT input blocks can now receive from assets (and from their child devices). Existing input blocks may need to be updated to enable receiving from assets. See [Update Cumulocity IoT input blocks to receive from assets](doc/151-MigrateInputBlocksForAssetInput.md) for more details.
 

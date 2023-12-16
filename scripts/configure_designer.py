@@ -1,6 +1,8 @@
 import os, sys
+from checkApamaInstallation import confirmFullInstallation
 
 def run(args):
+    confirmFullInstallation()
     # Check the command has been executing from Apama command prompt
     apama_home = os.getenv('APAMA_HOME', '')
 

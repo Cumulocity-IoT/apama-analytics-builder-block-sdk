@@ -6,6 +6,7 @@ import shutil, json, os, subprocess, urllib
 import blockMetadataGenerator, buildVersions
 from pathlib import Path
 import ssl, urllib.parse, urllib.request, base64, sys
+from checkApamaInstallation import confirmFullInstallation
 
 ENCODING = 'UTF8'
 BLOCK_METADATA_EVENT = 'apama.analyticsbuilder.BlockMetadata'
@@ -13,7 +14,9 @@ BLOCK_MESSAGES_EVENT = 'apama.analyticsbuilder.BlockMessages'
 PAS_EXT_TYPE = 'pas_extension'	# Type of the ManagedObject containing information about extension zip.
 PAS_EXT_ID_FIELD = 'pas_extension_binary_id' # The field of the ManagedObject with id of the extension zip binary object.
 BLOCK_REGISTRY_CHANNEL = 'analyticsbuilder.metadata.requests'
-UNSUPPORTED_FILE_TYPES = ('.log','.classpath','.dependencies','.project','.deploy','.launch','.out','.o') # Files to exclude
+UNSUPPORTED_FILE_TYPES = ('.log','.classpath','.dependencies','.project','.deploy','.launch','.out','.o') # Files with these extensions are to be excluded
+EXCLUDE_FOLDERS = ['.git', '.github'] # The folders to be excluded, .git and .github folders should be excluded as they are unnecessary and can lead to build issues
+LOCALES = 'EN,DE,PL,PT_BR,ZH_CN,ZH_TW,NL,FR,JA_JP,KO,RU,ES'
 
 def add_arguments(parser):
 	""" Add parser arguments. """
@@ -45,28 +48,24 @@ def write_evt_file(ext_files_dir, name, event):
 	"""
 	events_dir = ext_files_dir / 'events'
 	events_dir.mkdir(parents=True, exist_ok=True)
-	with open(events_dir / name, mode='w+', encoding='UTF8') as f:
-		return f.writelines([event])
+	with open(events_dir / name, mode='a+', encoding='UTF8') as f:
+		return f.writelines(['\n' + event + '\n'])
 
 def embeddable_json_str(json_str):
 	"""Return JSON string which could be included in a string literal of an event string."""
 	s = json.dumps(json.loads(json_str), separators=(',', ':'))
 	return json.dumps(s)
 
-def gen_messages_evt_file(name, input, ext_files_dir, messages_from_metadata):
-	"""
-	Generate evt file containing event string for sending message JSON.
-	:param name: Extension name.
-	:param input: The input directory containing messages JSON files.
-	:param ext_files_dir: The 'files' directory of the extension.
-	:param messages_from_metadata: Extra messages to include extracted from blocks' metadata.
-	:return: None
-	"""
-	all_msgs = messages_from_metadata.copy()
+def get_messages_for_locale(locale, msg_files, localeMsgs, all_msgs, input, default=False):
+	"""Iterates over message files to assign to correct locale ready to be inserted in evt file."""
 	msg_to_files = {}
-	msg_files = list(input.rglob('messages.json')) + list(input.rglob('*-messages.json'))
+	matches = []
 	for f in msg_files:
+		if not default and not f.match(f'{input}/{locale}/*'):
+			#This locale is not in the path for this message file.
+			continue
 		try:
+			matches.append(f)
 			data = json.loads(f.read_text(encoding=ENCODING))
 			if not isinstance(data, dict):
 				print(f'Skipping JSON file with invalid messages format: {str(f)}')
@@ -80,9 +79,45 @@ def gen_messages_evt_file(name, input, ext_files_dir, messages_from_metadata):
 		except:
 			print(f'Skipping invalid JSON file: {str(f)}')
 
-	write_evt_file(ext_files_dir, f'{name}_messages.evt',
-				   f'"{BLOCK_REGISTRY_CHANNEL}",{BLOCK_MESSAGES_EVENT}("{name}", "EN", {embeddable_json_str(json.dumps(all_msgs))})')
+	#Can only match one locale, so remove any files that have been handled from the list.
+	for match in matches:
+		msg_files.remove(match)
+	if all_msgs:
+		#Store all messages for this locale.
+		localeMsgs[locale] = all_msgs
 
+def gen_messages_evt_file(name, input, ext_files_dir, messages_from_metadata):
+	"""
+	Generate evt file containing event string for sending message JSON.
+	:param name: Extension name.
+	:param input: The input directory containing messages JSON files.
+	:param ext_files_dir: The 'files' directory of the extension.
+	:param messages_from_metadata: Extra messages to include extracted from blocks' metadata.
+	:return: None
+	"""
+	msg_files = list(input.rglob('messages.json')) + list(input.rglob('*-messages.json'))
+	localeMsgs = {}
+	for locale in LOCALES.split(','):
+		if locale == 'EN':
+			#Skip the default in initial pass, all will be picked up in final pass.
+			continue
+		get_messages_for_locale(locale, msg_files, localeMsgs, {}, input)
+	
+	#All remaining files treated as default language EN.
+	locale = 'EN'
+	#Generated metadata from build extension is currently always EN.
+	all_msgs = messages_from_metadata.copy()
+	get_messages_for_locale(locale, msg_files, localeMsgs, all_msgs, input, default=True)
+
+	#Remove output file if already exists as we will be appending to it for each locale.
+	outFile = Path(ext_files_dir / 'events' / f'{name}_messages.evt')
+	if os.path.exists(outFile):
+		os.remove(outFile)
+
+	#Write all messages for each locale to evt file.
+	for (locale, msgs) in localeMsgs.items():
+		write_evt_file(ext_files_dir, f'{name}_messages.evt',
+		   f'"{BLOCK_REGISTRY_CHANNEL}",{BLOCK_MESSAGES_EVENT}("{name}", "{locale}", {embeddable_json_str(json.dumps(msgs))})')
 
 def createCDP(name, mons, ext_files_dir):
 	"""
@@ -92,6 +127,7 @@ def createCDP(name, mons, ext_files_dir):
 	:param ext_files_dir: Output directory for the CDP file.
 	:return: None
 	"""
+	confirmFullInstallation()
 	cmd = [
 		os.path.join(os.getenv('APAMA_HOME'), 'bin', 'engine_package'),
 		'-u',
@@ -117,7 +153,8 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 	input = Path(input).resolve()
 	output = Path(output).resolve()
 	tmpDir = Path(tmpDir).resolve()
-	if folderToSkip is None: folderToSkip = list()
+	
+	if folderToSkip is None: folderToSkip= list()
 
 	if not input.exists():
 		raise Exception(f'Input directory does not exist: {input.absolute()}')
@@ -135,33 +172,23 @@ def build_extension(input, output, tmpDir, cdp=False, priority=None, printMsg=Fa
 	if priority is not None:
 		ext_dir.joinpath('priority.txt').write_text(str(priority), encoding=ENCODING)
 	
-	files_to_copy = []
+	files_to_copy = []	
+	mons = []
 
-	# Create CPD or copy mon files to extension directory while maintaining structure
-	mons = list(input.rglob('*.mon'))
-	if cdp:
-		createCDP(name, mons, ext_files_dir)
-	else:
-		files_to_copy.extend(mons)
+	# Traverse the input folder 
+	exclude = set (folderToSkip + EXCLUDE_FOLDERS)
+	for root, dirs, filenames in os.walk(input, topdown=True): 
+		dirs[:] = [d for d in dirs if d not in exclude] # exclude dir before they are traversed, saves time and works if dir is inaccessible
+		for filename in filenames:
+			if not filename.endswith(UNSUPPORTED_FILE_TYPES ):# Excluding UNSUPPORTED_FILE_TYPES from all_files
+				if filename.endswith('.mon') and cdp: # Create CPD or copy mon files to extension directory while maintaining structure
+					mons.append(os.path.join(root, filename))
+				else: files_to_copy.append (os.path.join(root, filename))
 	
-	# Adding all the files
-	all_files = list(input.rglob('*.*'))
-
-	# Excluding UNSUPPORTED_FILE_TYPES from all_files
-	for file in all_files:
-		if not str(file).endswith(UNSUPPORTED_FILE_TYPES + ('.mon',)):# mon files are already included in files_to_copy
-			files_to_copy.append(file)
-
-	filtered_files = list() if len(folderToSkip) > 0 else files_to_copy
-	
-	if len(folderToSkip) > 0:
-		for f in files_to_copy:
-			if not any(folder in str(f.relative_to(input).parent) for folder in folderToSkip):
-				filtered_files.append(f)
-		
+	if cdp : createCDP(name, mons, ext_files_dir)
 			
-	for p in filtered_files:
-		target_file = ext_files_dir / p.relative_to(input)
+	for p in files_to_copy:
+		target_file = ext_files_dir /  Path(p).relative_to(input)
 		target_file.parent.mkdir(parents=True, exist_ok=True)
 		shutil.copy2(p, target_file)
 
@@ -342,7 +369,7 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 		extension_mos = extension_mos.get('managedObjects', [])
 		extension_mo = extension_mos[0] if len(extension_mos) == 1 else None
 		if len(extension_mos) > 1:
-			raise Exception(f'Multiple Managed Objects found with pas_extension={name}. Delete them to upload a new extension with the same name.')
+			raise Exception(f'Multiple managed objects found with pas_extension={name}. Delete them and upload a new extension with the same name.')
 
 	if extension_mo:
 		moId = extension_mo["id"]
@@ -416,9 +443,9 @@ def checkVersions(connection, ignoreVersion):
 		if err.code == 404 and not microserviceNotSubscribed:
 			# if it's a 404 and not a microservice not subscribed error, this is a 404 from the microservice itself.
 			if ignoreVersion:
-				print(f'WARNING: It is recommended to use the Analytics Builder script only against Apama-ctrl with the same version.', file=sys.stderr)
+				print(f'WARNING: Unable to fetch version due to  error - {err.reason}', file=sys.stderr)
 			else:
-				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url} (HTTP status {err.code}). A user using a Cumulocity tenant version ({apamactrl_version}) has to checkout the latest and compatible version of the branch, for example if using the cloned github repository, switch to the 10.5.0.x branch using git checkout rel/10.5.0.x. Else download the latest release of 10.5.0.x from {git_url}.')
+				raise Exception(f'Failed to perform REST request for resource /diagnostics/componentVersion on url {connection.base_url} (HTTP status {err.code}). Use the \'main\' branch for the current release or switch to the appropriate branch for Long-term support (LTS) / Maintenance releases.')
 
 
 		else:
@@ -426,18 +453,16 @@ def checkVersions(connection, ignoreVersion):
 				if not ignoreVersion:
 					ignoreVersion= True
 					print(f'WARNING: apama-ctrl may not be running, skipping version check.', file=sys.stderr)
-					apamactrl_version = 'Unknown'
+					apamactrl_version = "Unknown"
 			else:
 				raise err
-	
-	sdk_version = buildVersions.RELEASE_TRAIN_VERSION
-	
-	if apamactrl_version is not None and apamactrl_version != sdk_version:
-		
+	# Check that this is not a legacy/non-CD version. Example: Older / non-CD versions has a version number like 10.18.0, 10.16.0 ...., 
+	# where as CD versions usually start with 2 digit year number, example: 24.0.0
+	if apamactrl_version is not None and (apamactrl_version.startswith("10.") or apamactrl_version == "Unknown"):
 		if ignoreVersion:
-			print(f'WARNING: It is recommended to use the Analytics Builder script only against Apama-ctrl with the same version. The version of the Analytics Builder script is {sdk_version} but the version of Apama-ctrl is {apamactrl_version}.')
+			print('WARNING: It is recommended to use the \'main\' branch for the current release or switch to the appropriate branch for Long-term support (LTS) / Maintenance releases.')
 		else:
-			raise Exception(f'The apama analytics builder block sdk version has to be compatible with the apama-ctrl microservice version. Please download the latest block sdk release for v{apamactrl_version} from https://github.com/SoftwareAG/apama-analytics-builder-block-sdk/releases. If you have cloned the git repository then checkout/switch to the branch that\'s compatible with the version of the apama-ctrl microservice. For example, if the apama-ctrl microservice release train version is {apamactrl_version} switch to {apamactrl_version}.x branch using \'git checkout rel/{apamactrl_version}.x\'. You can also provide the --ignoreVersion command line option if you want to ignore the version compatibility check.')
+			raise Exception(f'Make sure the Apama Analytics Builder Block SDK version is compatible with the Apama-ctrl microservice version. Use the \'main\' branch for the current release or switch to the appropriate branch for Long-term support (LTS) / Maintenance releases.')
 
 def run(args):
 	# Support remote operations and whether they are mandatory.

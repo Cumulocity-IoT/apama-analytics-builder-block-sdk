@@ -14,6 +14,7 @@ import xml.etree.cElementTree as ElementTree
 import buildVersions
 from subprocess import CalledProcessError
 from logging import Formatter
+from checkApamaInstallation import confirmFullInstallation
 
 FORMAT = '%(asctime)-15s %(levelname)s : %(message)s'
 
@@ -849,6 +850,7 @@ class ScriptRunner:
 		Generate Apama Doc for all the monitors in the specified directory.
 		:return: Path to the generated structure.xml
 		"""
+		confirmFullInstallation()
 		apamaDocErrLog = os.path.join(self.tmpDir, 'apamadoc_err.log')
 		apamaDocOutLog = os.path.join(self.tmpDir, 'apamadoc_out.log')
 		
@@ -897,6 +899,7 @@ def add_arguments(parser):
 	parser.add_argument('--output', metavar='JSON_FILE', type=str, required=True, help='the output JSON file containing the metadata for blocks')
 
 def run_metadata_generator(input, output, tmpDir, printMsg=False):
+	confirmFullInstallation()
 	apama_home = os.getenv('APAMA_HOME', None)
 	# assumes we're running with apama_env sourced
 	if 'APAMA_JRE' in os.environ:

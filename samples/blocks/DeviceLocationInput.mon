@@ -31,11 +31,10 @@ using apama.analyticsbuilder.Partition_Broadcast;
 event DeviceLocationInput_$Parameters {
 
 	/**
-	 * Device or Device Group.
+	 * Input Source.
 	 *
-	 * The device or device group from which the location has been received.
+	 * The input source from which the location has been received.
 	 *
-	 * The model editor uses the current device or group name. This is mapped internally to the inventory identifier.
 	 * @$semanticType c8y_deviceOrGroupId
 	 */
 	any deviceId;
@@ -47,7 +46,7 @@ event DeviceLocationInput_$Parameters {
 }
 
 /**
- * Device or Device Group Location Input.
+ * Location Input.
  *
  * Receives <tt>ManagedObject</tt> events from Cumulocity and extracts device location information.
  *
@@ -95,17 +94,23 @@ event DeviceLocationInput {
 	}
 	
 	/**
-	 * Method starts listening for the events from Cumulocity.
+	 * Method to create listeners using CumulocityInputHandlerfor the events from Cumulocity IoT.
 	 */
 	action $init() {
-		string id;
-		// Start listening for ManagedObject events for all the devices (multiple devices if the deviceId parameter 
-		// is a device group otherwise a single device).
-		for id in inputHandler.getDevices() {
-			on all ManagedObject(id = id) as managedObject{
-				extractLocation(managedObject);
-			}
-		}
+		
+		// provide all the necessary info required to set up the listeners
+		inputHandler.createListeners(ManagedObject.getName(), new dictionary<string,any>, handleMO);	
+	}
+
+	/**
+	 * Callback received from the CumulocityInputHandler when an Alarm event is received
+	 * @param e The incoming ManagedObject event.
+	 * @private
+	 */
+	action handleMO(any e) {
+
+		ManagedObject managedObject := <ManagedObject> e;		
+		extractLocation(managedObject);
 	}
 	
 	/**
@@ -120,8 +125,7 @@ event DeviceLocationInput {
 			// This creates a timer which when triggered, calls the $timerTriggered action providing the managed object as payload.
 			any discard := inputHandler.scheduleNow(managedObject);
 		}
-	}
-	
+	}	
 	
 	/**
 	 * This action is called by the framework when a timer is triggered. The framework provides the value of the payload 
@@ -142,7 +146,7 @@ event DeviceLocationInput {
 			valueProperties[k.valueToString()] := positionValue.getEntry(k);
 		}
 		// Call the $setOutput_location action to set the output.
-		$setOutput_location($activation, Value(true, $base.getModelTime(), valueProperties));
+		$setOutput_location($activation, Value(true, $activation.timestamp, valueProperties));
 	}
 
 	/**

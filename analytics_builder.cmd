@@ -5,16 +5,19 @@ rem Use, reproduction, transfer, publication or disclosure is prohibited except 
 
 setlocal
 
-if not defined APAMA_HOME (goto UNDEFINED)
-
 set THIS_SCRIPT=%~$PATH:0
 call :getpath %THIS_SCRIPT
 set "PATH=%APAMA_HOME%\third_party\python;%PATH%"
+
+set PYTHON_VERSION=0
+for /f %%i in ('python -c "import sys; print(sys.version_info[0])"') do set PYTHON_VERSION=%%i
+if %PYTHON_VERSION% LSS 3 (goto PY_UNDEFINED)
+
 python.exe "%THIS_DIR%/analytics_builder" %* || EXIT /B 1
 goto END
 
-:UNDEFINED
-echo Please run this script from an apama_env shell or Apama Command Prompt.
+:PY_UNDEFINED
+echo Add an appropriate Python 3 version to your path. Refer to the system requirements in the README of the Analytics Builder Block SDK documentation.
 goto END
 
 :END

@@ -46,11 +46,10 @@ using apama.analyticsbuilder.cumulocity.CumulocityOutputParams;
  */
 event DualMeasurementIO_$Parameters{
 	/**
-	 * Device or Device Group.
+	 * Input Source.
 	 *
-	 * The device or device group from which the measurements have been received.
+	 * The input source from which the measurements have been received.
 	 *
-	 * The model editor uses the current device or device group name. This is mapped internally to the inventory identifier.
 	 * @$semanticType c8y_deviceOrGroupId
 	 */
 	any deviceId;
@@ -240,7 +239,7 @@ event DualMeasurementIO{
 		}
 
 		// because two measurements may occur at the same time, we need to wait for all timers to fire; the on wait(0.0) achieves this
-		float modelTime := $base.getModelTime();
+		float modelTime := $activation.timestamp;
 		on wait(0.0) {
 			ifpresent $blockState.latestNumerator as num, $blockState.latestDenominator as den {
 				// only create a single measurement output for each device for 
