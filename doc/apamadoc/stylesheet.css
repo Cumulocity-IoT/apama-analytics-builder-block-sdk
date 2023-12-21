@@ -1,29 +1,35 @@
 /* ApamaDoc style sheet */
 
-/* Define colors, fonts and other style attributes here to override the defaults */
+/* Copyright (c) 2013, 2023 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors. */
 
 /* Page background color */
-body { background-color: #FFFFFF }
+body { background-color: white; }
+
+body { font-family: "Roboto","Helvetica", Arial, sans-serif; } /* delite recommended font stack https://delite.eur.ad.sag/typography/ */
 
 /* Headings */
 h1 { font-size: 145% }
 
 /* Table colors */
-.TableHeadingColor     { background: #8BCFED } /* Dark */
-.TableSubHeadingColor  { background: #CDE7F6 } /* Light */
-.TableRowColor         { background: #FFFFFF } /* White */
+th                     { background-color: #1776BF; color: white; } /* delite https://delite.eur.ad.sag/colors standard blue */
 
 /* Font used in left-hand frame lists */
-.FrameTitleFont   { font-size: 100%; font-family: Helvetica, Arial, sans-serif }
-.FrameHeadingFont { font-size:  90%; font-family: Helvetica, Arial, sans-serif }
-.FrameItemFont    { font-size:  90%; font-family: Helvetica, Arial, sans-serif }
+/*
+.FrameTitleFont   { font-size: 100%; }
+.FrameHeadingFont { font-size:  90%; }
+.FrameItemFont    { font-size:  90%; }
+*/
 
-/* Navigation bar fonts and colors */
-.NavBarCell1    { background-color:#CDE7F6;} /* Light */
-.NavBarCell1Rev { background-color:#52B6EB;} /* Dark */
-.NavBarFont1    { font-family: Arial, Helvetica, sans-serif; color:#000000;}
-.NavBarFont1Rev { font-family: Arial, Helvetica, sans-serif; color:#FFFFFF;}
+/* Nav bar general */
+.NavBarCell1    { background-color:#96CAF3;} /* delite blue-77 */
+.NavBarFont1    { color: black; }
 
-.NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
-.NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
+/* Navigation bar - selected item */
+.NavBarCell1Rev { background-color:#1776BF;} /* delite standard blue */
+.NavBarFont1Rev { color: white; }
 
+.NavBarCell2    { background-color:white;}
+.NavBarCell3    { background-color:white;}
+
+/* Code blocks should be offset a bit for readability */
+pre { margin-left: 2rem; }
