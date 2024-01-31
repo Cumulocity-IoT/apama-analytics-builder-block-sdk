@@ -1,0 +1,196 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.ABConstants;
+using apama.analyticsbuilder.L10N;
+using apama.analyticsbuilder.Value;
+
+using com.softwareag.connectivity.httpclient.HttpTransport;
+using com.softwareag.connectivity.httpclient.RequestType;
+using com.softwareag.connectivity.httpclient.Request;
+using com.softwareag.connectivity.httpclient.Response;
+
+
+/**
+ * Event definition of the parameters for the HTTP Output block.
+ */
+event HTTPOutput_$Parameters {
+	
+	/**
+	 * Host.
+	 *
+	 * A valid host name or IP address.
+	 */
+	string host;
+	
+	/**
+	 * Path.
+	 *
+	 * A path component, consisting of a sequence of path segments separated by a slash (/). A path is always defined for a URI, 
+	 * though the defined path may be empty.
+	 */
+	 string path;
+	
+	/**
+	* Port.
+	*
+	* The host port number.
+	*/
+	integer port;
+	
+	/**
+	* Use HTTPS.
+	*
+	* If selected, block will use Transport-level security to transfer data over the network.  Certificate checking is not enabled.
+	*/
+	boolean tlsEnabled;
+	
+	/**Default value for tlsEnabled.*/
+	constant boolean $DEFAULT_tlsEnabled := false;
+
+	/** Validate that the values for all the parameters have been provided. */
+	action $validate() {
+		BlockBase.throwsOnEmpty(host, "host", self);
+		if port < 0 and port > 65535 {
+			throw L10N.getLocalizedException("sample_blk_apamax.analyticsbuilder.samples.HTTPOutput_unexpected_port_value", [<any> port]);
+		}
+	}
+}
+
+/**
+ * HTTPOutput
+ *
+ * Invokes a REST endpoint using POST
+ *
+ *  An example of HTTP request from the block:
+ * <code>
+    Content-Type: application/json
+  	
+    {
+  	    "modelName":"model_0",
+  	    "value": {  
+  	        "value":true,  
+  	        "timestamp":"1563466239",
+  	        "properties": {  
+  		         "alt":"451",
+  		         "lng":"0.42",
+  		         "lat":"52.35"
+  	        }
+        }
+   }
+   </code>
+ *
+ * @$blockCategory Output
+ */
+event HTTPOutput {
+
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when the block is required for a model.
+	 */
+	BlockBase $base;
+	
+	/**The parameters for the block.*/
+	HTTPOutput_$Parameters $parameters;
+	
+	/**
+	 * Handle to the connectivity chain that will handle the requests. It is created in the <tt>$init</tt> method and not in the <tt>$validate</tt> method so it only gets created if the model will become active. 
+	 * This is just a function of the parameters, so can safely live on this object rather than the <tt>$blockState</tt> object.
+	 */
+	HttpTransport transport;
+	
+	/** Initializes the HTTP transport according to the specified configurations. */
+	action $init() {
+		string host := $parameters.host;
+		integer port := $parameters.port;
+		dictionary<string, string> config := {};
+
+		if $parameters.tlsEnabled {
+			config := {"tlsAcceptUnrecognizedCertificates": "true", "tls":"true"};
+		}
+		// Get the transport instance with the defined configurations.
+		transport := HttpTransport.getOrCreateWithConfigurations(host, port, config);
+	}
+	
+	/**
+	 * This action is called by the framework, it receives the input values and contains the logic of the block.
+	 * 
+	 * Sends the output using the HTTP protocol.
+	 *
+	 * @param $activation  The current activation, contextual information required when generating a block output. Blocks should only use the
+	 * <tt>Activation</tt> object passed to them from the framework, never creating their own or holding on to an <tt>Activation</tt> object.
+	 * @param $input_value Input value to the block. This will be sent in the body of the post request.
+	 * @param $modelScopeParameters  Dictionary containing the information about the model.
+	 *
+	 * @$inputName value Value
+	 */
+	action $process(Activation $activation, Value $input_value, dictionary<string, any> $modelScopeParameters) {
+		string modelName := $modelScopeParameters.getOrDefault(ABConstants.MODEL_NAME_IDENTIFIER).valueToString();
+		
+		any data := {"modelName":<any>modelName, "value":$input_value }; // $input_value is a Value object with fields value, timestamp, properties - this will be output as a JSON object.
+		
+		// Create the request event.
+		Request req := transport.createPOSTRequest($parameters.path, data);
+
+		// Execute the request and pass the callback action.
+		req.execute(handleResponse);
+		$base.profile(BlockBase.PROFILE_OUTPUT);
+	}
+	
+	/** Handle the HTTP response.*/
+	action handleResponse(Response res) {
+		$base.createTimer(0.01, res);		// Creates a timer with the specified duration.
+		
+		if not res.isSuccess() {
+			log "Unable to connect " +$parameters.host+". Error code: " + res.statusMessage at WARN;
+		}
+	}
+	
+	/**
+	 * This action is called by the framework when the timer is triggered. The framework provides the value of the payload which was passed while creating the timer.
+	 * 
+	 * Here it is setting the response output after the timer has been triggered.
+	 */
+	action $timerTriggered(Activation $activation, any $payload) {
+		Response response := <Response> $payload;
+		dictionary<string, any> propertyValues := {};
+		any k;
+		for k in response.payload.data.getKeys() {
+			propertyValues[k.valueToString()] := response.payload.data.getEntry(k);
+		}
+		$setOutput_responseBody($activation, Value(true, $activation.timestamp, propertyValues));
+		$setOutput_statusCode($activation, response.statusCode.toFloat());
+	}
+	
+	/**
+	 * Response body.
+	 *
+	 * The HTTP response - any JSON properties are available as properties that the PropertyExtractor block can extract.
+	 */
+	action<Activation,Value> $setOutput_responseBody;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+
+	/** The basic type of the responseBody output. */
+	constant string $OUTPUT_TYPE_responseBody := "pulse";
+
+	/**
+	 * Response status code.
+	 *
+	 * The HTTP response status code.
+	 */
+	action<Activation,float> $setOutput_statusCode;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+
+	/**To let framework know block is using latest APIs.*/
+	constant integer BLOCK_API_VERSION := 2;
+}

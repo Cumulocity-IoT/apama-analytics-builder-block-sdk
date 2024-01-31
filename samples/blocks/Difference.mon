@@ -1,0 +1,68 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+
+/**
+ * Difference
+ *
+ * Calculates the absolute and signed differences between the connected inputs.
+ *
+ * Only generates an output if both the inputs receive a value.
+ *
+ * @$blockCategory Calculations
+ */
+event Difference {
+	
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when the block is required for a model.
+	 */
+	BlockBase $base;
+	
+	/**
+	 * This action receives the input values and contains the logic of the block. 
+	 *
+	 * It calculates the absolute and signed differences between the inputs in this method. 
+	 *  
+	 * @param $activation The current activation, contextual information required when generating a block output. Blocks should only use the
+	 * <tt>Activation</tt> object passed to them from the framework, never creating their own or holding on to an <tt>Activation</tt> object.
+	 * @param $input_value1 First input to the block.
+	 * @param $input_value2 Second input to the block.
+	 *
+	 * @$inputName value1 Value 1
+	 * @$inputName value2 Value 2
+	 */
+	action $process(Activation $activation, optional<float> $input_value1, optional<float> $input_value2) {
+		ifpresent $input_value1, $input_value2{		// As both the inputs of the blocks are of optional type, process only if both of them have a value.
+			float result :=  $input_value1-$input_value2;
+			$setOutput_absoluteDifference($activation, result.abs());
+			$setOutput_signedDifference($activation, result);
+		}
+	}
+	
+	/**
+	 * Absolute Difference
+	 *
+	 * The absolute difference of the inputs.
+	 */
+	action<Activation,float> $setOutput_absoluteDifference;		// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	
+	/**
+	 * Signed Difference
+	 *
+	 * The signed difference of the inputs. Positive if the Value 1 input is larger than the Value 2 input.
+	 */
+	action<Activation,float> $setOutput_signedDifference;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+}

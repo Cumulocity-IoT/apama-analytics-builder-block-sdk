@@ -1,0 +1,282 @@
+﻿/*
+ * $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.TimerHandle;
+using apama.analyticsbuilder.L10N;
+using apama.analyticsbuilder.ABConstants;
+using com.apama.cumulocity.Measurement;
+using com.apama.cumulocity.MeasurementValue;
+using com.apama.exceptions.Exception;
+
+using apama.analyticsbuilder.Promise;
+using apama.analyticsbuilder.PromiseJoiner;
+using apama.analyticsbuilder.Partition_Broadcast;
+using apama.analyticsbuilder.cumulocity.CumulocityInputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityInputParams; 
+
+using apama.analyticsbuilder.cumulocity.CumulocityOutputHandler;
+using apama.analyticsbuilder.cumulocity.CumulocityOutputParams;
+
+/*
+ * This block is equivalent to two normal Measurement input blocks and an Expression block performing a division
+ * - it takes two Measurement inputs and returns the value of numerator / denominator.  Using a single block
+ * is a bit more efficient.
+ *
+ * The Measurements may occur in the same Measurement object with multiple fragments, or separate Measurement inputs.
+ */
+
+
+/**
+ * Parameters
+ * The parameters for the Input Block. 
+ */
+event DualMeasurementIO_$Parameters{
+	/**
+	 * Input Source.
+	 *
+	 * The input source from which the measurements have been received.
+	 *
+	 * @$semanticType c8y_deviceOrGroupId
+	 */
+	any deviceId;
+
+	/**
+	 * Input Numerator Fragment.
+	 *
+	 * Name of the input fragment for the numerator.
+	 */
+	string numeratorFragment;
+	constant string $DEFAULT_numeratorFragment := "numerator";
+	/**
+	 * Input Denominator Fragment.
+	 *
+	 * Name of the input fragment for the denominator.
+	 */
+	string denominatorFragment;
+	constant string $DEFAULT_denominatorFragment := "denominator";
+
+	/**
+	 * Output Ratio Fragment.
+	 *
+	 * Name of the output fragment for the ratio.
+	 */
+	string ratioFragment;
+	constant string $DEFAULT_ratioFragment := "ratio";
+	/**
+	 * Output Inverse Ratio Fragment.
+	 *
+	 * Name of the output fragment for the inverse ratio.
+	 */
+	string inverseFragment;
+	constant string $DEFAULT_inverseFragment := "inverse";
+
+	/** Validate that values for all parameters have been provided. */
+	action $validate() {
+		BlockBase.throwsOnEmpty(deviceId, "deviceId", self);
+	}
+} 
+
+
+/** Dual measurement state.
+ *
+ * This is used to store the latest value received from each of the two measurements.
+ * (because we don't have wires in the model for each of these, it is up to this block to
+ * store the latest value)
+ */
+event DualMeasurementIO_$State {
+	optional<float> latestNumerator;
+	optional<float> latestDenominator;
+	float lastOutputTime;
+}
+
+/**
+ * Dual Measurement Input.
+ *
+ * Receives <tt>Measurement</tt> objects from Cumulocity and outputs the ratio between values on the numerator and denominator inputs.
+ *
+ * This also generates output to measurements defined by ratio and inverse ratio.
+ *
+ * @$blockCategory Input
+ * @$producesOutput
+ * @$consumesInput
+ * @$blockType c8y_Input
+ */
+event DualMeasurementIO{
+	BlockBase $base;
+
+	/**The parameters for the block. */
+	DualMeasurementIO_$Parameters $parameters;
+
+	/** The input handler to schedule the numerator input events for processing at the specified time. */
+	CumulocityInputHandler numeratorInputHandler;
+	/** The input handler to schedule the denominator input events for processing at the specified time. */
+	CumulocityInputHandler denominatorInputHandler;
+
+	/** The output handler to send the ratio output events. */
+	CumulocityOutputHandler ratioOutputHandler;
+	/** The output handler to send the inverse output events. */
+	CumulocityOutputHandler inverseOutputHandler;
+
+	// names of the fragment, series:
+	constant string SERIES := "V";
+
+	/**
+	 * Asynchronously validates that the device exists in the inventory and creates all input and output handlers for scheduling the input events for processing and sending output events.
+	 *
+	 * See - Asynchronous validations in the block-sdk guide for more details.
+	 *
+	 * @return a <tt>Promise</tt> object, validation of the model will be suspended until the Promise is fulfilled.
+	*/
+	action $validate() returns Promise {
+		// Create parameters for all input and outputs (See Input and Output blocks and Cumulocity specific helpers in the block-sdk guide for more details)
+		CumulocityInputParams numeratorInput := CumulocityInputParams.create($parameters.deviceId, self, Measurement.getName()).withFields({"fragment":<any>$parameters.numeratorFragment, "series":SERIES});
+		CumulocityInputParams denominatorInput := CumulocityInputParams.create($parameters.deviceId, self, Measurement.getName()).withFields({"fragment":<any>$parameters.denominatorFragment, "series":SERIES});
+		CumulocityOutputParams ratioOutput := CumulocityOutputParams.forSyncEventType($parameters.deviceId, self, Measurement.getName(), {"fragment":<any>$parameters.ratioFragment, "series":SERIES} );
+		CumulocityOutputParams inverseOutput := CumulocityOutputParams.forSyncEventType($parameters.deviceId, self, Measurement.getName(), {"fragment":<any>$parameters.inverseFragment, "series":SERIES} );
+		
+		// Declare all input and outputs, and combine all Promise objects into a single Promise object and return.
+		return PromiseJoiner.joinAll([
+		                              numeratorInput.declare(saveNumeratorInputHandler), 
+		                              denominatorInput.declare(saveDenominatorInputHandler), 
+		                              ratioOutput.declare(saveRatioOutputHandler), 
+		                              inverseOutput.declare(saveInverseOutputHandler)]);
+	}
+	
+	/** Save the input handler for the numerator inputs. */
+	action saveNumeratorInputHandler(CumulocityInputHandler inputHandler) {
+		numeratorInputHandler := inputHandler;
+	}
+	/** Save the input handler for the denominator inputs. */
+	action saveDenominatorInputHandler(CumulocityInputHandler inputHandler) {
+		denominatorInputHandler := inputHandler;
+	}
+	/** Save the output handler for the ratio outputs. */
+	action saveRatioOutputHandler(CumulocityOutputHandler cumOuputHandler) {
+		ratioOutputHandler := cumOuputHandler;
+	}
+	/** Save the output handler for the inverse outputs. */
+	action saveInverseOutputHandler(CumulocityOutputHandler cumOuputHandler) {
+		inverseOutputHandler := cumOuputHandler;
+	}
+
+	/**
+	 * Method starts listening for the events from Cumulocity 
+	 * and prepares memory store. 
+	 */
+	action $init() {
+		string id;
+		for id in numeratorInputHandler.getDevices() {  // will be the same for both inputs
+			on all Measurement(source = id) as msmnt {
+				// may be both together or separately...
+				if hasFrag(msmnt, $parameters.numeratorFragment) or
+				   hasFrag(msmnt, $parameters.denominatorFragment) {
+					handleMeasurement(msmnt);
+				}
+			}
+		}
+	}
+
+	/** Helper for checking if a fragment exists (with a SERIES value below it) */
+	action hasFrag(Measurement m, string fragName) returns boolean {
+		return m.measurements.hasKey(fragName) and m.measurements[fragName].hasKey(SERIES);
+	}
+
+	/**
+	 * Schedule the measurement value to be processed at the timestamp of the event.
+	 * @param measurement The incoming Measurement event from Cumulocity.
+	 * @private
+	 */
+	action handleMeasurement(Measurement measurement) {
+		// this param indicates it was sent to Cumulocity from Apama - in which case we ignore it; for model-to-model communications, the CreateMeasurement block routes the event, and we process that immediately.  The measurement will also go to Cumulocity and come back, but that may come 'too late'.
+		if not (measurement.params.hasKey(ABConstants.MODEL_NAME_IDENTIFIER)) {
+			// Find the input handler for the event and schedule the event
+			CumulocityInputHandler inputHandler;
+			if hasFrag(measurement, $parameters.numeratorFragment) {
+				inputHandler := numeratorInputHandler;
+			} else {
+				inputHandler := denominatorInputHandler;
+			}
+			
+			optional<float> timeValue := measurement.time;
+			// Schedule the event to be processed at the timestamp of the event. This creates a timer which when triggered, 
+			// calls the $timerTriggered action providing the measurement event as payload.
+			any discard := inputHandler.schedule(measurement, timeValue);
+		}
+	}
+
+	/**
+	 * Sets output on the current activation.
+	 * @param $activation The current activation.
+	 * @param value The input measurement event passed to the schedule action of the input handlers.
+	 * @param $blockState The current state of the block.
+	 */
+	action $timerTriggered(Activation $activation, any $payload, DualMeasurementIO_$State $blockState) {
+		Measurement mInput := <Measurement> $payload;
+		if hasFrag(mInput, $parameters.numeratorFragment) {
+			$blockState.latestNumerator := mInput.measurements[$parameters.numeratorFragment][SERIES].value;
+		}
+		if hasFrag(mInput, $parameters.denominatorFragment) {
+			$blockState.latestDenominator := mInput.measurements[$parameters.denominatorFragment][SERIES].value;
+		}
+		// note that two different measurements may occur at the same time. For outputs from a block, calling $setOutput 
+		// multiple times from timers firing at the same time will only use the latest value
+		ifpresent $blockState.latestNumerator as num, $blockState.latestDenominator as den {
+			$setOutput_ratio($activation, num/ den);
+		}
+
+		// because two measurements may occur at the same time, we need to wait for all timers to fire; the on wait(0.0) achieves this
+		float modelTime := $activation.timestamp;
+		on wait(0.0) {
+			ifpresent $blockState.latestNumerator as num, $blockState.latestDenominator as den {
+				// only create a single measurement output for each device for 
+				if $blockState.lastOutputTime < modelTime {
+					sendMeasurement(modelTime, $parameters.ratioFragment, num / den, ratioOutputHandler, $activation);
+					sendMeasurement(modelTime, $parameters.inverseFragment, den / num, inverseOutputHandler , $activation);
+					$blockState.lastOutputTime := modelTime;
+				}
+			}
+		}
+	}
+
+	/**
+	* This action is called by the framework if an input event scheduled for the processing is too old.
+	*/
+	action $timerRejected(TimerHandle $timerHandle, string $reason) {
+		log "TimerRejected: " + $timerHandle.toString() + " reason: "+ $reason + " for blockId: " + $base.getBlockId() + " of type: " + self.getName();
+	}
+
+	/** Send a Measurement output event to Cumulocity. */
+	action sendMeasurement(float time, string fragment, float value, CumulocityOutputHandler outputhandler, Activation $activation) {
+		// Get the output device for which output should be produced. It returns the current device which caused the model execution 
+		// if the source device is a device group. It returns the empty value if output should not be generated for the current activation.
+		ifpresent outputhandler.deviceToOutput($activation) as device {
+			Measurement m := new Measurement;
+			m.source := device; // set the device returned as source
+			m.type := fragment;
+			m.time := time;
+			m.measurements[fragment] := {SERIES: MeasurementValue(value, "", new dictionary<string, any>)};
+			outputhandler.sendOutput(m, m.SEND_CHANNEL, $activation);
+		}
+	}
+
+	/**
+	 * Ratio.
+	 *
+	 * The numerator value divided by denominator.
+	 */
+	action<Activation,float> $setOutput_ratio;
+}

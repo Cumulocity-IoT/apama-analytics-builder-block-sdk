@@ -1,0 +1,166 @@
+/*
+ * $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+/* ***DISCLAIMER***
+ *
+ * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
+ * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ */
+
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using com.apama.exceptions.Exception;
+using apama.analyticsbuilder.L10N;
+using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.TimerParams;
+using apama.analyticsbuilder.TimerHandle;
+using apama.analyticsbuilder.Partition_Broadcast;
+
+
+/**
+ * Parameters for Time window block.
+ */
+event TimeWindow_$Parameters {
+	/**
+	 * Duration (secs).
+	 *
+	 * The duration of the window.
+	 */
+	float durationSecs;
+	
+	/**
+	 * Output period (secs).
+	 *
+	 * Time betweeen outputs.  If not specified, output period is the same as the window duration.
+	 */
+	optional<float> outputPeriodSecs;
+	/** 
+	 * This action is called by the framework to validate the parameters of the block. 
+	 * Here the action checks the value of <tt>durationSecs</tt> provided is a finite and a valid number. 
+	 * An exception is thrown if value of <tt>durationSecs</tt> is not valid.
+	 * Similarly, if <tt>outputPeriodSecs</tt> is specified, check that.
+	 */
+	action $validate() {
+		if (durationSecs < 0.0  or not durationSecs.isFinite()) {
+			throw L10N.getLocalizedException("fwk_param_finite_non-negative_value", [BlockBase.getL10N_param("durationSecs",self), durationSecs]);
+		}		
+		ifpresent outputPeriodSecs as period {
+			if (period < 0.0  or not period.isFinite()) {
+				throw L10N.getLocalizedException("fwk_param_finite_non-negative_value", [BlockBase.getL10N_param("period",self), period]);
+			}
+		}		
+	}
+	
+}
+
+
+
+event TimeWindow_$State {
+	sequence<WindowContents> contents;
+	float startTime;
+}
+
+/**
+ * Time Window.
+ *
+ * Accumulates all values received by the block within the window duration and provides these as a property on the output.
+ * For use with blocks that will use the <tt>timeWindow</tt> property output from this block.
+ *
+ * <b>Warning</b> - high frequency input and/or long window durations can lead to excessive memory consumption and poor 
+ * performance.  Aim for the number of values received within the window duration to be under 1,000 values.
+ *
+ * @$blockCategory Aggregates
+ */
+event TimeWindow {
+	
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when the block is required for a model.
+	 */
+	BlockBase $base;
+
+	/** Parameters, filled in by the framework. */
+	TimeWindow_$Parameters $parameters;
+	
+	/** The output period - $parameters.outputPeriodSecs if set, else $parameters.durationSecs. */
+	float periodSecs;
+	
+	/** Called once at block start up. */
+	action $init() {
+		// get periodSecs:
+		ifpresent $parameters.outputPeriodSecs as p {
+			periodSecs := p;
+		} else {
+			periodSecs := $parameters.durationSecs;
+		}
+		// set up a recurring output timer. withPartition(Partition_Broadcast) means $timerTriggered will be called for every partition (even if it has had no inputs...)
+		TimerParams tp := TimerParams.recurring(periodSecs).withPartition(new Partition_Broadcast);
+		TimerHandle th := $base.createTimerWith(tp);
+	}
+	
+	/** Called by the framework.  Provides the blockState specific to that partition. */
+	action $timerTriggered(Activation $activation, TimeWindow_$State $blockState) {
+		// if no input, then no output:
+		if $blockState.contents.size() = 0 { return; }
+		
+		// holder object for the output.  We don't really use the primary value, the significant output is the WINDOW_PROPERTY_NAME property.
+		Value v :=new Value;
+		sequence<WindowContents> seq := $blockState.contents;
+		// calculate the start time of the window we want to output:
+		$blockState.startTime := $activation.timestamp - $parameters.durationSecs;
+		any prev := new any;
+		
+		// expire old entries (index 0) that are older than the start of the window. Remember the last one we expire...
+		while (seq.size() > 0 and seq[0].timestamp < $blockState.startTime) {
+			prev := seq[0].value;
+			seq.remove(0);
+		}
+		seq := seq.clone(); // this is important - downstream blocks may hold on to the output (e.g. TimeDelay), and this block will modify the blockState copy of the sequence in the future.
+		ifpresent prev {
+			// ... and add the last value we removed back to the window with a timestamp of the beginning of the window.
+			seq.insert(WindowContents(prev, $blockState.startTime), 0);
+		}
+		v.properties[WindowContents.WINDOW_PROPERTY_NAME] := seq;
+		if seq.size() > 0 {
+			v.value := seq[seq.size()-1].value; // while not that useful, the Value's value should be set - just use the latest value.
+			$setOutput_windowContents($activation, v);
+		}
+	}
+	/** Declare the reset input to be pulse type */
+	constant string $INPUT_TYPE_reset := "pulse";
+	/**
+	 * This action receives the input. 
+	 *
+	 * This simply adds it to the window contents - the bulk of the work is in <tt>$timerTriggered</tt>.
+	 *  
+	 * @param $input_value Value to accumulate.
+	 * @param $input_reset Reset the window.
+	 * @$inputName value Value
+	 * @$inputName reset Reset
+	 */
+	action $process(Activation $activation, any $input_value, TimeWindow_$State $blockState, boolean $input_reset) {
+		if($input_reset) {
+			$blockState.contents.clear();
+		} else {
+			ifpresent $input_value {
+				$blockState.contents.append(WindowContents($input_value, $activation.timestamp));
+			}
+		}
+	}
+	
+	/**
+	 * Window contents.
+	 *
+	 * Value containing a property <tt>timeWindow</tt> which is the contents of the window.
+	 */
+	action<Activation,Value> $setOutput_windowContents;		// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	
+	/**
+	 * The type of the output is same as the type of the <tt>Value</tt> input (see - Dynamic types in the block-sdk guide for more details).
+	*/
+	constant string $OUTPUT_TYPE_windowContents := "input(value)";
+}

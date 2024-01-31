@@ -1,0 +1,35 @@
+/* ApamaDoc style sheet */
+
+/* Copyright (c) 2013, 2023 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors. */
+
+/* Page background color */
+body { background-color: white; }
+
+body { font-family: "Roboto","Helvetica", Arial, sans-serif; } /* delite recommended font stack https://delite.eur.ad.sag/typography/ */
+
+/* Headings */
+h1 { font-size: 145% }
+
+/* Table colors */
+th                     { background-color: #1776BF; color: white; } /* delite https://delite.eur.ad.sag/colors standard blue */
+
+/* Font used in left-hand frame lists */
+/*
+.FrameTitleFont   { font-size: 100%; }
+.FrameHeadingFont { font-size:  90%; }
+.FrameItemFont    { font-size:  90%; }
+*/
+
+/* Nav bar general */
+.NavBarCell1    { background-color:#96CAF3;} /* delite blue-77 */
+.NavBarFont1    { color: black; }
+
+/* Navigation bar - selected item */
+.NavBarCell1Rev { background-color:#1776BF;} /* delite standard blue */
+.NavBarFont1Rev { color: white; }
+
+.NavBarCell2    { background-color:white;}
+.NavBarCell3    { background-color:white;}
+
+/* Code blocks should be offset a bit for readability */
+pre { margin-left: 2rem; }

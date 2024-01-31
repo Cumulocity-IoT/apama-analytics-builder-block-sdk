@@ -1,0 +1,126 @@
+/*
+ * $Copyright (c) 2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+ */
+//*****************************************************************************
+// Title:         SendC8YObjects
+// Description:   EPL monitors and events used for testing blocks.
+// Dependencies:  Analytics Builder
+// Author:        SUJ
+//
+//*****************************************************************************
+package apamax.analyticsbuilder.test;
+
+using com.apama.cumulocity.ManagedObject;
+using com.apama.json.JSONPlugin;
+using com.apama.cumulocity.FindManagedObject;
+using com.apama.cumulocity.FindManagedObjectResponse;
+using com.apama.cumulocity.FindManagedObjectResponseAck;
+using com.apama.cumulocity.Event;
+
+
+/**
+ * Request to create and send a Managed Object.
+ *
+ * Sent by AnalyticsBuilderBaseTest.inputManagedObject method.
+ */
+event SendManagedObject {
+	string id;
+	string type;
+	string name;
+	sequence<string> supportedOperations;
+	sequence<string> supportedMeasurements;
+	sequence<string> childDeviceIds;
+	sequence<string> childAssetIds;
+	sequence<string> deviceParentIds;
+	sequence<string> assetParentIds;
+	string jsonPosition;
+	string jsonParams;
+}
+
+/** SendC8YObjects.
+ *
+ * Prepares Managed Objects from the incoming events and forwards it.
+ */
+monitor SendC8YObjects {
+	action onload() {
+		spawn mockInventory to context("cumulocity_sim");
+		spawn startlisteners() to context("Cum_Events");
+		
+		on all SendManagedObject() as obj {
+			dictionary<any, any> position:= <dictionary<any, any> > JSONPlugin.fromJSON(obj.jsonPosition);
+			dictionary<any, any> parameters := <dictionary<any, any> > JSONPlugin.fromJSON(obj.jsonParams);
+
+			dictionary<string, float> pos := new dictionary<string, float>;
+			dictionary<string, any> param := new dictionary<string, any>;
+			any s;
+			for s in position.keys() {
+				pos.add(s.valueToString(), <float>position[s]);
+			}
+			for s in parameters.keys() {
+				param.add(s.valueToString(), parameters[s]);
+			}
+
+			ManagedObject m := ManagedObject(obj.id, obj.type, obj.name, obj.supportedOperations, obj.supportedMeasurements, obj.childDeviceIds,
+			obj.childAssetIds, obj.deviceParentIds, obj.assetParentIds, pos, param);
+			
+			send m to m.SUBSCRIBE_CHANNEL;
+		}
+		
+		
+	}
+	
+	action startlisteners() {
+		
+		monitor.subscribe(Event.SEND_CHANNEL);
+		on all Event() as eve{
+				log "Received Event: " + eve.toString() at INFO;
+		}
+		
+	}
+	/**
+	 * Check if a given string starts with another given substring.
+	 * @param str The string which need to be checked if it starts with the given string.
+	 * @param fragment The string fragment which the given string might starts with.
+	 */
+	action startsWith(string str, string fragment) returns boolean {
+		if str.length() < fragment.length() {
+			return false;
+		}
+		return str.substring(0, fragment.length()) = fragment;
+	}
+
+
+	/**
+	 * Mocks c8y inventory, listens for FindManaged object and sends out a response for that.
+	 */
+	action mockInventory() {
+		monitor.subscribe(FindManagedObject.SEND_CHANNEL);
+
+		on all FindManagedObject() as fmo {
+			log "Request:"+fmo.toString();
+			ManagedObject mo := new ManagedObject;
+			mo.id := fmo.deviceId;
+			mo.name := "name-" + mo.id; // set name of the object to be "name-<id>".
+			dictionary<any,any> dps := {};
+			mo.params["c8y_DataPoint"] := dps;
+
+			if startsWith(fmo.deviceId, "group"){				// if deviceId starts with 'group', treat it as a group otherwise a device.
+				mo.params["c8y_IsDeviceGroup"] := dps;
+				mo.childAssetIds := ["1","2"];
+			}
+			else{
+				mo.params["c8y_IsDevice"] := dps;
+			}
+			// Preparing and sending back the response.
+			FindManagedObjectResponse fmor := new FindManagedObjectResponse;
+			fmor.reqId := fmo.reqId;
+			fmor.managedObject := mo;
+			FindManagedObjectResponseAck fmorAck := new FindManagedObjectResponseAck;
+			fmorAck.reqId := fmo.reqId;
+
+			send fmor to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
+			send fmorAck to FindManagedObjectResponse.SUBSCRIBE_CHANNEL;
+		}
+	}
+}
