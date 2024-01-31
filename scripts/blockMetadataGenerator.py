@@ -11,7 +11,6 @@ import sys
 import subprocess
 import json
 import xml.etree.cElementTree as ElementTree
-import buildVersions
 from subprocess import CalledProcessError
 from logging import Formatter
 from checkApamaInstallation import confirmFullInstallation
@@ -762,10 +761,6 @@ class BlockGenerator:
 			self.raiseError(errorMessage)
 
 
-
-
-
-
 class ScriptRunner:
 	def __init__(self, apama_home, java_home, outputFile, inputDir, tmpDir, version):
 		self.apamaHome = apama_home
@@ -917,7 +912,7 @@ def run_metadata_generator(input, output, tmpDir, printMsg=False):
 		output += '.json'
 
 	scriptRunner = ScriptRunner(apama_home, java_home, output,
-	                            inputDir, tmpDir, buildVersions.FULL_VERSION)
+	                            inputDir, tmpDir, '24.x.y')
 	f = scriptRunner.generateBlockMetaData()
 	if printMsg:
 		if f[0]:
