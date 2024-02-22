@@ -7,7 +7,7 @@ from pysys.constants import *
 from apamax.analyticsbuilder.basetest import AnalyticsBuilderBaseTest
 
 class PySysTest(AnalyticsBuilderBaseTest):
-	def startPython(self, script, args, ignoreExitStatus=False, stdouterr=None, environs=None, pythonPaths=None, **kwargs):
+	def ABStartPython(self, script, args, ignoreExitStatus=False, stdouterr=None, environs=None, pythonPaths=None, **kwargs):
 		"""
 		Starts a python process, using the same python version and environment the tests are running under (python 3)
 		@param script: .py file from input dir or absolute path
@@ -39,7 +39,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		self.httpConPort = self.getNextAvailableTCPPort()
 		
 		# Starting dummy HTTP server.
-		server = self.startPython('server.py', [str(self.httpConPort)], stdouterr='test-http-server', state=BACKGROUND)
+		server = self.ABStartPython('server.py', [str(self.httpConPort)], stdouterr='test-http-server', state=BACKGROUND)
 		self.waitForSocket(self.httpConPort, process=server)
 		
 		# Correlator configurations:
