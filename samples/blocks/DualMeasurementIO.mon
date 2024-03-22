@@ -214,7 +214,7 @@ event DualMeasurementIO{
 			optional<float> timeValue := measurement.time;
 			// Schedule the event to be processed at the timestamp of the event. This creates a timer which when triggered, 
 			// calls the $timerTriggered action providing the measurement event as payload.
-			any discard := inputHandler.schedule(measurement, timeValue);
+			inputHandler.schedule(measurement, timeValue);
 		}
 	}
 

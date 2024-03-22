@@ -77,7 +77,7 @@ event TimeDelay {
 			$setOutput_delayedValue($activation, $input_value);  // it's not legal to create a timer with 0 delay, but we can just pass-through the value.
 		}
 		else {
-			any discard := $base.createTimerWith(TimerParams.relative($parameters.delaySecs));	// Creates a timer with the specified duration.
+			$base.createTimerWith(TimerParams.relative($parameters.delaySecs));	// Creates a timer with the specified duration.
 		}
 	}
 	

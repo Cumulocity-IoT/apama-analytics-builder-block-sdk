@@ -70,7 +70,7 @@ event Block {
         // The amount of time (in seconds) between each output. This value can be taken from one of the block parameters.
         float period := 5.0; 
         // Combine values from all the partitions on the worker and send the values to all workers.
-        TimerHandle shareDataHandle := $base.createTimerWith(TimerParams.recurring(period).withPayload(TIMERTYPE_SHAREDATA_RECUR));
+        $base.createTimerWith(TimerParams.recurring(period).withPayload(TIMERTYPE_SHAREDATA_RECUR));
     
         // Listen for data from all workers but only for the correct block in the correct model by filtering on the blockId and modelId.
         on all WorkerData(blockId=$base.getBlockId(), modelId=$base.getModelId()) as workerData {
@@ -79,7 +79,7 @@ event Block {
     
         // Create a timer for combining data from all workers to generate final values. Pass the TIMERTYPE_GENOUTPUT as the payload so that we 
         // can identify the type of the triggered timer. Use Partition_Broadcast as the partition so that the timer is triggered for each device and output generated.
-        TimerHandle genOutputHandle := $base.createTimerWith(TimerParams.recurring(period).withPayload(TIMERTYPE_GENOUTPUT).withPartition(new Partition_Broadcast));
+        $base.createTimerWith(TimerParams.recurring(period).withPayload(TIMERTYPE_GENOUTPUT).withPartition(new Partition_Broadcast));
     }
     
     action $timerTriggered(Activation $activation, Block_$WorkerState $workerState, any $payload) {

@@ -95,7 +95,7 @@ event TimeTicker{
 			try {
 				TimerParams tp := TimerParams.recurring($parameters.periodSecs)
 									.withPartition(handler.partitionForTimer(id));
-				any discard := $base.createTimerWith(tp);
+				$base.createTimerWith(tp);
 			} catch(Exception e) {}
 		}
 	}

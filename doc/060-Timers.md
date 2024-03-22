@@ -30,7 +30,7 @@ The following is a simple example of timers, to delay float values by 1 second:
 event Delay1Sec {
     BlockBase $base;
     action $process(float $input_value) {
-        any discard := $base.createTimerWith(TimerParams.relative(1.0).withPayload($input_value));
+        $base.createTimerWith(TimerParams.relative(1.0).withPayload($input_value));
     }
     action $timerTriggered(Activation $activation, any $payload) {
         $setOutput_delayed($activation,<float>$payload);

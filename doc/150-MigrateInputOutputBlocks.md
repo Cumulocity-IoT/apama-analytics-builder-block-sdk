@@ -132,11 +132,11 @@ action $init() {
 								.withPayload(value)
 								.withPartition(e.source);
 			// Create timer to process input event.
-			any timerHandle := $base.createTimerWith(tp);
+			$base.createTimerWith(tp);
 		}
 		catch(Exception exp) {
-		// Exception handling and reporting about dropped events to the framework.
-		$base.droppedEvent(e, e.time);
+			// Exception handling and reporting about dropped events to the framework.
+			$base.droppedEvent(e, e.time);
 		}
 	}
 }
@@ -401,7 +401,7 @@ action $init() {
 					tp := tp.withPartition(Partition_Broadcast(alm.source));
 				}
 				// Scheduling the input event.
-				any discard := $base.createTimerWith(tp);
+				$base.createTimerWith(tp);
 			} catch (Exception e) {
 				// Notifying about the dropped event.
 				$base.droppedEvent(alm, alm.time);
