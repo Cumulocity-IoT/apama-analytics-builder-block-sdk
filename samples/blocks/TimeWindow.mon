@@ -99,7 +99,7 @@ event TimeWindow {
 		}
 		// set up a recurring output timer. withPartition(Partition_Broadcast) means $timerTriggered will be called for every partition (even if it has had no inputs...)
 		TimerParams tp := TimerParams.recurring(periodSecs).withPartition(new Partition_Broadcast);
-		TimerHandle th := $base.createTimerWith(tp);
+		$base.createTimerWith(tp);
 	}
 	
 	/** Called by the framework.  Provides the blockState specific to that partition. */
