@@ -51,5 +51,4 @@ event AlarmInput {
 ```
 The value of the parameter (deviceId in the above) will be a dictionary if the `Input Source` parameter has been set to `All Inputs`. 
 
-
 [< Prev: Update Cumulocity IoT input blocks to receive from assets](151-MigrateInputBlocksForAssetInput.md) | [Contents](000-contents.md) | [Next: Sharing data across partitions and workers >](160-SharingDataAcrossPartition.md) 

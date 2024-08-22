@@ -79,5 +79,4 @@ event Add {
 }
 ```
 
-
 [< Prev: Partition values](070-Partitions.md) | [Contents](000-contents.md) | [Next: The Value type >](090-ValueType.md) 
