@@ -6,5 +6,4 @@ After the `configure designer` command has run, close Software AG Designer if it
 
 While it is possible to run the correlator from within Software AG Designer, it is recommended to use the included PySys test framework for executing blocks. See [Testing blocks](035-Testing.md).
 
-
 [< Prev: Introduction](005-Intro.md) | [Contents](000-contents.md) | [Next: Basic blocks >](010-BasicBlocks.md) 

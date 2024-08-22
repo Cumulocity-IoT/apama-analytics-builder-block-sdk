@@ -209,6 +209,4 @@ event DeviceLocationInput {
 
 **Note:** Avoid using a common id with different type between two input or two output blocks.
 
-
-
 [< Prev: The Value type](090-ValueType.md) | [Contents](000-contents.md) | [Next: Cumulocity-specific helpers >](105-CumulocityHelper.md) 

@@ -113,4 +113,5 @@ If the uploaded extension is invalid, corrupt, or duplicate, it is not injected 
 * `Multiple managed objects found with pas_extension=<extension name>. Delete them and upload a new extension with the same name.`
 
   When uploading an extension to the Cumulocity IoT inventory, if an extension with the same name already exists, its contents are replaced. If more than one extension with the same name is found in the inventory, the above error is raised. Delete the extensions and then upload a new extension with the same name.
+
 [< Prev: Naming and documenting blocks](020-NamingAndDoc.md) | [Contents](000-contents.md) | [Next: Testing blocks >](035-Testing.md) 
