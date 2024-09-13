@@ -374,10 +374,7 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 	if extension_mo:
 		moId = extension_mo["id"]
 		if delete:
-			try:
-				connection.request('DELETE', f'/inventory/binaries/{moId}')
-			except Exception as ex:
-				raise Exception(f'Unable to delete extension using DELETE on /inventory/binaries/{moId}: {ex}')
+			connection.request('DELETE', f'/inventory/binaries/{moId}')
 			if printMsg: print(f'Deleted extension {name}')
 		else:
 			replace_extension_content(connection, extension_zip, moId)
