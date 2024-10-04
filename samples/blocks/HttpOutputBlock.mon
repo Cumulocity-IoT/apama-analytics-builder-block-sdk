@@ -16,12 +16,27 @@ using apama.analyticsbuilder.Activation;
 using apama.analyticsbuilder.ABConstants;
 using apama.analyticsbuilder.L10N;
 using apama.analyticsbuilder.Value;
+using apama.analyticsbuilder.TimerParams;
 
 using com.softwareag.connectivity.httpclient.HttpTransport;
 using com.softwareag.connectivity.httpclient.RequestType;
 using com.softwareag.connectivity.httpclient.Request;
 using com.softwareag.connectivity.httpclient.Response;
 
+
+/**
+ * HTTP Response handler for a specific device.
+ */
+event HTTPOutputResponseHandler {
+	/** The device partition. */
+	any devicePartition;
+	/** Callback action for actual handling of the response. */
+	action<any, Response> responseCallback;
+	/** The action which is called when response is received from the HTTP transport. */
+	action onResponse(Response r) {
+		responseCallback(devicePartition, r);
+	}
+}
 
 /**
  * Event definition of the parameters for the HTTP Output block.
@@ -145,14 +160,15 @@ event HTTPOutput {
 		Request req := transport.createPOSTRequest($parameters.path, data);
 
 		// Execute the request and pass the callback action.
-		req.execute(handleResponse);
+		req.execute(HTTPOutputResponseHandler($activation.partition, handleResponse).onResponse);
 		$base.profile(BlockBase.PROFILE_OUTPUT);
 	}
 	
 	/** Handle the HTTP response.*/
-	action handleResponse(Response res) {
-		$base.createTimer(0.01, res);		// Creates a timer with the specified duration.
-		
+	action handleResponse(any devicePartition, Response res) {
+		// Creates a timer to generate output from the block
+		$base.createTimerWith(TimerParams.relative(0.01).withPayload(res).withPartition(devicePartition));
+
 		if not res.isSuccess() {
 			log "Unable to connect " +$parameters.host+". Error code: " + res.statusMessage at WARN;
 		}
