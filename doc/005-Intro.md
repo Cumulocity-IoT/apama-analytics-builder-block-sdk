@@ -8,7 +8,7 @@ Blocks can be tested using the PySys test framework that is included in an Apama
 
 Blocks are implemented in Apama's Event Processing Language (EPL). This guide assumes a working knowledge of EPL. Refer to the [Apama documentation on developing EPL applications](https://documentation.softwareag.com/pam/10.15.5/en/webhelp/pam-webhelp/index.html#page/pam-webhelp%2Fco-DevApaAppInEpl_how_this_book_is_organized.html) and the [API Reference for EPL (ApamaDoc)](https://documentation.softwareag.com/pam/10.15.5/en/webhelp/related/ApamaDoc/index.html). This guide also assumes a working knowledge of the Analytics Builder data model. Refer to the [Streaming Analytics guide](https://cumulocity.com/docs/streaming-analytics/analytics-builder/#getting-started).
 
-The Analytics Builder block SDK has branches in a GitHub repository. You need to download the appropriate release of the block SDK based on the version of the Cumulocity IoT tenant you are using. Refer to the [Releases](https://github.com/SoftwareAG/apama-analytics-builder-block-sdk/releases) page of the block SDK. The version of the block SDK should be compatible with the version of the Cumulocity IoT tenant.
+The Analytics Builder block SDK has branches in a GitHub repository. You need to download the appropriate release of the block SDK based on the version of the Cumulocity IoT tenant you are using. Refer to the [Releases](https://github.com/Cumulocity-IoT/apama-analytics-builder-block-sdk/releases) page of the block SDK. The version of the block SDK should be compatible with the version of the Cumulocity IoT tenant.
 
 Blocks can range from very simple stateless functions to more complex logic. Blocks can make use of:
 
