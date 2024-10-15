@@ -72,13 +72,14 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		self.assertGrep(stdouterr[1], expr='.*', contains=False, assertMessage="analytics_builder build extension should not report errors/ warnings") # should not generate any error.
 		return result
 
-	def injectCumulocityEvents(self, corr):
+	def injectCumulocityEvents(self, corr , c8yeventDefInjected=False):
 		"""
 		Inject the Cumulocity event definitions.
 		:param corrHelper: The CorrelatorHelper object.
 		:return: None.
 		"""
-		corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
+		if not c8yeventDefInjected :
+			corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-forward-events.cdp')
 		
 	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, injectBlocks = True, initialCorrelatorTime = None, **kwargs):
@@ -113,9 +114,9 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		kwargs['logfile']=logfile
 		corr.start(Xclock=Xclock, **kwargs)
 		corr.logfile = logfile
-		corr.injectEPL([self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['ScenarioService', 'data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface']])
+		corr.injectEPL([self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['TimeFormatEvents', 'ScenarioService', 'data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface', 'cumulocity/Cumulocity_EventDefinitions', 'cumulocity/Cumulocity_Utils', 'cumulocity/Cumulocity_TenantSupport']])
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK+'/block-api/framework/analyticsbuilder-framework.cdp')
-		self.injectCumulocityEvents(corr)
+		self.injectCumulocityEvents(corr, True)
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-inventoryLookup-events.cdp')
 		corr.injectEPL(self.project.ANALYTICS_BUILDER_SDK+'/testframework/resources/TestHelpers.mon')
 
