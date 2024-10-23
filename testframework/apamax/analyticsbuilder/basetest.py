@@ -24,7 +24,8 @@ class Waiter:
 		self.parent = parent
 		self.corr = corr
 		self.stdouterr = self.parent.allocateUniqueStdOutErr('waiter')
-
+		if channels:
+			channels = channels + ['AnalyticsBuilder.ModelLifecycleManager']
 		corr.receive(self.stdouterr[0], channels=channels, utf8=True)
 	def waitFor(self, expr, count=5, errorExpr=None):
 		self.corr.flush(count=count)
@@ -192,7 +193,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			blockUnderTest=[blockUnderTest]
 		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(json.dumps(outputs)), json.dumps(wiring), '{"isDeviceOrGroup":any(string, "%s")}'%isDeviceOrGroup])
 		corr.sendEventStrings(f'apamax.analyticsbuilder.test.Test({testParams})')
-		waiter.waitFor(expr='com.apama.scenario.Created', errorExpr='CreateFailed')
+		waiter.waitFor(expr=f'apama.analyticsbuilder.framework.ModelCreateResponse\(.*{id}', errorExpr='CreateFailed')
 		return id
 
 

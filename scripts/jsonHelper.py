@@ -11,7 +11,7 @@ ENCODING = 'UTF8'
 BLOCK_METADATA_EVENT = buildExtension.BLOCK_METADATA_EVENT
 BLOCK_MESSAGES_EVENT = buildExtension.BLOCK_MESSAGES_EVENT
 BLOCK_REGISTRY_CHANNEL = buildExtension.BLOCK_REGISTRY_CHANNEL
-LOCALES = 'EN,DE,PL,PT_BR,ZH_CN,ZH_TW,NL,FR,JA_JP,KO,RU,ES'
+LOCALES = 'EN,DE,PL,PT_BR,ZH_CN,ZH_TW,NL,FR,JA_JP,KO,ES'
 
 def add_arguments_extract(parser):
 	parser.add_argument('--input', metavar='INPUT', type=str, required=True, help='the input directory (should contain <name>_messages.evt and <name>_metadata.evt)')
