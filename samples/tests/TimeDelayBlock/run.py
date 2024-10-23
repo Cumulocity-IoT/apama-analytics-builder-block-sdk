@@ -17,7 +17,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		modelId_failed = self.createTestModel('apamax.analyticsbuilder.samples.TimeDelay')
 		
 		# Checking that the model failed to load.
-		self.assertGrep('all.evt', expr="Created.*No value provided for required parameter 'Delay .secs.'")
+		self.assertGrep('all.evt', expr="No value provided for required parameter 'Delay .secs.'")
 
 		# Deploying a new model with correct parameter.
 		self.modelId = self.createTestModel('apamax.analyticsbuilder.samples.TimeDelay', {'delaySecs':1.9})

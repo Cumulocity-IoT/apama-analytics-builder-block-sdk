@@ -16,7 +16,7 @@ PAS_EXT_ID_FIELD = 'pas_extension_binary_id' # The field of the ManagedObject wi
 BLOCK_REGISTRY_CHANNEL = 'analyticsbuilder.metadata.requests'
 UNSUPPORTED_FILE_TYPES = ('.log','.classpath','.dependencies','.project','.deploy','.launch','.out','.o') # Files with these extensions are to be excluded
 EXCLUDE_FOLDERS = ['.git', '.github'] # The folders to be excluded, .git and .github folders should be excluded as they are unnecessary and can lead to build issues
-LOCALES = 'EN,DE,PL,PT_BR,ZH_CN,ZH_TW,NL,FR,JA_JP,KO,RU,ES'
+LOCALES = 'EN,DE,PL,PT_BR,ZH_CN,ZH_TW,NL,FR,JA_JP,KO,ES'
 
 def add_arguments(parser):
 	""" Add parser arguments. """

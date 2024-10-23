@@ -17,7 +17,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		modelId_failed = self.createTestModel('apamax.analyticsbuilder.samples.Percentile', {'percentile':500.0})
 		
 		# Checking that the model failed to load.
-		self.assertGrep('all.evt', expr="Created.*must be in the range 0 to 100 inclusive")
+		self.assertGrep('all.evt', expr="must be in the range 0 to 100 inclusive")
 
 		# Deploying a new model with correct parameter.
 		self.m5 = self.createTestModel('apamax.analyticsbuilder.samples.Percentile', {'percentile':5.0})

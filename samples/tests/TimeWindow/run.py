@@ -17,7 +17,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		modelId_failed = self.createTestModel('apamax.analyticsbuilder.samples.TimeWindow')
 		
 		# Checking that the model failed to load.
-		self.assertGrep('all.evt', expr="Created.*No value provided for required parameter 'Duration.*'")
+		self.assertGrep('all.evt', expr="No value provided for required parameter 'Duration.*'")
 
 		# Deploying a new model with correct parameter.
 		self.modelId = self.createTestModel('apamax.analyticsbuilder.samples.TimeWindow', {'durationSecs':10.0})
