@@ -1,5 +1,8 @@
 # Change Log
 
+## 2024-10-01
+* HTTPOutput Sample block works correctly in partitioned model.
+
 ## 2024-03-22
 * The Analytics Builder Block SDK is now processing the input events with timestamp 0.0.
 
