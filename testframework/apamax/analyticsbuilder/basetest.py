@@ -73,14 +73,23 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		self.assertGrep(stdouterr[1], expr='.*', contains=False, assertMessage="analytics_builder build extension should not report errors/ warnings") # should not generate any error.
 		return result
 
-	def injectCumulocityEvents(self, corr , c8yeventDefInjected=False):
+	def _injectCumulocitySupport(self, corr):
+		""" 
+		Inject the Cumulocity support monitors. 
+		:param corr: the correlator to inject into.
+		:return: None.
+		"""
+		self._injectEPLOnce(corr, ['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
+		self._injectEPLOnce(corr, self.project.APAMA_HOME+'/monitors/TimeFormatEvents.mon')
+		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/cumulocity/'+i+'.mon' for i in ['Cumulocity_Utils', 'Cumulocity_TenantSupport']])
+
+	def injectCumulocityEvents(self, corr):
 		"""
 		Inject the Cumulocity event definitions.
 		:param corrHelper: The CorrelatorHelper object.
 		:return: None.
 		"""
-		if not c8yeventDefInjected :
-			corr.injectEPL(['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
+		self._injectCumulocitySupport(corr)
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-forward-events.cdp')
 		
 	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, injectBlocks = True, initialCorrelatorTime = None, **kwargs):
@@ -115,11 +124,16 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		kwargs['logfile']=logfile
 		corr.start(Xclock=Xclock, **kwargs)
 		corr.logfile = logfile
-		corr.injectEPL([self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['TimeFormatEvents', 'ScenarioService', 'data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface', 'cumulocity/Cumulocity_EventDefinitions', 'cumulocity/Cumulocity_Utils', 'cumulocity/Cumulocity_TenantSupport']])
+		
+		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['ScenarioService', 'data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface']])
+		
+		self._injectCumulocitySupport(corr)
+		
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK+'/block-api/framework/analyticsbuilder-framework.cdp')
-		self.injectCumulocityEvents(corr, True)
+		self.injectCumulocityEvents(corr)
+		
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-inventoryLookup-events.cdp')
-		corr.injectEPL(self.project.ANALYTICS_BUILDER_SDK+'/testframework/resources/TestHelpers.mon')
+		self._injectEPLOnce(corr, self.project.ANALYTICS_BUILDER_SDK+'/testframework/resources/TestHelpers.mon')
 
 
 		for blockOutput in blockOutputDirs:
@@ -135,7 +149,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 
 		# inject block files:
 		for blockOutput in blockOutputDirs:
-			corr.injectEPL(sorted(list(blockOutput.rglob('*.mon'))))
+			self._injectEPLOnce(corr, sorted(list(blockOutput.rglob('*.mon'))))
 			corr.send(sorted(list(blockOutput.rglob('*.evt'))))
 		# now done
 		corr.sendEventStrings('com.apama.connectivity.ApplicationInitialized()')
@@ -373,3 +387,23 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 			else:
 				return simple
 		return self.formatFloatExponent(num)
+
+	def _injectEPLOnce(self, corrHelper, paths, **kwargs):
+		"""
+		Injects a list of one or more EPL files, ignoring any that have already been injected into this correlator.
+       
+		Specify all files to be injected in a single invocation if possible, to reduce test execution time.
+       
+		@param corrHelper: the correlator to inject into.
+		@param paths: a list of paths to be injected. e.g. [MY_DIR+f for f in ['a.mon', 'b.mon']]
+       
+		"""
+		if not isinstance(paths, list):
+			paths = [paths]
+		already = getattr(corrHelper, '_monitorsAlreadyInjected',set())
+		if not already: corrHelper._monitorsAlreadyInjected = already
+		paths = [os.path.normpath(p) for p in paths]
+		injectnow = [p for p in paths if p not in already]
+		if not injectnow: return
+		corrHelper.injectEPL(injectnow, **kwargs)
+		for p in injectnow: already.add(p)
