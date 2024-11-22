@@ -397,7 +397,7 @@ def checkIfStarter(connection,ignoreVersion):
 def checkVersions(connection, ignoreVersion):
 	
 	apamactrl_version = None
-	git_url = 'https://github.com/SoftwareAG/apama-analytics-builder-block-sdk/releases'
+	git_url = 'https://github.com/Cumulocity-IoT/apama-analytics-builder-block-sdk/releases'
 
 	try:
 		resp = connection.request('GET', f'/service/cep/diagnostics/componentVersion')
@@ -437,7 +437,7 @@ def checkVersions(connection, ignoreVersion):
 		if ignoreVersion:
 			print(f'WARNING: It is recommended to use the Analytics Builder script only against Apama-ctrl with the same version. The version of the Analytics Builder script is {sdk_version} but the version of Apama-ctrl is {apamactrl_version}.')
 		else:
-			raise Exception(f'The apama analytics builder block sdk version has to be compatible with the apama-ctrl microservice version. Please download the latest block sdk release for v{apamactrl_version} from https://github.com/SoftwareAG/apama-analytics-builder-block-sdk/releases. If you have cloned the git repository then checkout/switch to the branch that\'s compatible with the version of the apama-ctrl microservice. For example, if the apama-ctrl microservice release train version is {apamactrl_version} switch to {apamactrl_version}.x branch using \'git checkout rel/{apamactrl_version}.x\'. You can also provide the --ignoreVersion command line option if you want to ignore the version compatibility check.')
+			raise Exception(f'The apama analytics builder block sdk version has to be compatible with the apama-ctrl microservice version. Please download the latest block sdk release for v{apamactrl_version} from https://github.com/Cumulocity-IoT/apama-analytics-builder-block-sdk/releases. If you have cloned the git repository then checkout/switch to the branch that\'s compatible with the version of the apama-ctrl microservice. For example, if the apama-ctrl microservice release train version is {apamactrl_version} switch to {apamactrl_version}.x branch using \'git checkout rel/{apamactrl_version}.x\'. You can also provide the --ignoreVersion command line option if you want to ignore the version compatibility check.')
 
 def run(args):
 	# Support remote operations and whether they are mandatory.
