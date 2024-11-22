@@ -20,7 +20,7 @@ Note that Analytics Builder requires your Cumulocity IoT tenant to be subscribed
 
 ## Documentation
 
-The guide to writing blocks is available in the [doc directory](doc/000-contents.md) and there is [ApamaDoc reference](https://softwareag.github.io/apama-analytics-builder-block-sdk/doc/apamadoc/index.html) available.
+The guide to writing blocks is available in the [doc directory](doc/000-contents.md) and there is [ApamaDoc reference](https://cumulocity-iot.github.io/apama-analytics-builder-block-sdk/doc/apamadoc/index.html) available.
 
 ## Getting started
 
