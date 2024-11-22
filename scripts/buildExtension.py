@@ -424,7 +424,7 @@ def checkIfStarter(connection,ignoreVersion):
 def checkVersions(connection, ignoreVersion):
 	
 	apamactrl_version = None
-	git_url = 'https://github.com/SoftwareAG/apama-analytics-builder-block-sdk/releases'
+	git_url = 'https://github.com/Cumulocity-IoT/apama-analytics-builder-block-sdk/releases'
 
 	try:
 		resp = connection.request('GET', f'/service/cep/diagnostics/componentVersion')

@@ -1,5 +1,8 @@
 # Change Log
 
+## 2024-10-01
+* HTTPOutput Sample block works correctly in partitioned model.
+
 ## 24.0.0
 * The Analytics Builder Block SDK is now moving to a continuous delivery (CD) model.
 
