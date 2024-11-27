@@ -44,8 +44,8 @@ def main():
 			SubCommand('pack', 'pack JSON into events in an extension directory', jsonHelper.add_arguments_pack, jsonHelper.run_json_pack),
 		]),
 		Command('configure', 'configure tools', [
-			SubCommand('designer', 'configure Software AG Designer for Analytics Builder', None, configure_designer.run, False,
-			           'Configure Software AG Designer for Analytics Builder block development. After configuration, you have to restart Designer.')
+			SubCommand('designer', 'configure Apama Plugin for Eclipse', None, configure_designer.run, False,
+			           'Configure Apama Plugin for Eclipse for Analytics Builder block development. After configuration, you have to restart Designer.')
 		]),
 		Command('upload', 'uploads a zip file', [
 			SubCommand('extension', 'uploads an extension', uploadExtension.add_arguments, uploadExtension.run, False,

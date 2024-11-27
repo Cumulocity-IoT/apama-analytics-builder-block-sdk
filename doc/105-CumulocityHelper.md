@@ -14,7 +14,7 @@ These helper events handle the following functionality:
 
 The main event types are `CumulocityInputHandler` and `CumulocityOutputHandler`. They internally use the `InventoryLookup` event type, which returns a `Promise` of a result of looking up an object in the inventory.
 
-If using Software AG Designer, add the bundle **Cumulocity Block helpers (Support for Cumulocity input and output blocks)**.
+If using Apama Plugin for Eclipse, add the bundle **Cumulocity Block helpers (Support for Cumulocity input and output blocks)**.
 
 ## Input blocks
 
