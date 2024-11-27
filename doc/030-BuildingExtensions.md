@@ -57,7 +57,7 @@ The `analytics_builder` script takes a two-word command, followed by any argumen
 
 * `configure designer`
 
-  Configure Software AG Designer with the location of the block SDK.  See [Using Software AG Designer](007-UsingDesigner.md).
+  Configure Apama Plugin for Eclipse with the location of the block SDK.  See [Using Apama Plugin for Eclipse](007-UsingDesigner.md).
 
 * `json extract --output <path to directory>` or `json pack --output <path to directory>`
 

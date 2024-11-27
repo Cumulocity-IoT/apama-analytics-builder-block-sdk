@@ -6,7 +6,7 @@
 /* ***DISCLAIMER***
  *
  * This is only a sample block and there is no support for this block. This block supports only English. There may be incompatible changes in future releases without prior notice.
- * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ * To use this block, we recommend that you copy it and change the package name. Cumulocity GmbH accepts no responsibility for bug fixes, maintenance or adding new features to this block.
  */
 
 package apamax.analyticsbuilder.samples;
