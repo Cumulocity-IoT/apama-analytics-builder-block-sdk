@@ -394,7 +394,7 @@ event GroupStatistics {
 		
 		integer deviceCount := $workerState.perDeviceBucket.size();
 		// Share the data with all workers.
-		send GroupStatistics_WorkerData($base.getWorkerId(), $base.getBlockId(), $base.getModelId(), deviceCount, workerAggregate) to Partitioner.ALL_WORKERS;
+		send GroupStatistics_WorkerData($base.getWorkerId(), $base.getBlockId(), $base.getModelId(), deviceCount, workerAggregate) to $base.getTenantDetails().getChannel(Partitioner.ALL_WORKERS);
 	}
  
 	
