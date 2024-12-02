@@ -1,12 +1,6 @@
 /*
- * $Copyright (c) 2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
- * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
- */
-
-/* ***DISCLAIMER***
- *
- * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
- * To use this block, we recommend that you copy it and change the package name. Cumulocity GmbH accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ * $Copyright (c) 2013 - 2024 Cumulocity GmbH, Duesseldorf, Germany and/or its affiliates and/or their licensors.$
+ * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Cumulocity GmbH
  */
 
 package apamax.analyticsbuilder.samples;

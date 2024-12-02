@@ -29,8 +29,6 @@ The base event for all blocks. Every block implementation must have a field name
 <br>Notify framework that this block has dropped an input event.</TD></TR>
 <TR><TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getBlockId()">getBlockId</A></B>()</CODE><br>
 <br>Get the block identifier. Useful for debugging only.</TD></TR>
-<TR><TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;integer</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getCurrentWorkerId()">getCurrentWorkerId</A></B>()</CODE><br>
-</TD></TR>
 <TR><TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;integer</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getInputCount()">getInputCount</A></B>(string&nbsp;input)</CODE><br>
 <br>Get the number of connections for an input.</TD></TR>
 <TR><TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1"><CODE>&nbsp;string</CODE></FONT></TD><TD><CODE></CODE><CODE><B><A HREF="BlockBase.html#getInputTypeName()">getInputTypeName</A></B>(string&nbsp;input)</CODE><br>
@@ -67,8 +65,6 @@ Create a timer with the specified parameters. The <tt>$timerTriggered</tt> actio
 Notify framework that this block has dropped an input event.<DL><DT><B>Parameters:</B></DT><DD><tt>evt</tt>&nbsp;-&nbsp;The event that was dropped.</DD><DD><tt>time</tt>&nbsp;-&nbsp;The timestamp.</DD></DL><HR>
 <A NAME="getBlockId()"></A><H3>getBlockId</H3><PRE>string&nbsp;<B>getBlockId</B>()</PRE>
 Get the block identifier. Useful for debugging only.<DL><DT><B>Returns:</B></DT><DD>Block identifier.</DD></DL><HR>
-<A NAME="getCurrentWorkerId()"></A><H3>getCurrentWorkerId</H3><PRE>integer&nbsp;<B>getCurrentWorkerId</B>()</PRE>
-<HR>
 <A NAME="getInputCount()"></A><H3>getInputCount</H3><PRE>integer&nbsp;<B>getInputCount</B>(string&nbsp;input)</PRE>
 Get the number of connections for an input.<DL><DT><B>Parameters:</B></DT><DD><tt>input</tt></DD></DL><HR>
 <A NAME="getInputTypeName()"></A><H3>getInputTypeName</H3><PRE>string&nbsp;<B>getInputTypeName</B>(string&nbsp;input)</PRE>
