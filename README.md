@@ -4,9 +4,11 @@ This is a Software Development Kit (SDK) for producing blocks for the Apama Anal
 
 ## Disclaimer
 
-These tools are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite. Users are free to use, fork and modify them, subject to the license agreement. While Software AG welcomes contributions, we cannot guarantee to include every contribution in the main project.
+These tools are provided as-is and without warranty or support. They do not constitute part of the product suite. Users are free to use, fork and modify them, subject to the license agreement. While we welcome contributions, we cannot guarantee to include every contribution in the main project.
 
 ## Licensing
+
+Copyright 2019-present Cumulocity GmbH
 
 This project is licensed under the Apache 2.0 license - see <https://www.apache.org/licenses/LICENSE-2.0>
 
