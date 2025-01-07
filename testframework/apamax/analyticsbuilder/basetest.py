@@ -131,7 +131,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK+'/block-api/framework/analyticsbuilder-framework.cdp')
 		self.injectCumulocityEvents(corr)
-		
+
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-inventoryLookup-events.cdp')
 		self._injectEPLOnce(corr, self.project.ANALYTICS_BUILDER_SDK+'/testframework/resources/TestHelpers.mon')
 
