@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## License
-# Copyright (c) 2017-2022 Software AG, Darmstadt, Germany and/or its licensors
+# Copyright (c) 2019-present Cumulocity GmbH, Duesseldorf, Germany and/or its affiliates and/or their licensors.
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
 # file except in compliance with the License. You may obtain a copy of the License at
