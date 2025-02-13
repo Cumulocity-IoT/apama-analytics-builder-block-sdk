@@ -122,6 +122,9 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		kwargs['arguments']=arguments
 		logfile=kwargs.get('logfile', 'correlator.log')
 		kwargs['logfile']=logfile
+		kwargs['config'] = [os.path.join(self.project.APAMA_HOME, 'connectivity', 'bundles', 'standard-codecs.yaml'), 
+							os.path.join(self.project.APAMA_HOME, 'connectivity', 'bundles', 'HTTPClientConnectivity', 'GenericJSON', 'HTTPClientGenericJSON.yaml')
+							]
 		corr.start(Xclock=Xclock, **kwargs)
 		corr.logfile = logfile
 		
@@ -343,8 +346,6 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		if logfile == None:
 			logfile = self.analyticsBuilderCorrelator.logfile
 		self.assertGrep(logfile, expr=' ERROR .*', contains=False, ignores=errorIgnores+[
-			'Unknown dynamicChain HTTPClientGenericJSONChain',
-			'apama.analyticsbuilder.BlockCatalogRegistry \[\d\] Stack dump:', # Stack dump output with 'Unknown dynamicChain HTTPClientGenericJSONChain'
 			'ERROR \[\d+\] - \t'
 		])
 		self.assertGrep(logfile, expr=' WARN .*', contains=False, ignores=warnIgnores+['RLIMIT.* is not unlimited'])
