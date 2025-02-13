@@ -1,0 +1,6 @@
+eplPlugins:
+  PythonBlockPlugin:
+    pythonFile: "${PARENT_DIR}/pythonBlockPlugin.py"
+    class: PythonBlockPlugin
+    pythonPath:
+      - "${PARENT_DIR}/venv/lib/python3.9/site-packages"

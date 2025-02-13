@@ -1,0 +1,116 @@
+/*
+ * Copyright (c) 2013-present Cumulocity GmbH, Duesseldorf, Germany and/or its affiliates and/or their licensors.
+ * Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Cumulocity GmbH
+ */
+ 
+package apamax.analyticsbuilder.samples;
+
+using apama.analyticsbuilder.BlockBase;
+using apama.analyticsbuilder.Activation;
+using apama.analyticsbuilder.Value;
+
+/**
+ * Parameters for Python block.
+ */
+event Python_$Parameters
+{
+	import "PythonBlockPlugin" as plugin;
+	/**
+	 * Python expression
+	 * @$semanticType pab_multiLine
+	 */
+	string expression;
+	/** 
+	 * This action is called by the framework to validate the parameters of the block. 
+	 */
+	action $validate() {
+		plugin.validate(expression);
+	}
+}
+
+
+/**
+ * Python
+ *
+ * Executes python code on the inputs and produces an output.
+ *
+ * @$blockCategory Calculations
+ */
+event Python 
+{
+	import "PythonBlockPlugin" as plugin;
+	
+	/**BlockBase object.
+	 *
+	 * This is initialized by the framework when the block is required for a model.
+	 */
+	BlockBase $base;
+	
+	/** Block parameters, filled in by the framework. */
+	Python_$Parameters $parameters;
+
+	/** Setup the return vector */
+	action $init()
+	{
+		setOutput := [$setOutput_result1, $setOutput_result2, $setOutput_result3, $setOutput_result4, $setOutput_result5];
+		compiled_expression := plugin.validate($parameters.expression);
+	}
+
+	/**
+	 * This action receives the input values and contains the logic of the block. 
+	 *
+	 * @param $activation The current activation, contextual information required when generating a block output. Blocks should only use the
+	 * <tt>Activation</tt> object passed to them from the framework, never creating their own or holding on to an <tt>Activation</tt> object.
+	 * @param $input_value1 First input to the block.
+	 * @param $input_value2 Second input to the block.
+	 * @param $input_value3 Third input to the block.
+	 * @param $input_value4 Fourth input to the block.
+	 * @param $input_value5 Fifth input to the block.
+	 *
+	 * @$inputName value1 input0
+	 * @$inputName value2 input1
+	 * @$inputName value3 input2
+	 * @$inputName value4 input3
+	 * @$inputName value5 input4
+	 */
+	action $process(Activation $activation, Value $input_value1, Value $input_value2, Value $input_value3, Value $input_value4, Value $input_value5) {
+		sequence<any> results := plugin.execute(compiled_expression, [$input_value1.value, $input_value2.value, $input_value3.value, $input_value4.value, $input_value5.value]);
+		if results.size()>0 and <boolean> results[0] {
+			integer i := 1;
+			while i < results.size() and i <= setOutput.size() {
+				Value result := new Value;
+				result.value := results[i];
+				setOutput[i-1]($activation, result);
+				i := i + 1;
+			}
+		}
+	}
+	
+	/**
+	 * output0
+	 */
+	action<Activation,Value> $setOutput_result1;		// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	
+	/**
+	 * output1
+	 */
+	action<Activation,Value> $setOutput_result2;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	
+	/**
+	 * output2
+	 */
+	action<Activation,Value> $setOutput_result3;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	
+	/**
+	 * output3
+	 */
+	action<Activation,Value> $setOutput_result4;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+	
+	/**
+	 * output4
+	 */
+	action<Activation,Value> $setOutput_result5;	// This is initialized by the framework. It sets the output of the block and may trigger any blocks connected to this output.
+
+	sequence<action<Activation,Value>> setOutput;
+	chunk compiled_expression;
+}
