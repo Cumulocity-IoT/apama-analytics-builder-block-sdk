@@ -20,7 +20,6 @@
 		<dependency bundle-filename="CumulocityUtilities.bnd" catalog="${APAMA_HOME}/catalogs/bundles"/>
 		<dependency bundle-filename="JSONPlugin.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="MemoryStore.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
-		<dependency bundle-filename="ScenarioService.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="AnyExtractor.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="Management.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="HTTPClientConnectivityGenericEvents.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>

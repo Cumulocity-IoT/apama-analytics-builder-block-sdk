@@ -128,7 +128,7 @@ class AnalyticsBuilderBaseTest(ApamaBaseTest):
 		corr.start(Xclock=Xclock, **kwargs)
 		corr.logfile = logfile
 		
-		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['ScenarioService', 'data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface']])
+		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface']])
 		
 		self._injectCumulocitySupport(corr)
 		
