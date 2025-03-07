@@ -4,7 +4,7 @@ This is a Software Development Kit (SDK) for producing blocks for the Apama Anal
 
 ## Disclaimer
 
-These tools are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite. Users are free to use, fork and modify them, subject to the license agreement. While Software AG welcomes contributions, we cannot guarantee to include every contribution in the main project.
+These tools are provided as-is and without warranty or support. They do not constitute part of the product suite. Users are free to use, fork and modify them, subject to the license agreement. While we welcome contributions, we cannot guarantee to include every contribution in the main project.
 
 ## Licensing
 
@@ -18,9 +18,9 @@ Use the 'main' branch for the current release or switch to the appropriate branc
 
 ## System requirements
 
-This script requires an installation of Python 3.7+ and runs on either Windows or Linux. To build extensions or configure Software AG Designer, a full installation of Apama 10.15.4 is required. If you do not already have access, then you can download the Apama Community Edition from [Apama Downloads](https://apamacommunity.com/downloads) (shortly after the official Software AG release date). If you choose to install Apama, you can skip the manual installation of Python, as it is shipped with Apama.
+This script requires an installation of Python 3.7+ and runs on either Windows or Linux. To build extensions or configure Apama Plugin for Eclipse, a full installation of Apama 10.15.4 is required. If you do not already have access, then you can download the Apama Community Edition from [Apama Downloads](https://download.cumulocity.com/Apama) (shortly after the official Apama release date). If you choose to install Apama, you can skip the manual installation of Python, as it is shipped with Apama.
 
-The [apama-builder](https://hub.docker.com/r/softwareag/apama-builder) Docker image from Docker Hub can also be used for building and managing extensions.
+The [apama-builder](https://gallery.ecr.aws/apama/apama-builder) Docker image from Amazon ECR Public Gallery can also be used for building and managing extensions.
 
 Note that Analytics Builder requires your Cumulocity IoT tenant to be subscribed to an 'apama-ctrl' microservice.  The 'apama-ctrl-starter' microservice offers only restricted functionality and does not support custom blocks.
 
