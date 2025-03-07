@@ -6,7 +6,7 @@ Analytic models run in the Apama correlator, and are managed by the Analytics Bu
 
 Blocks can be tested using the PySys test framework that is included in an Apama installation. In order to develop, test and package blocks, you will need a full installation of Apama.
 
-Blocks are implemented in Apama's Event Processing Language (EPL). This guide assumes a working knowledge of EPL. Refer to the [Apama documentation on developing EPL applications](https://documentation.softwareag.com/pam/10.15.5/en/webhelp/pam-webhelp/index.html#page/pam-webhelp%2Fco-DevApaAppInEpl_how_this_book_is_organized.html) and the [API Reference for EPL (ApamaDoc)](https://documentation.softwareag.com/pam/10.15.5/en/webhelp/related/ApamaDoc/index.html). This guide also assumes a working knowledge of the Analytics Builder data model. Refer to the [Streaming Analytics guide](https://cumulocity.com/docs/2024/streaming-analytics/analytics-builder/#getting-started).
+Blocks are implemented in Apama's Event Processing Language (EPL). This guide assumes a working knowledge of EPL. Refer to the [Apama documentation on developing EPL applications](https://cumulocity.com/apama/docs/10.15/developing-apama-applications-in-epl/getting-started-with-apama-epl/) and the [API Reference for EPL (ApamaDoc)](https://cumulocity.com/apama/docs/10.15/related/ApamaDoc/index.html). This guide also assumes a working knowledge of the Analytics Builder data model. Refer to the [Streaming Analytics guide](https://cumulocity.com/docs/2024/streaming-analytics/analytics-builder/#getting-started).
 
 The Analytics Builder block SDK has branches in a GitHub repository. You need to download the appropriate release of the block SDK based on the version of the Cumulocity IoT tenant you are using. Refer to the [Releases](https://github.com/Cumulocity-IoT/apama-analytics-builder-block-sdk/releases) page of the block SDK. The version of the block SDK should be compatible with the version of the Cumulocity IoT tenant.
 
@@ -18,4 +18,4 @@ Blocks can range from very simple stateless functions to more complex logic. Blo
 * **Sending and receiving events** - this allows the block to interact with external data sources or sinks, or to other models or even EPL applications.
 * **Documentation** - a block can include in-line ApamaDoc documenting the behavior of the block, parameters, inputs and outputs. This is visible in the documentation pane of the model editor part of Analytics Builder.
 
-[< Prev: Contents](000-contents.md) | [Contents](000-contents.md) | [Next: Using Software AG Designer >](007-UsingDesigner.md) 
+[< Prev: Contents](000-contents.md) | [Contents](000-contents.md) | [Next: Using Apama Plugin for Eclipse >](007-UsingDesigner.md) 

@@ -1,12 +1,12 @@
 ﻿/*
- * $Copyright (c) 2019-2020 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
+ * Copyright (c) 2019-present Cumulocity GmbH, Duesseldorf, Germany and/or its affiliates and/or their licensors.
  * This file is licensed under the Apache 2.0 license - see https://www.apache.org/licenses/LICENSE-2.0
  *
  */
 /* ***DISCLAIMER***
  *
  * This is only a sample block and there is no support for this block. This block only supports English. There may be incompatible changes in the future releases without prior notice.
- * To use this block, we recommend that you copy it and change the package name. Software AG accepts no responsibility for bug fixes, maintenance or adding new features to this block.
+ * To use this block, we recommend that you copy it and change the package name. Cumulocity GmbH accepts no responsibility for bug fixes, maintenance or adding new features to this block.
  */
 
 package apamax.analyticsbuilder.samples;

@@ -13,4 +13,4 @@ def run(args):
     with open(filename, "w") as f:
         f.write('VARIABLE ; ANALYTICS_BUILDER_SDK ; %s ; R \n' % (os.path.abspath(os.path.dirname(sys.argv[0])).replace('\\', '/'),))
         f.write('BUNDLE_CATALOG ; ANALYTICS_BUILDER_SDK/bundles')
-    print('Configured designer for Analytics Builder')
+    print('Configured Eclipse for Analytics Builder')

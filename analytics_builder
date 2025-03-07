@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# $Copyright (c) 2019 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
-# Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+# Copyright (c) 2019-present Cumulocity GmbH, Duesseldorf, Germany and/or its affiliates and/or their licensors.
+# Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Cumulocity GmbH
 
 import sys, os, pathlib, shutil
 import argparse, tempfile, traceback
@@ -44,8 +44,8 @@ def main():
 			SubCommand('pack', 'pack JSON into events in an extension directory', jsonHelper.add_arguments_pack, jsonHelper.run_json_pack),
 		]),
 		Command('configure', 'configure tools', [
-			SubCommand('designer', 'configure Software AG Designer for Analytics Builder', None, configure_designer.run, False,
-			           'Configure Software AG Designer for Analytics Builder block development. After configuration, you have to restart Designer.')
+			SubCommand('designer', 'configure Apama Plugin for Eclipse for Analytics Builder', None, configure_designer.run, False,
+			           'Configure Apama Plugin for Eclipse for Analytics Builder block development. After configuration, you have to restart eclipse.')
 		]),
 		Command('upload', 'uploads a zip file', [
 			SubCommand('extension', 'uploads an extension', uploadExtension.add_arguments, uploadExtension.run, False,
