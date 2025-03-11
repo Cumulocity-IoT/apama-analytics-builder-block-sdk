@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-# $Copyright (c) 2019-20 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.$
-# Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG
+# Copyright (c) 2019-present Cumulocity GmbH, Duesseldorf, Germany and/or its affiliates and/or their licensors.
+# Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Cumulocity GmbH
 
 import argparse
 import logging
@@ -420,10 +420,10 @@ class BlockGenerator:
 			t = member.find('./Parameters/Parameter[@type]')
 			if t is not None:
 				member_type = t.attrib['type']
-				if t.attrib.get('type').lower() == 'sequence'.lower():
+				if member_type.lower() == 'sequence'.lower():
 					seqUnderlyingType = t.find('./Parameters/Parameter[@type]')  # optional <sequence <T> >
 					if seqUnderlyingType is not None:
-						member_type = seqUnderlyingType.attrib['type']
+						member_type = f"sequence<{seqUnderlyingType.attrib['type']}>"
 						return member_type, is_optional, ('NameValue' in member_type or 'LngLat' in member_type)
 			else:
 				self.raiseError("Parameter type is missing.")
