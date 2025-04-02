@@ -12,13 +12,13 @@
 	</version>
 	<description>Support for Cumulocity input and output blocks</description>
 	<monitors>
-		<fileset dir="${ANALYTICS_BUILDER_SDK}/block-api/framework">
+		<fileset dir="../block-api/framework">
 			<include name="cumulocity-forward-events.cdp"/>
 			<include name="cumulocity-inventoryLookup-events.cdp"/>
 		</fileset>
 	</monitors>
 	<dependencies>
-		<dependency bundle-filename="AnalyticsBuilder.bnd" catalog="${ANALYTICS_BUILDER_SDK}/bundles/"/>
+		<dependency bundle-filename="AnalyticsBuilder.bnd"/>
 		<dependency bundle-filename="Cumulocity Event Definitions.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 	</dependencies>
 </bundle>
