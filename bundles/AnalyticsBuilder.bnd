@@ -12,7 +12,7 @@
 	</version>
 	<description>Support for building blocks</description>
 	<monitors>
-		<fileset dir="${ANALYTICS_BUILDER_SDK}/block-api/framework">
+		<fileset dir="../block-api/framework">
 			<include name="analyticsbuilder-framework.cdp"/>
 		</fileset>
 	</monitors>
