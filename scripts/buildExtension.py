@@ -18,6 +18,13 @@ UNSUPPORTED_FILE_TYPES = ('.log','.classpath','.dependencies','.project','.deplo
 EXCLUDE_FOLDERS = ['.git', '.github'] # The folders to be excluded, .git and .github folders should be excluded as they are unnecessary and can lead to build issues
 LOCALES = 'EN,DE,PL,PT_BR,ZH_CN,ZH_TW,NL,FR,JA_JP,KO,ES'
 
+# Dictionary mapping parameter names to environment variables
+ENV_VAR_MAP = {
+    'cumulocity_url': "CUMULOCITY_SERVER_URL",
+    'username': "CUMULOCITY_USERNAME",
+    'password': "CUMULOCITY_PASSWORD"
+}
+
 def add_arguments(parser):
 	""" Add parser arguments. """
 	parser.add_argument('--input', metavar='DIR', type=str, required=False, help='the input directory containing extension files - required when not deleting an extension')
@@ -28,7 +35,7 @@ def add_arguments(parser):
 	local = parser.add_argument_group('local save (requires at least the following arguments: --input, and --output)')
 	local.add_argument('--output', metavar='ZIP_FILE', type=str, required=False, help='the output zip file (requires the --input argument)')
 
-	remote = parser.add_argument_group('remote upload or delete (requires at least the following arguments: --cumulocity_url, --username, --password, and --name)')
+	remote = parser.add_argument_group('remote upload or delete (requires at least the following arguments: --cumulocity_url, --username, --password, and --name); if using environment variables, we recommend doing the upload as a seperate step, by building a zip and uploading it.')
 	remote.add_argument('--cumulocity_url', metavar='URL', help='the base Cumulocity URL')
 	remote.add_argument('--username', help='the Cumulocity tenant identifier and the username in the <tenantId>/<username> format')
 	remote.add_argument('--password', help='the Cumulocity password')
@@ -399,9 +406,18 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 		except Exception as ex:
 			raise Exception(f'Failed to restart Apama-ctrl: {ex}')
 
-def isAllRemoteOptions(args, remote):
-		for k, v in remote.items():
-			if v and getattr(args, k, None) is None:
+def prepareRemoteOptions(args, remote):
+	"""
+	Prepares the specified options for remote operation.
+
+	If not provided as an argument, checks if it was provided as a environment variable.
+	If not found, raises an Exception.
+	"""
+	for k, v in remote.items():
+		if v and getattr(args, k, None) is None:
+			if k in ENV_VAR_MAP and os.environ.get(ENV_VAR_MAP[k]):
+				setattr(args, k, os.environ.get(ENV_VAR_MAP[k]))
+			else:
 				raise Exception(f'Argument --{k} is required for the remote operation.')
 
 def checkIfStarter(connection,ignoreVersion):
@@ -466,6 +482,10 @@ def run(args):
 	remote = {'cumulocity_url':True, 'username':True, 'password':True, 'name':True, 'delete':False, 'restart':False}
 
 	# Check if any remote option is provided
+	# We do not check for the existence of environment variables here. If we did, it would be impossible to use `build` to produce a ZIP file, 
+	# without having to unset the environment variables. If you have env vars, you should do a build -> upload as separate steps.
+	# However, you can technically make it work by providing one of the remote args, but not the others. 
+	# We're just going to ignore that.
 	is_remote = False
 	for k in remote.keys():
 		if getattr(args, k, None):
@@ -474,7 +494,7 @@ def run(args):
 
 	# check all mandatory remote options are provided
 	if is_remote:
-		isAllRemoteOptions(args, remote)
+		prepareRemoteOptions(args, remote)
 
 	# check either output or mandatory remote options are provided.
 	if not (is_remote or args.output):

@@ -15,6 +15,7 @@ from pysys.constants import *
 from pysys.basetest import BaseTest
 from apama.correlator import CorrelatorHelper
 from apama.basetest import ApamaBaseTest
+from apama.testplugin import ApamaHelper # adds self.apama (without the need for <test-plugin> project config)
 import os, zipfile, json
 from pathlib import Path
 import math
@@ -35,7 +36,7 @@ class Waiter:
 			self.parent.waitForSignal(self.stdouterr[0], expr=f'({expr})|({errorExpr})', encoding='utf-8')
 			self.parent.assertGrep(self.stdouterr[0], expr=errorExpr, contains=False, encoding='utf-8')
 
-class AnalyticsBuilderBaseTest(ApamaBaseTest):
+class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 	"""
 	Base test for Analytics Builder tests.
 

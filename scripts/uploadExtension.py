@@ -12,11 +12,11 @@ def add_arguments(parser):
     parser.add_argument('--name', type=str, required=False, help='the extension name in the inventory')
 
     remote = parser.add_argument_group(
-        'upload or delete (requires at least the following arguments: --cumulocity_url, --username, --password, (--input or --name))')
-    remote.add_argument('--cumulocity_url', metavar='URL', help='the base Cumulocity URL')
+        'upload or delete (requires at least the following arguments: --cumulocity_url, --username, --password, (--input or --name), or their corresponding environment variables)')
+    remote.add_argument('--cumulocity_url', metavar='URL', help='the base Cumulocity URL (can also be set via CUMULOCITY_SERVER_URL environment variable)')
     remote.add_argument('--username',
-                        help='the Cumulocity tenant identifier and the username in the <tenantId>/<username> format')
-    remote.add_argument('--password', help='the Cumulocity password')
+                        help='the Cumulocity tenant identifier and the username in the <tenantId>/<username> format (can also be set via CUMULOCITY_USERNAME environment variable)')
+    remote.add_argument('--password', help='the Cumulocity password (can also be set via CUMULOCITY_PASSWORD environment variable)')
     remote.add_argument('--delete', action='store_true', default=False, help='delete the extension from the inventory')
     remote.add_argument('--restart', action='store_true', default=False,
                         help='restart the apama-ctrl')
@@ -29,7 +29,7 @@ def run(args):
               'restart': False}
 
     # checks if all manadatory remote options are provided
-    buildExtension.isAllRemoteOptions(args,remote)
+    buildExtension.prepareRemoteOptions(args,remote)
     if args.input:
         if not os.path.exists(args.input):
             raise Exception(f'Provide a valid path to the .zip file.')
