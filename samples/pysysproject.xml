@@ -29,6 +29,4 @@
 
 	<path value="${ANALYTICS_BUILDER_SDK}/testframework"/>
 
-	<test-plugin classname="apama.testplugin.ApamaPlugin" alias="apama"/>
-
 </pysysproject>
