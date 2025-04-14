@@ -762,9 +762,8 @@ class BlockGenerator:
 
 
 class ScriptRunner:
-	def __init__(self, apama_home, java_home, outputFile, inputDir, tmpDir, version):
+	def __init__(self, apama_home, outputFile, inputDir, tmpDir, version):
 		self.apamaHome = apama_home
-		self.javaHome = java_home
 		self.outputFile = os.path.abspath(outputFile)
 		self.inputDir = os.path.abspath(inputDir)
 		self.tmpDir = os.path.abspath(tmpDir)
@@ -853,11 +852,7 @@ class ScriptRunner:
 		if not os.path.exists(apamaDocOutput):
 			os.makedirs(apamaDocOutput)
 		cmd = [
-			os.path.join(self.javaHome, 'bin', 'java'),
-			'-DAPAMA_HOME=' + self.apamaHome,
-			'-Djava.awt.headless=true',
-			'-jar',
-			os.path.join(self.apamaHome, 'lib', 'ap-generate-apamadoc.jar'),
+			os.path.join(self.apamaHome, 'bin', 'apamadoc' + ('.exe' if os.name == 'nt' else '')),
 			apamaDocOutput,
 			self.inputDir,
 		]
@@ -896,13 +891,6 @@ def add_arguments(parser):
 def run_metadata_generator(input, output, tmpDir, printMsg=False):
 	confirmFullInstallation()
 	apama_home = os.getenv('APAMA_HOME', None)
-	# assumes we're running with apama_env sourced
-	if 'APAMA_JRE' in os.environ:
-		java_home = os.environ['APAMA_JRE']
-	else:
-		# else in the docker image
-		java_home = os.path.join(apama_home,'..', 'jvm', 'jvm')
-
 
 	inputDir = os.path.abspath(os.path.normpath(input))
 	if not os.path.isdir(inputDir): raise Exception('The input directory does not exist: %s' % inputDir)
@@ -911,7 +899,7 @@ def run_metadata_generator(input, output, tmpDir, printMsg=False):
 	if not output.endswith('.json'):
 		output += '.json'
 
-	scriptRunner = ScriptRunner(apama_home, java_home, output,
+	scriptRunner = ScriptRunner(apama_home, output,
 	                            inputDir, tmpDir, '26.x.y')
 	f = scriptRunner.generateBlockMetaData()
 	if printMsg:
@@ -927,8 +915,6 @@ def run(args):
 
 ## Main method
 if __name__ == '__main__':
-	assert 'APAMA_JRE' in os.environ, 'APAMA_JRE variable is not set.'
-	
 	## Parse Command line arguments
 	parser = argparse.ArgumentParser(description='Analytics Builder Block Metadata Generator')
 	add_arguments(parser)
