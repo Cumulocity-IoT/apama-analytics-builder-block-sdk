@@ -1,6 +1,6 @@
 # Contents
 1. [Introduction](005-Intro.md)
-2. [Using Apama Plugin for Eclipse](007-UsingDesigner.md)
+2. [Developing blocks locally](007-DevEnvironment.md)
 3. [Basic blocks](010-BasicBlocks.md)
 4. [Naming and documenting blocks](020-NamingAndDoc.md)
 5. [Building a block into an extension](030-BuildingExtensions.md)

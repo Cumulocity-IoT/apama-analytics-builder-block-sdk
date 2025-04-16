@@ -14,7 +14,10 @@ These helper events handle the following functionality:
 
 The main event types are `CumulocityInputHandler` and `CumulocityOutputHandler`. They internally use the `InventoryLookup` event type, which returns a `Promise` of a result of looking up an object in the inventory.
 
-If using Apama Plugin for Eclipse, add the bundle **Cumulocity Block helpers (Support for Cumulocity input and output blocks)**.
+If using Apama Extension for Visual Studio Code, you need to add the Cumulocity Block helpers support bundle by running:
+    ```
+    apama_project add bundle ../apama-analytics-builder-block-sdk/bundles/CumulocityHelper.bnd 
+    ```
 
 ## Input blocks
 

@@ -1,6 +1,6 @@
-# apama-analytics-builder-block-sdk
+# Apama Analytics Builder Block SDK
 
-This is a Software Development Kit (SDK) for producing blocks for the Apama Analytics Builder Block SDK.
+This is a Software Development Kit (SDK) for producing blocks for the Apama Analytics Builder.
 
 ## Disclaimer
 
@@ -20,9 +20,9 @@ Use the 'main' branch for the current release or switch to the appropriate branc
 
 ## System requirements
 
-This script requires an installation of Python 3.7+ and runs on either Windows or Linux. To build extensions or configure Apama Plugin for Eclipse, a full installation of the latest Apama is required. If you do not already have access, then you can download the Apama Community Edition from [Apama Downloads](https://download.cumulocity.com/Apama) (shortly after the official Apama release date). If you choose to install Apama, you can skip the manual installation of Python, as it is shipped with Apama.
+This script requires an installation of Python 3.7+ and runs on either Windows or Linux. To build extensions or edit them using the [Apama extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ApamaCommunity.apama-extensions), a `dev` installation of the latest Apama is required. You can download the package from [Apama Downloads](https://download.cumulocity.com/Apama). If you choose to install Apama, you can skip the manual installation of Python, as it is shipped with Apama.
 
-The [apama-builder](https://gallery.ecr.aws/apama/apama-builder) Docker image from Amazon ECR Public Gallery can also be used for building and managing extensions.
+Alternatively, the [apama-builder](https://gallery.ecr.aws/apama/apama-builder) Docker image from Amazon ECR Public Gallery can also be used for building and managing extensions.
 
 Note that Analytics Builder requires your Cumulocity IoT tenant to be subscribed to an 'apama-ctrl' microservice.  The 'apama-ctrl-starter' microservice offers only restricted functionality and does not support custom blocks.
 

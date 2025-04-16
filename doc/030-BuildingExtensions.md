@@ -55,10 +55,6 @@ The `analytics_builder` script takes a two-word command, followed by any argumen
   analytics_builder build metadata --input samples/blocks  --output samples.json
   ```
 
-* `configure designer`
-
-  Configure Apama Plugin for Eclipse with the location of the block SDK.  See [Using Apama Plugin for Eclipse](007-UsingDesigner.md).
-
 * `json extract --output <path to directory>` or `json pack --output <path to directory>`
 
   Extract or pack message or metadata JSON files from/to event files. This allows the metadata or the messages to be edited as JSON.
