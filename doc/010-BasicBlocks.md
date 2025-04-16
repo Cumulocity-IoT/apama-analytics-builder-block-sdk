@@ -73,4 +73,4 @@ Blocks can also call methods on the `$base` field, which can provide contextual 
 * `getInputCount(input)` - to get the count of connections to a specified input identifier. This will currently return 0 or 1.
 * `getInputTypeName(input)` - to get the type of the wire attached to the input (useful for the `any` and `Value` types on inputs).
 
-[< Prev: Using Apama Plugin for Eclipse](007-UsingDesigner.md) | [Contents](000-contents.md) | [Next: Naming and documenting blocks >](020-NamingAndDoc.md) 
+[< Prev: Developing blocks locally](007-DevEnvironment.md) | [Contents](000-contents.md) | [Next: Naming and documenting blocks >](020-NamingAndDoc.md) 

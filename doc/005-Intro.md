@@ -18,4 +18,4 @@ Blocks can range from very simple stateless functions to more complex logic. Blo
 * **Sending and receiving events** - this allows the block to interact with external data sources or sinks, or to other models or even EPL applications.
 * **Documentation** - a block can include in-line ApamaDoc documenting the behavior of the block, parameters, inputs and outputs. This is visible in the documentation pane of the model editor part of Analytics Builder.
 
-[< Prev: Contents](000-contents.md) | [Contents](000-contents.md) | [Next: Using Apama Plugin for Eclipse >](007-UsingDesigner.md) 
+[< Prev: Contents](000-contents.md) | [Contents](000-contents.md) | [Next: Developing blocks locally >](007-DevEnvironment.md) 

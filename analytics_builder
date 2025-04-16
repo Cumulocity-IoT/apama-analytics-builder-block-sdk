@@ -8,7 +8,7 @@ import argparse, tempfile, traceback
 
 sys.path.append(os.fspath(pathlib.Path(__file__).parent.joinpath('scripts')))
 
-import blockMetadataGenerator, buildExtension, configure_designer, jsonHelper, uploadExtension,listExtensions
+import blockMetadataGenerator, buildExtension, jsonHelper, uploadExtension,listExtensions
 
 class Command(object):
 	def __init__(self, name, help, sub_commands=None, required=True):
@@ -42,10 +42,6 @@ def main():
 		Command('json', 'JSON helper', [
 			SubCommand('extract', 'extract JSON from extracted extensions', jsonHelper.add_arguments_extract, jsonHelper.run_json_extract),
 			SubCommand('pack', 'pack JSON into events in an extension directory', jsonHelper.add_arguments_pack, jsonHelper.run_json_pack),
-		]),
-		Command('configure', 'configure tools', [
-			SubCommand('designer', 'configure Apama Plugin for Eclipse', None, configure_designer.run, False,
-			           'Configure Apama Plugin for Eclipse for Analytics Builder block development. After configuration, you have to restart Designer.')
 		]),
 		Command('upload', 'uploads a zip file', [
 			SubCommand('extension', 'uploads an extension', uploadExtension.add_arguments, uploadExtension.run, False,
