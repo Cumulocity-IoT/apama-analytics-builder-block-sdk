@@ -1,9 +1,12 @@
 # Change Log
 
-## 2024-10-01
+## 26.95.0
+* The Analytics Builder Block SDK is no longer supported natively on Windows environments. For Windows users, we recommend switching to a WSL-based (Windows Subsystem for Linux) environment using Debian.
+
+## 25.298.0
 * HTTPOutput Sample block works correctly in partitioned model.
 
-## 2024-03-22
+## 25.90.0
 * The Analytics Builder Block SDK is now processing the input events with timestamp 0.0.
 
 ## 24.0.0
