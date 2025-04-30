@@ -852,7 +852,7 @@ class ScriptRunner:
 		if not os.path.exists(apamaDocOutput):
 			os.makedirs(apamaDocOutput)
 		cmd = [
-			os.path.join(self.apamaHome, 'bin', 'apamadoc' + ('.exe' if os.name == 'nt' else '')),
+			os.path.join(self.apamaHome, 'bin', 'apamadoc'),
 			apamaDocOutput,
 			self.inputDir,
 		]
@@ -899,8 +899,7 @@ def run_metadata_generator(input, output, tmpDir, printMsg=False):
 	if not output.endswith('.json'):
 		output += '.json'
 
-	scriptRunner = ScriptRunner(apama_home, output,
-	                            inputDir, tmpDir, '26.x.y')
+	scriptRunner = ScriptRunner(apama_home, output, inputDir, tmpDir, '26.x.y')
 	f = scriptRunner.generateBlockMetaData()
 	if printMsg:
 		if f[0]:
@@ -919,5 +918,3 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Analytics Builder Block Metadata Generator')
 	add_arguments(parser)
 	run(parser.parse_args())
-
-	

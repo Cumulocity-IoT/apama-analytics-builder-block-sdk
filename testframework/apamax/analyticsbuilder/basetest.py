@@ -48,8 +48,6 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 	def __init__(self, descriptor, outsubdir, runner, **kwargs):
 		super(AnalyticsBuilderBaseTest, self).__init__(descriptor, outsubdir, runner, **kwargs)
 		self.modelId=0
-		self.IS_WINDOWS = OSFAMILY=='windows'
-
 	def runAnalyticsBuilderScript(self, args=[], environs={}, **kwargs):
 		"""
 		Run the analytics_builder script.
@@ -65,7 +63,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		stdouterr = self.allocateUniqueStdOutErr(script)
 
 		try:
-			result=self.startProcess(f'{self.project.ANALYTICS_BUILDER_SDK}/{script}'+('.cmd' if self.IS_WINDOWS else ''), args,
+			result=self.startProcess(f'{self.project.ANALYTICS_BUILDER_SDK}/{script}', args,
 				stdout=stdouterr[0], stderr=stdouterr[1],
 				displayName=script, environs=env, **kwargs)
 		except Exception:

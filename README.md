@@ -34,13 +34,6 @@ The guide to writing blocks is available in the [doc directory](doc/000-contents
 
 From an Apama command prompt:
 
-* Run sample tests (Windows):
-```bat
-set ANALYTICS_BUILDER_SDK=%cd%
-cd samples/tests
-pysys run
-```
-
 * Run sample tests (Unix):
 
 ```bash
