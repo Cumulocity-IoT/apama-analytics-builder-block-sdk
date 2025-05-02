@@ -5,8 +5,8 @@ Blocks may be written in any text editor, but for a more convenient development 
 See the extension's documentation for details of how to get it installed (including the steps for running Visual Studio Code on Windows using the Apama installation packages for Linux). 
 
 To use the extension for block development you need to create an Apama project for your blocks, and add the bundle which makes available the same EPL APIs that will be used when your blocks are deployed to Cumulocity. To do this:
-1. Install the latest version of the Apama `dev` package. If you have Docker available, you might instead run the following commands from within a `builder` container image, or use the dev container at https://github.com/Cumulocity-IoT/cumulocity-analytics-vsc-devcontainer/
-2. Download (or `git clone`) this SDK. We recommend ensuring the directory is named `apama-analytics-builder-block-sdk` (i.e. the same as the repository, without any extra version number). 
+1. Install the latest version of the Apama `dev` package. If you have Docker available, you might instead run the following commands from within a `builder` container image, or use our [Dev Container](https://github.com/Cumulocity-IoT/cumulocity-analytics-vsc-devcontainer/) (see also [Microsoft's instructions for Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers)). 
+2. Download (or `git clone`) this SDK. We recommend ensuring the directory is named `apama-analytics-builder-block-sdk` (i.e. the same as the repository, without any extra version number) - if using the Dev Container, this is already done for you. 
 3. Create an Apama project for your blocks, next to the block SDK directory: `apama_project create my-block-project`
 4. Change into your project directory and add the Analytics Builder block support bundle using a relative path:
    ```

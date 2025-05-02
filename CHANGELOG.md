@@ -1,7 +1,7 @@
 # Change Log
 
 ## 26.95.0
-* The Analytics Builder Block SDK is no longer supported natively on Windows environments. For Windows users, we recommend switching to a WSL-based (Windows Subsystem for Linux) environment using Debian.
+* The Analytics Builder Block SDK is no longer supported natively on Windows environments. For Windows users, we recommend switching to a WSL-based (Windows Subsystem for Linux) environment using Debian. You may wish to use the [Apama Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ApamaCommunity.apama-extensions) for block development. 
 
 ## 25.298.0
 * HTTPOutput Sample block works correctly in partitioned model.
