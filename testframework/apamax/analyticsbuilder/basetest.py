@@ -209,7 +209,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 			blockUnderTest=[blockUnderTest]
 		testParams=', '.join([json.dumps(blockUnderTest), json.dumps(id), json.dumps(json.dumps(parameters)), json.dumps(json.dumps(inputs)), json.dumps(json.dumps(outputs)), json.dumps(wiring), '{"isDeviceOrGroup":any(string, "%s")}'%isDeviceOrGroup])
 		corr.sendEventStrings(f'apamax.analyticsbuilder.test.Test({testParams})')
-		waiter.waitFor(expr=f'apama.analyticsbuilder.framework.ModelCreateResponse\(.*{id}', errorExpr='CreateFailed')
+		waiter.waitFor(expr=fr'apama.analyticsbuilder.framework.ModelCreateResponse\(.*{id}', errorExpr='CreateFailed')
 		return id
 
 
@@ -323,7 +323,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		if isinstance(value, float):
 			value = self.formatFloat(value)
 
-		return f'apamax.analyticsbuilder.test.Output\\("{name}","{id}","{partition}",{time},any\\(.*,{value}\\),{open}{properties}{end}\\)'
+		return fr'apamax.analyticsbuilder.test.Output\("{name}","{id}","{partition}",{time},any\(.*,{value}\),{open}{properties}{end}\)'
 
 	def sendEventStrings(self, corr, *events, **kwargs):
 		"""
@@ -345,7 +345,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		if logfile == None:
 			logfile = self.analyticsBuilderCorrelator.logfile
 		self.assertGrep(logfile, expr=' ERROR .*', contains=False, ignores=errorIgnores+[
-			'ERROR \[\d+\] - \t'
+			r'ERROR \[\d+\] - \t'
 		])
 		self.assertGrep(logfile, expr=' WARN .*', contains=False, ignores=warnIgnores+['RLIMIT.* is not unlimited'])
 
