@@ -18,8 +18,8 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		model_opPeriod_failed = self.createTestModel('apamax.analyticsbuilder.samples.GroupStatistics', {'outputPeriod': -1.0})
 
 		# Checking that the model failed to load.
-		self.assertGrep('correlator.log', expr="Error validating parameters: The value of 'Window Duration \\(secs\\)':'0' must be a finite and positive number.")
-		self.assertGrep('correlator.log', expr="Error validating parameters: The value of 'Output Period \\(secs\\)':'-1' must be a finite and non-negative number.")
+		self.assertGrep('correlator.log', expr=r"Error validating parameters: The value of 'Window Duration \(secs\)':'0' must be a finite and positive number.")
+		self.assertGrep('correlator.log', expr=r"Error validating parameters: The value of 'Output Period \(secs\)':'-1' must be a finite and non-negative number.")
 
 		# Deploying new model where value of parameter windowDuration is 10, this means that block will use window of duration 10 secs.
 		# So on new incoming inputs, older values in the window which are beyond 10 seconds will start expiring.

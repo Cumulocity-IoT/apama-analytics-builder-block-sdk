@@ -89,4 +89,4 @@ class PySysTest(AnalyticsBuilderBaseTest):
 		#Verify external correlator time set.
 		self.assertLineCount("correlator.log",expr=f'Set time to.*', condition='==2')
 		#Verify CreateEvent Output block creates an event
-		self.assertLineCount("correlator.log",expr='Received Event: com.apama.cumulocity.Event\(.*,"c8y_Event".*LocationFound', condition='==2')
+		self.assertLineCount("correlator.log",expr=r'Received Event: com.apama.cumulocity.Event\(.*,"c8y_Event".*LocationFound', condition='==2')
