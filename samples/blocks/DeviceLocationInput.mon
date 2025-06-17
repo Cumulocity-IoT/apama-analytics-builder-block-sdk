@@ -88,7 +88,7 @@ event DeviceLocationInput {
 	}
 	
 	/**
-	 * Method to create listeners using CumulocityInputHandlerfor the events from Cumulocity IoT.
+	 * Method to create listeners using CumulocityInputHandlerfor the events from Cumulocity.
 	 */
 	action $init() {
 		

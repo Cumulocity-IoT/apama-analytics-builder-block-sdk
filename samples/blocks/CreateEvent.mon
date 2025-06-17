@@ -141,7 +141,7 @@ event CreateEvent {
 			/* Get the current device to which the output will be sent.*/
 			ifpresent cumulocityOutputHandler.deviceToOutput($activation) as device {
 				
-				/* Creating an event to send to Cumulocity IoT.*/
+				/* Creating an event to send to Cumulocity.*/
 				Event evt := Event("", $parameters.eventType, device, $activation.timestamp, text,  new dictionary<string,any>);
 				
 				// Ask the framework to send the output to the output channel.

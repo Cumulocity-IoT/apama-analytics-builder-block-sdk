@@ -1,6 +1,6 @@
 # Building a block into an extension
 
-Once a block is written in EPL, it can be packaged into an "extension". Extensions are **.zip** files that can be used to add blocks to the Analytics Builder runtime. Analytics Builder is deployed within Cumulocity IoT, and extensions are stored in the inventory. The extensions are only read when the Apama-ctrl microservice inside Cumulocity IoT is started, so the service must be restarted to make use of a new block. Restarting the microservice will lose state in any running models or custom EPL applications running in that tenant. This SDK provides a command line utility called `analytics_builder` which is available in the root directory of the SDK. This can be used to build an extension or list an extension or manage an extension in a Cumulocity IoT installation. You must navigate out of the model editor to the model manager and back to the editor to expose the new blocks after uploading an extension.
+Once a block is written in EPL, it can be packaged into an "extension". Extensions are **.zip** files that can be used to add blocks to the Analytics Builder runtime. Analytics Builder is deployed within Cumulocity, and extensions are stored in the inventory. The extensions are only read when the Apama-ctrl microservice inside Cumulocity is started, so the service must be restarted to make use of a new block. Restarting the microservice will lose state in any running models or custom EPL applications running in that tenant. This SDK provides a command line utility called `analytics_builder` which is available in the root directory of the SDK. This can be used to build an extension or list an extension or manage an extension in a Cumulocity installation. You must navigate out of the model editor to the model manager and back to the editor to expose the new blocks after uploading an extension.
 
 Most of the `analytics_builder` commands use an `--input` argument that specifies the path to a directory. All files in that directory are included in the **.zip** file, except for the files with the following extensions: **.log**, **.classpath**, **.dependencies**, **.project**, **.deploy**, **.launch**, **.out**, and **.o**. Files in the **.git** and **.github** subdirectories are also not included. The message files named **messages.json** or matching **\*-messages.json** are used for the runtime messages.
 
@@ -20,7 +20,7 @@ The `analytics_builder` script takes a two-word command, followed by any argumen
 
 *  A full version of Apama is required for building an extension.
 
-  Build and upload an extension to a Cumulocity IoT instance. For example:
+  Build and upload an extension to a Cumulocity instance. For example:
 
   ```bash
   analytics_builder build extension --input samples/blocks --cumulocity_url https://demo.cumulocity.com/ --username tenantID/user --password pass
@@ -28,7 +28,7 @@ The `analytics_builder` script takes a two-word command, followed by any argumen
 
 * `build extension --cumulocity_url <url> --username <user> --password <password> --folderToSkip <folder_name>`
 
-  Build and upload an extension to a Cumulocity IoT instance by skipping uninteresting folders from the build. For example:
+  Build and upload an extension to a Cumulocity instance by skipping uninteresting folders from the build. For example:
 
   ```bash
   analytics_builder build extension --input samples/blocks --cumulocity_url https://demo.cumulocity.com/ --username tenantID/user --password pass --folderToSkip temp --folderToSkip temp1
@@ -36,12 +36,12 @@ The `analytics_builder` script takes a two-word command, followed by any argumen
 
 * `upload extension --cumulocity_url <url> --username <user> --password <password> --input <path to zip file>`
 
-  Upload an extension to a Cumulocity IoT instance.  Note that the 'apama-ctrl-starter' version of Apama in Cumulocity IoT does not support extensions and thus you cannot use it for custom blocks.
+  Upload an extension to a Cumulocity instance.  Note that the 'apama-ctrl-starter' version of Apama in Cumulocity does not support extensions and thus you cannot use it for custom blocks.
   Ask your support contact to upgrade to a fully-featured version of the Apama-ctrl microservice.
 
 * `list extensions --cumulocity_url <url> --username <user> --password <password> `
 
-  List extensions that are uploaded to a Cumulocity IoT instance. For example:
+  List extensions that are uploaded to a Cumulocity instance. For example:
 
   ```bash
   analytics_builder list extensions --cumulocity_url https://demo.cumulocity.com/ --username tenantID/user --password pass
@@ -108,6 +108,6 @@ If the uploaded extension is invalid, corrupt, or duplicate, it is not injected 
 
 * `Multiple managed objects found with pas_extension=<extension name>. Delete them and upload a new extension with the same name.`
 
-  When uploading an extension to the Cumulocity IoT inventory, if an extension with the same name already exists, its contents are replaced. If more than one extension with the same name is found in the inventory, the above error is raised. Delete the extensions and then upload a new extension with the same name.
+  When uploading an extension to the Cumulocity inventory, if an extension with the same name already exists, its contents are replaced. If more than one extension with the same name is found in the inventory, the above error is raised. Delete the extensions and then upload a new extension with the same name.
 
 [< Prev: Naming and documenting blocks](020-NamingAndDoc.md) | [Contents](000-contents.md) | [Next: Testing blocks >](035-Testing.md) 

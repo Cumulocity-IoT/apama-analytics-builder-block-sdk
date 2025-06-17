@@ -24,7 +24,7 @@ This script requires an installation of Python 3.7+ and runs on either Windows o
 
 Alternatively, the [apama-builder](https://gallery.ecr.aws/apama/apama-builder) Docker image from Amazon ECR Public Gallery can also be used for building and managing extensions.
 
-Note that Analytics Builder requires your Cumulocity IoT tenant to be subscribed to an 'apama-ctrl' microservice.  The 'apama-ctrl-starter' microservice offers only restricted functionality and does not support custom blocks.
+Note that Analytics Builder requires your Cumulocity tenant to be subscribed to an 'apama-ctrl' microservice.  The 'apama-ctrl-starter' microservice offers only restricted functionality and does not support custom blocks.
 
 ## Documentation
 

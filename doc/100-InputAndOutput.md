@@ -89,7 +89,7 @@ An output block is a block that sends data to an external target. An output bloc
 
 An output block needs to declare what event types and fields it is sending and whether the generated output is time synchronous or asynchronous. Synchronous output values are values which have a source timestamp and can be consumed by another model in a time-synchronous manner and can be processed by the model with any other data with the same timestamp. Asynchronous output values are values which do not have a source timestamp and can only be consumed by another model in a time-asynchronous manner when they are received back from the external system.
 
-When sending events, these may be sent to an external system that may or may not echo the same event back to the correlator. For example, sending an HTTP request to a remote web service would result in a response, but the request would not be sent to the correlator. However, invoking a web service hosted by the correlator itself or sending to a system such as Cumulocity IoT or a message bus which echoes events back to the correlator would result in the correlator receiving the event again. In these cases, input blocks should make a distinction between the event routed and the one sent (which will be echoed back to the correlator). For Cumulocity `Measurement` objects, this is achieved by adding a property identifying the model name to the event sent to Cumulocity, but not the event routed internally. The input block ignores events with this property set; it should have already processed them (and they are likely to be treated as "late").
+When sending events, these may be sent to an external system that may or may not echo the same event back to the correlator. For example, sending an HTTP request to a remote web service would result in a response, but the request would not be sent to the correlator. However, invoking a web service hosted by the correlator itself or sending to a system such as Cumulocity or a message bus which echoes events back to the correlator would result in the correlator receiving the event again. In these cases, input blocks should make a distinction between the event routed and the one sent (which will be echoed back to the correlator). For Cumulocity `Measurement` objects, this is achieved by adding a property identifying the model name to the event sent to Cumulocity, but not the event routed internally. The input block ignores events with this property set; it should have already processed them (and they are likely to be treated as "late").
 
 Declaring output streams can be done by calling `BlockBase.producesOutput` from the `$validate` action which takes an `OutputParams` object as a parameter and returns an `OutputHandler` object. If the output is time synchronous, then the `OutputParams` object can be created by calling the static action `forSyncEventType` and providing the event type name, a dictionary describing the output stream, and a tagger action. The tagger action is used to tag the output event so that input blocks can recognise the echoed back events. The tagger action must have a single parameter of the output event type. If the output is time asynchronous, then the `OutputParams` object can be created by calling the static action `forAsyncEventType` and providing the event type name. The OutputHandler object is used to send output to the external source or block and thus should be saved for later use.
 
@@ -130,7 +130,7 @@ To send the output event, call the `sendOutput` action of the output handler obj
 
 ```Java
 action $process(Activation $activation, string $input_source, string $input_type, float $input_value) {
-    /* Creating an event to send to Cumulocity IoT.*/
+    /* Creating an event to send to Cumulocity.*/
     MyEvent m := MyEvent($input_source, $input_type, $input_value, $activation.timestamp, new dictionary<string, any>);
     // Ask the framework to send the output to the output channel.
     // If output is synchronous, then it is tagged before sending it to the channel.
@@ -142,7 +142,7 @@ To ensure that the timestamp of the input event matches the timestamp of the out
 
 ```Java
 action $process(Activation $activation, string $input_source, string $input_type, float $input_value) {
-    /* Creating an event to send to Cumulocity IoT.*/
+    /* Creating an event to send to Cumulocity.*/
     MyEvent m := new MyEvent;
     ...
     // Set the timestamp of the output event from activation object.
