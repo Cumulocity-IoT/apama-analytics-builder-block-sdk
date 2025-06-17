@@ -19,7 +19,7 @@ event Sum {
 }
 ```
 
-Separating the state to a different object allows the framework to provide a different `$State` object for each partition that a model may execute, without blocks needing to manage which state belongs to which partition. A model may use multiple partitions if it is being used to process different devices within a device group in Cumulocity IoT. In this case, the framework will maintain a separate `$State` object for each partition, and provide it to blocks when they receive input.
+Separating the state to a different object allows the framework to provide a different `$State` object for each partition that a model may execute, without blocks needing to manage which state belongs to which partition. A model may use multiple partitions if it is being used to process different devices within a device group in Cumulocity. In this case, the framework will maintain a separate `$State` object for each partition, and provide it to blocks when they receive input.
 
 Keeping the runtime state of a block separate from the block implementation also facilitates potential future features of Analytics Builder:
 

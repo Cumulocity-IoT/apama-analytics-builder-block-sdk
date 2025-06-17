@@ -1,6 +1,6 @@
-# Update Cumulocity IoT input blocks to receive from all input sources
+# Update Cumulocity input blocks to receive from all input sources
 
-A new input source option `All Inputs` has been added for receiving inputs from all input sources. Existing Cumulocity IoT input blocks need to be updated to enable receiving from all input sources using this option.
+A new input source option `All Inputs` has been added for receiving inputs from all input sources. Existing Cumulocity input blocks need to be updated to enable receiving from all input sources using this option.
 
 The input block should not set up the listeners for incoming events in `$init` action. Instead, the input block should call the `createListeners()` method on the `CumulocityInputHandler` object and provide a set of field names and values as the argument to this method for filtering the events. This will then set up the listeners in `CumulocityInputHandler` and the input block will receive a callback when a matching event is received. For example, consider following block parameter `source` that can listen to all input sources.
 
@@ -28,7 +28,7 @@ event AlarmInput {
 	CumulocityInputHandler inputHandler;
 
 	/**
-	* Method to set up listeners using CumulocityInputHandler and start listening for alarms from Cumulocity IoT.
+	* Method to set up listeners using CumulocityInputHandler and start listening for alarms from Cumulocity.
 	*/
 	action $init(){
 	
@@ -51,4 +51,4 @@ event AlarmInput {
 ```
 The value of the parameter (deviceId in the above) will be a dictionary if the `Input Source` parameter has been set to `All Inputs`. 
 
-[< Prev: Update Cumulocity IoT input blocks to receive from assets](151-MigrateInputBlocksForAssetInput.md) | [Contents](000-contents.md) | [Next: Sharing data across partitions and workers >](160-SharingDataAcrossPartition.md) 
+[< Prev: Update Cumulocity input blocks to receive from assets](151-MigrateInputBlocksForAssetInput.md) | [Contents](000-contents.md) | [Next: Sharing data across partitions and workers >](160-SharingDataAcrossPartition.md) 

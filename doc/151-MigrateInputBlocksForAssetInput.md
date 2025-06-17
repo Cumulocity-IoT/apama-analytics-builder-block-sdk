@@ -1,6 +1,6 @@
-# Update Cumulocity IoT input blocks to receive from assets
+# Update Cumulocity input blocks to receive from assets
 
-In version 10.18, support was added for receiving inputs from an asset (and not from its child devices). Existing Cumulocity IoT input blocks may need to be updated to enable receiving from assets.
+In version 10.18, support was added for receiving inputs from an asset (and not from its child devices). Existing Cumulocity input blocks may need to be updated to enable receiving from assets.
 
 Change the type of the parameter which holds the selected device identifier to `any`. For example, consider following block parameter `source` that holds the selected device, asset or group of devices.
 
@@ -72,4 +72,4 @@ event AlarmInput {
 }
 ```
 
-[< Prev: Migrating input and output blocks to the version 2 API](150-MigrateInputOutputBlocks.md) | [Contents](000-contents.md) | [Next: Update Cumulocity IoT input blocks to receive from all input sources >](152-MigrateInputBlocksForAllInputs.md) 
+[< Prev: Migrating input and output blocks to the version 2 API](150-MigrateInputOutputBlocks.md) | [Contents](000-contents.md) | [Next: Update Cumulocity input blocks to receive from all input sources >](152-MigrateInputBlocksForAllInputs.md) 
