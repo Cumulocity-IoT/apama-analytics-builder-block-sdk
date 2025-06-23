@@ -25,5 +25,6 @@
 		<dependency bundle-filename="HTTPClientConnectivityGenericEvents.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="ConnectivityPlugins-Common.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 		<dependency bundle-filename="AutomaticOnApplicationInitialized.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
+		<dependency bundle-filename="Functional.bnd" catalog="${APAMA_HOME}/catalogs/bundles/"/>
 	</dependencies>
 </bundle>
