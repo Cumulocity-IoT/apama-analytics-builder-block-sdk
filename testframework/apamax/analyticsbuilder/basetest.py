@@ -121,9 +121,10 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		kwargs['arguments']=arguments
 		logfile=kwargs.get('logfile', 'correlator.log')
 		kwargs['logfile']=logfile
-		kwargs['config'] = [os.path.join(self.project.APAMA_HOME, 'connectivity', 'bundles', 'standard-codecs.yaml'), 
-							os.path.join(self.project.APAMA_HOME, 'connectivity', 'bundles', 'HTTPClientConnectivity', 'GenericJSON', 'HTTPClientGenericJSON.yaml')
-							]
+		config=kwargs.get('config', [])
+		config.append(os.path.join(self.project.APAMA_HOME, 'connectivity', 'bundles', 'standard-codecs.yaml'))
+		config.append(os.path.join(self.project.APAMA_HOME, 'connectivity', 'bundles', 'HTTPClientConnectivity', 'GenericJSON', 'HTTPClientGenericJSON.yaml'))
+		kwargs['config']=config
 		corr.start(Xclock=Xclock, **kwargs)
 		corr.logfile = logfile
 		
