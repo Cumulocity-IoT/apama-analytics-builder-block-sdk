@@ -236,7 +236,7 @@ class C8yConnection(object):
 		ctx = ssl.create_default_context()
 		ctx.check_hostname = False
 		ctx.verify_mode = ssl.CERT_NONE
-		self.urlopener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx, check_hostname=False), auth_handler)
+		self.urlopener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx), auth_handler)
 		self.base_url = url
 		self.auth_header = "Basic " + base64.b64encode(bytes("%s:%s" % (username, password), "utf8")).decode()
 
