@@ -1,5 +1,8 @@
 # Change Log
 
+## 2025-05-23
+* Change bundles to use relative paths, making use of recently introduced `apama_project` functionality in Apama 10.15.
+
 ## 2024-10-01
 * HTTPOutput Sample block works correctly in partitioned model.
 
