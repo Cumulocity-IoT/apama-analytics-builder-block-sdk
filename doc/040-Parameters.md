@@ -80,6 +80,7 @@ In addition to the semantic types listed in [Input and output blocks](100-InputA
 * `pab_multiLine` - shown as multi-line text.
 * `pab_geofence`  - shown as a map area on the surface of the earth.
 * `c8y_fragmentSeries_KPI_supportedMeasurements_DataPoints` - shown as a drop-down list with the data points.
+* `pab_codeEditor_<language_name>` - shown as a code editor with syntax highlighting and configurable language support. Example: pab_codeEditor_python or pab_codeEditor_javascript.
 
 ## Validating parameters
 
