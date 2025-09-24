@@ -14,6 +14,7 @@ import xml.etree.cElementTree as ElementTree
 from subprocess import CalledProcessError
 from logging import Formatter
 from checkApamaInstallation import confirmFullInstallation
+import re
 
 FORMAT = '%(asctime)-15s %(levelname)s : %(message)s'
 
@@ -267,6 +268,7 @@ typeFieldsXPath = "./Package/Type"
 vanillaFieldTags = ['semanticType', 'displayType', 'minNumEntries', 'optional']
 headerFieldTags = [('displayHeaderName', 'name'), ('displayHeaderValue', 'value')]
 validFieldTags = vanillaFieldTags + [x[0] for x in headerFieldTags]
+PAB_CODE_EDITOR = 'pab_codeEditor_'
 
 
 class BlockGenerator:
@@ -438,6 +440,25 @@ class BlockGenerator:
 			member_type = member.attrib.get('type').strip()
 		return member_type, is_optional, (self._isThisTypeSupported(member_type))
 
+	def checkValidCodeEditorLanguage(self, value, blockName):
+		"""Performs security sanitization on semanticType 'pab_codeEditor_' language parameters."""
+		if len(value) == len(PAB_CODE_EDITOR):
+			raise RuntimeError(
+				f"Ignoring parameter with semanticType '{value}' in block '{blockName}': "
+				f"missing language suffix after '{PAB_CODE_EDITOR}'"
+			)
+		
+		suffix = value[len(PAB_CODE_EDITOR):]
+
+		# Validate: should have lowercase letters, digits, dots, and hyphens
+		isValid = bool(re.fullmatch(r'[a-z][a-z0-9.-]*', suffix))
+
+		if not isValid:
+			raise RuntimeError(
+				f"Ignoring parameter with semanticType '{value}' in block '{blockName}': "
+				f"invalid language suffix '{suffix}' (only lowercase letters, digits, '.', and '-' are allowed)"
+			)
+
 	# Create Parameter List
 	def _createParameterList(self, typeElement, xmlRootElement, block):
 		parameterList = []
@@ -472,6 +493,12 @@ class BlockGenerator:
 							tag = member.find(genericTagXPath % extraTag)
 							
 							if tag is not None:
+								if extraTag == 'semanticType':
+									semanticTypeValue = tag.text
+									if semanticTypeValue.startswith(PAB_CODE_EDITOR):
+										# validate if semanticType is of type PAB_CODE_EDITOR and check if language is valid
+										self.checkValidCodeEditorLanguage(semanticTypeValue, block.data['name'])
+								
 								if extraTag == 'optional':
 									# If $optional tag is set, make the parameter optional in the UI by
 									# setting the optional property to true. Useful for `any` type parameters.
