@@ -280,6 +280,13 @@ event GroupStatistics {
 		on all GroupStatistics_WorkerData(blockId=$base.getBlockId(), modelId=$base.getModelId()) as data {
 			$workerState.workerSnapshot[data.workerId] := data;
 		}
+
+		// If device deleted, erase the related partition data from block.
+		on all apama.analyticsbuilder.ModelPartitionRemoved(modelId=$base.getModelId()) as e {
+			if $workerState.perDeviceBucket.hasKey(e.partition) {
+				$workerState.perDeviceBucket.remove(e.partition);
+			}
+		}
 	}
 	
 	/**
