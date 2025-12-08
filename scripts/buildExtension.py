@@ -360,8 +360,8 @@ def upload_or_delete_extension(extension_zip, url, username, password, name, del
 	
 	# checks Analytics builder version with Apama-ctrl version
 	checkVersions(connection, ignoreVersion)
-	checkIfStarter(connection, ignoreVersion)
-	
+	checkIfExtensionsSupported(connection, ignoreVersion)
+		
 	# Get existing ManagedObject for PAS extension.
 	try:
 		extension_mos = connection.do_get('/inventory/managedObjects', {'query': f"pas_extension eq '{name}'"})
@@ -420,20 +420,23 @@ def prepareRemoteOptions(args, remote):
 			else:
 				raise Exception(f'Argument --{k} is required for the remote operation.')
 
-def checkIfStarter(connection,ignoreVersion):
-	is_starter = None
+
+
+def checkIfExtensionsSupported(connection,ignoreVersion):
+	supportsExtensions  = False
 	try:
-		resp = connection.request('GET',f'/service/cep/diagnostics/apamaCtrlStatus')
-		is_starter = (json.loads(resp).get('is_starter_mode'))		
+		resp = json.loads(connection.request('GET',f'/service/cep/capabilities'))
+		supportsExtensions = resp.get('extensionsSupported', False)
+		if not supportsExtensions:
+			if ignoreVersion:
+				print(f'WARNING: Extensions are not supported by the current microservice variant.')
+			else:
+				print(f'FAILED: Extensions are not supported by the current microservice variant. Ignore the check using --ignoreVersion')
+				exit()
 	except urllib.error.HTTPError as err:
 		print(f'Could not identify Apama-ctrl : {err}')	
-	if is_starter == True:
-		if ignoreVersion:
-			print(f'WARNING: Uploaded extensions are not supported in Apama Starter so they will not be available in the model editor.')
-		else:
-			print(f'FAILED: Extensions are not supported in Apama Starter. Ignore the check using --ignoreVersion')
-			exit()
-
+	
+	
 def checkVersions(connection, ignoreVersion):
 	
 	apamactrl_version = None
