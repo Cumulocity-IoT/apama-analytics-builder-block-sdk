@@ -421,12 +421,18 @@ def prepareRemoteOptions(args, remote):
 				raise Exception(f'Argument --{k} is required for the remote operation.')
 
 
-
+# Check if extensions are supported by the microservice
 def checkIfExtensionsSupported(connection,ignoreVersion):
 	supportsExtensions  = False
 	try:
 		resp = json.loads(connection.request('GET',f'/service/cep/capabilities'))
-		supportsExtensions = resp.get('extensionsSupported', False)
+		# For backward compatibility, if 'extensionsSupported' field is not present, we check 'is_starter_mode' 
+		# field from /diagnostics/apamaCtrlStatus
+		if 'extensionsSupported' in resp:
+			supportsExtensions = resp['extensionsSupported']
+		else:
+			resp = json.loads(connection.request('GET',f'/service/cep/diagnostics/apamaCtrlStatus'))
+			supportsExtensions = not resp.get('is_starter_mode', True)
 		if not supportsExtensions:
 			if ignoreVersion:
 				print(f'WARNING: Extensions are not supported by the current microservice variant.')
