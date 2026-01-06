@@ -926,7 +926,7 @@ def run_metadata_generator(input, output, tmpDir, printMsg=False):
 	if not output.endswith('.json'):
 		output += '.json'
 
-	scriptRunner = ScriptRunner(apama_home, output, inputDir, tmpDir, '26.x.y')
+	scriptRunner = ScriptRunner(apama_home, output, inputDir, tmpDir, '27.x.y')
 	f = scriptRunner.generateBlockMetaData()
 	if printMsg:
 		if f[0]:
