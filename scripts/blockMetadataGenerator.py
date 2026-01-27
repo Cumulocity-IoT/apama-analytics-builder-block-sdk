@@ -70,6 +70,11 @@ class Block(object):
 			self.data['derivedName'] = derivedName
 		return self
 
+	def setIsPreviewBlock(self, isPreviewBlock):
+		if isPreviewBlock:
+			self.data['isPreviewBlock'] = True
+		return self
+
 	def setTitleIsDerived(self, titleIsDerived):
 		if titleIsDerived:
 			self.data['titleIsDerived'] = True
@@ -244,6 +249,7 @@ class ValidateBlockDollarFields:
 		self.data['$blockCategory'] = False
 		self.data['$blockType'] = False
 		self.data['$derivedName'] = False
+		self.data['$isPreviewBlock'] = False
 		self.data['$titleIsDerived'] = False
 		self.fieldWithMultipleOccurances = ['$replacesBlock', '$consumesInput', '$producesOutput']
 
@@ -257,6 +263,7 @@ blockIdentifierProducesOutputXPath = "./DollarFields/DollarField[@name='$produce
 blockTypeIdentifierTypeXPath = "./DollarFields/DollarField[@name='$blockType']/Description"
 blockTypeIdentifierDerivedNameXPath = "./DollarFields/DollarField[@name='$derivedName']/Description"
 blockTypeIdentifierTitleIsDerivedXPath = "./DollarFields/DollarField[@name='$titleIsDerived']/Description"
+blockTypeIdentifierIsPreviewBlockXPath = "./DollarFields/DollarField[@name='$isPreviewBlock']/Description"
 blockReplacesIdentifierXPath = "./DollarFields/DollarField[@name='$replacesBlock']/Description"
 inputIdentifierXPath = "./Action[@name=\"$process\"]/Parameters/Parameter"
 inputNameIdentifierXPath = "./Action[@name=\"$process\"]/DollarFields/DollarField[@name=\'$inputName\']/Description"
@@ -624,6 +631,10 @@ class BlockGenerator:
 		derivedName = typeElement.find(blockTypeIdentifierDerivedNameXPath)
 		if derivedName is not None and derivedName.text is not None:
 			block.setBlockDerivedName(derivedName.text.strip())
+		# set isPreviewBlock for the block
+		isPreviewBlock = typeElement.find(blockTypeIdentifierIsPreviewBlockXPath)
+		if isPreviewBlock is not None and isPreviewBlock.text.lower() != 'false':
+			block.setIsPreviewBlock(isPreviewBlock.text.strip())
 		# set titleIsDerived Name for the block
 		titleIsDerived = typeElement.find(blockTypeIdentifierTitleIsDerivedXPath)
 		if titleIsDerived is not None and titleIsDerived.text != 'false':

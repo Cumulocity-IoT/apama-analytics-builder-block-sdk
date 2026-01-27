@@ -1,5 +1,8 @@
 # Change Log
 
+## 27.23.0
+* Add @$isPreviewBlock annotation, which will suppress visibility of a block unless preview blocks are enabled by the user.
+
 ## 26.260.0
 * `CumulocityInputHandler.createListeners` has been enhanced to dynamically detect changes in the group hierarchy. This includes detecting the addition, deletion, or update of devices and assets, as well as structural changes within groups. This enhancement ensures consistent behavior, simplifies maintenance, prevents listener leaks, and aligns with updated best practices. See [Monitoring Device Hierarchy with CumulocityInputHandler](doc/153-MigrateInputBlocksToMonitorDeviceHierarchy.md) for more details.
 
