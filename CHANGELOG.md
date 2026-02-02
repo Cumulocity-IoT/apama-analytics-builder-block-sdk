@@ -1,5 +1,8 @@
 # Change Log
 
+## 26.260.0
+* `CumulocityInputHandler.createListeners` has been enhanced to dynamically detect changes in the group hierarchy. This includes detecting the addition, deletion, or update of devices and assets, as well as structural changes within groups. This enhancement ensures consistent behavior, simplifies maintenance, prevents listener leaks, and aligns with updated best practices. See [Monitoring Device Hierarchy with CumulocityInputHandler](doc/153-MigrateInputBlocksToMonitorDeviceHierarchy.md) for more details.
+
 ## 26.95.0
 * The Analytics Builder Block SDK is no longer supported natively on Windows environments. For Windows users, we recommend switching to a WSL-based (Windows Subsystem for Linux) environment using Debian. You may wish to use the [Apama Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ApamaCommunity.apama-extensions) for block development. 
 

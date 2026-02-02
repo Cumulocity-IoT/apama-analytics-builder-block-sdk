@@ -80,7 +80,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		"""
 		self._injectEPLOnce(corr, ['Cumulocity_EventDefinitions.mon'], filedir=self.project.APAMA_HOME + "/monitors/cumulocity")
 		self._injectEPLOnce(corr, self.project.APAMA_HOME+'/monitors/TimeFormatEvents.mon')
-		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/cumulocity/'+i+'.mon' for i in ['Cumulocity_Utils', 'Cumulocity_TenantSupport']])
+		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/cumulocity/'+i+'.mon' for i in ['Cumulocity_Utils', 'Cumulocity_RequestInterface', 'Cumulocity_TenantSupport']])
 
 	def injectCumulocityEvents(self, corr):
 		"""
@@ -128,7 +128,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		corr.start(Xclock=Xclock, **kwargs)
 		corr.logfile = logfile
 		
-		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional', 'cumulocity/Cumulocity_RequestInterface']])
+		self._injectEPLOnce(corr, [self.project.APAMA_HOME+'/monitors/'+i+'.mon' for i in ['data_storage/MemoryStore', 'JSONPlugin', 'AnyExtractor', 'ManagementImpl', 'Management', 'ConnectivityPluginsControl', 'ConnectivityPlugins', 'HTTPClientEvents', 'AutomaticOnApplicationInitialized', 'Functional']])
 		
 		self._injectCumulocitySupport(corr)
 		
