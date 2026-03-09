@@ -1,5 +1,8 @@
 # Change Log
 
+## 27.62.0
+* To improve end-to-end test coverage for Analytics Builder models, the default product blocks are now published and available at `testframework/resources/analyticsbuilder-blocks.cdp`.
+
 ## 27.23.0
 * Add @$isPreviewBlock annotation, which will suppress visibility of a block unless preview blocks are enabled by the user.
 
