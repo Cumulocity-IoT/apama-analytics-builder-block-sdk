@@ -1,5 +1,8 @@
 # Change Log
 
+## 26.275.10
+* To improve end-to-end test coverage for Analytics Builder models, the default product blocks are now published and available at `testframework/resources/analyticsbuilder-blocks.cdp`.
+
 ## 26.260.0
 * `CumulocityInputHandler.createListeners` has been enhanced to dynamically detect changes in the group hierarchy. This includes detecting the addition, deletion, or update of devices and assets, as well as structural changes within groups. This enhancement ensures consistent behavior, simplifies maintenance, prevents listener leaks, and aligns with updated best practices. See [Monitoring Device Hierarchy with CumulocityInputHandler](doc/153-MigrateInputBlocksToMonitorDeviceHierarchy.md) for more details.
 
