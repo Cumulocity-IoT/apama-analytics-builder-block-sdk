@@ -303,10 +303,21 @@ class BlockGenerator:
 				or elementType == 'float' \
 				or elementType == 'string' \
 				or elementType == 'any' \
-				or elementType == 'boolean':  # sequence <NameValue> is another supported type. see get_member_type()
+				or elementType == 'boolean':  # sequence<T> is another supported type. see get_member_type()
 			return True
 		else:
 			return False
+
+	def _isThisSequenceMemberTypeSupported(self, memberType):
+		""" Check if the sequence of provided member type is supported for block parameters. """
+		return memberType in [
+			'apama.analyticsbuilder.NameValue',
+			'apama.analyticsbuilder.LngLat',
+			'integer',
+			'float',
+			'string',
+			'boolean',
+		]
 
 	# Can be used to create unique hashcode as type and name together can't be duplicated within a particular scope
 	def _getTypeUnderscoreName(self, member):
@@ -422,6 +433,15 @@ class BlockGenerator:
 	def get_member_type(self, member):
 		is_optional = False
 		member_type = None
+		def handleSequence(seqMember):
+			seqUnderlyingType = seqMember.find('./Parameters/Parameter[@type]')  # sequence <T>
+			if seqUnderlyingType is not None:
+				seqMemberType = seqUnderlyingType.attrib['type']
+				member_type = 'sequence<' + seqMemberType + '>'
+				return member_type, is_optional, self._isThisSequenceMemberTypeSupported(seqMemberType)
+			else:
+				self.raiseError("Parameter type is missing.")
+
 		if 'type' not in member.attrib or member.attrib.get('type') is None:
 			self.raiseError("Parameter type is missing. ")
 		elif member.attrib.get('type').lower() == 'optional'.lower():
@@ -430,19 +450,11 @@ class BlockGenerator:
 			if t is not None:
 				member_type = t.attrib['type']
 				if member_type.lower() == 'sequence'.lower():
-					seqUnderlyingType = t.find('./Parameters/Parameter[@type]')  # optional <sequence <T> >
-					if seqUnderlyingType is not None:
-						member_type = f"sequence<{seqUnderlyingType.attrib['type']}>"
-						return member_type, is_optional, ('NameValue' in member_type or 'LngLat' in member_type)
+					return handleSequence(t)  # optional <sequence<T>> is also supported, so handle that as well.
 			else:
 				self.raiseError("Parameter type is missing.")
 		elif member.attrib.get('type').lower() == 'sequence'.lower():
-			t = member.find('./Parameters/Parameter[@type]')
-			if t is not None:
-				member_type = 'sequence<' + t.attrib['type'] + '>'
-				return member_type, is_optional, ('NameValue' in member_type or 'LngLat' in member_type)
-			else:
-				self.raiseError("Parameter type is missing.")
+			return handleSequence(member)
 		else:
 			member_type = member.attrib.get('type').strip()
 		return member_type, is_optional, (self._isThisTypeSupported(member_type))
@@ -487,11 +499,13 @@ class BlockGenerator:
 
 			for member in parameterTypeElement.iterfind('./Member[@name]'):
 				try:
+					if 'constant' in member.attrib:
+						continue  # skip constant members as they are not parameters, they are just used to capture enum values.
+
 					parameter_type, is_optional_type, is_supported_type = self.get_member_type(member)
 
-					# exclude the constant/non-supported-type parameter
-					if 'constant' not in member.attrib \
-							and is_supported_type:
+					# exclude the non-supported-type parameter
+					if is_supported_type:
 						parameterId = member.attrib.get('name').strip('\t ')
 						block.addId(parameterId, 'parameter')
 						parameterObject = Parameter().setParameterId(parameterId)
@@ -541,6 +555,8 @@ class BlockGenerator:
 							parameterObject.setEnumValuesJsonList(memberToEnumVals[keyForEnumMapping])
 
 						parameterList.append(parameterObject.getUnderlyingDataMap())
+					else:
+						print(f"Unsupported parameter type '{parameter_type}' for parameter '{member.attrib.get('name')}' in block '{block.data.get('name', '')}'", file=sys.stderr)
 				except (KeyError, RuntimeError) as err:
 					print('Error parsing parameter Elements: %s' %err, file=sys.stderr)
 		return parameterList
