@@ -91,7 +91,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		self._injectCumulocitySupport(corr)
 		corr.injectCDP(self.project.ANALYTICS_BUILDER_SDK + '/block-api/framework/cumulocity-forward-events.cdp')
 		
-	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, injectBlocks = True, initialCorrelatorTime = None, **kwargs):
+	def startAnalyticsBuilderCorrelator(self, blockSourceDir=None, Xclock=True, numWorkers=4, injectBlocks = True, initialCorrelatorTime = None, onnxModelDir=None, **kwargs):
 		"""
 		Start a correlator with the EPL for Analytics Builder loaded.
 		:param blockSourceDir: A location of blocks to include, or a list of locations
@@ -99,6 +99,7 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		:param numWorkers: Number of workers for Analytics Builder runtime (4 by default).
 		:param injectBlocks: if false, don't inject the actual block EPL (use if there are dependencies), returns blockOutput directory. Also skips applicationInitialized call.
 		:param initialCorrelatorTime: Set the initial time of the correlator when the correlator is externally clocked. The parameter is ignored if the correlator is not externally clocked. The value of the parameter should specify the time in seconds since the epoch (midnight, 1 Jan 1970 UTC).
+		:param onnxModelDir: Path to the directory containing ONNX models to be used by the ONNX block in local testing.
 		:param \\**kwargs: extra kwargs are passed to startCorrelator
 		"""
 
@@ -115,9 +116,15 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 			blockOutputDirs.append(Path(blockOutput))
 		# Start the correlator:
 		corr = CorrelatorHelper(self)
+		block_sdk_lib_path = os.path.join(self.project.ANALYTICS_BUILDER_SDK, 'testframework', 'resources', 'lib') # includes libs required for ONNX block
+		environ = kwargs.get('environ', {})
+		environ['LD_LIBRARY_PATH'] = environ.get('LD_LIBRARY_PATH', os.environ.get('LD_LIBRARY_PATH', '')) + ':' + block_sdk_lib_path
+		kwargs['environ'] = environ
 		arguments=kwargs.get('arguments', [])
 		arguments.append(f'-DanalyticsBuilder.numWorkerThreads={numWorkers}')
 		arguments.append(f'-DanalyticsBuilder.timedelay_secs=0.1')
+		if onnxModelDir:
+			arguments.append(f"-Dcorrplugins.onnx.model_dir={onnxModelDir}")
 		kwargs['arguments']=arguments
 		logfile=kwargs.get('logfile', 'correlator.log')
 		kwargs['logfile']=logfile
