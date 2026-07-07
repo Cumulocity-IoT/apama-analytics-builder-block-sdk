@@ -1,5 +1,8 @@
 # Change Log
 
+## 27.160.0
+* The ONNX block has been moved out of `testframework/resources/analyticsbuilder-blocks.cdp` into its own CDP, `testframework/resources/analyticsbuilder-onnx-block.cdp` (amd64 only), so that the default product blocks remain usable on non-amd64 platforms. If your tests use the ONNX block, you must now also inject `analyticsbuilder-onnx-block.cdp`.
+
 ## 27.62.0
 * To improve end-to-end test coverage for Analytics Builder models, the default product blocks are now published and available at `testframework/resources/analyticsbuilder-blocks.cdp`.
 

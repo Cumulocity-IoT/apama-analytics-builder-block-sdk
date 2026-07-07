@@ -16,7 +16,7 @@ from pysys.basetest import BaseTest
 from apama.correlator import CorrelatorHelper
 from apama.basetest import ApamaBaseTest
 from apama.testplugin import ApamaHelper # adds self.apama (without the need for <test-plugin> project config)
-import os, zipfile, json
+import os, zipfile, json, platform
 from pathlib import Path
 import math
 
@@ -124,6 +124,8 @@ class AnalyticsBuilderBaseTest(ApamaHelper, ApamaBaseTest):
 		arguments.append(f'-DanalyticsBuilder.numWorkerThreads={numWorkers}')
 		arguments.append(f'-DanalyticsBuilder.timedelay_secs=0.1')
 		if onnxModelDir:
+			if platform.machine().lower() not in ('x86_64', 'amd64'):
+				self.skipTest('The ONNX block is only available on amd64 platforms')
 			arguments.append(f"-Dcorrplugins.onnx.model_dir={onnxModelDir}")
 		kwargs['arguments']=arguments
 		logfile=kwargs.get('logfile', 'correlator.log')
