@@ -14,6 +14,7 @@ class PySysTest(AnalyticsBuilderBaseTest):
 			onnxModelDir=self.input
 		)
 		self.correlator.injectCDP(self.project.ANALYTICS_BUILDER_SDK+'/testframework/resources/analyticsbuilder-blocks.cdp')
+		self.correlator.injectCDP(self.project.ANALYTICS_BUILDER_SDK+'/testframework/resources/analyticsbuilder-onnx-block.cdp')
 		
 		# Model to add two scalar floats.
 		# inputs: 'x', 'y'. outputs: 'z'
