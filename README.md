@@ -14,6 +14,8 @@ This project is licensed under the Apache 2.0 license - see <https://www.apache.
 
 This excludes the Analytics Framework 'CDP' file, which is provided in binary form only for the purpose of testing.
 
+A list of third-party components used by this SDK, and their licenses, is available in [Third Party Licenses](https://cumulocity-iot.github.io/apama-analytics-builder-block-sdk/third-party-licenses-block-sdk.html).
+
 ## Analytics Builder version
 
 Use the 'main' branch for the current release or switch to the appropriate branch for Long-term support (LTS) / Maintenance releases.
