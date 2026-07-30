@@ -1,5 +1,8 @@
 # Change Log
 
+## 27.180.0
+* The ONNX block's `ONNX model name` parameter now requires an explicit `.onnx` or `.zip` file extension; `<modelName>.onnx` looks for a standalone `<modelName>.onnx` file directly, while `<modelName>.zip` extracts the zip archive and looks for `<modelName>.onnx` inside. Previously, `<modelName>`, `<modelName>.onnx` and `<modelName>.zip` were always resolved by extracting a `<modelName>.zip` archive and looking for `<modelName>.onnx` inside. This is a **breaking change** for existing models that omit the file extension, or that use a `.onnx` extension but have only a `.zip` binary uploaded to the Cumulocity Files repository (the plugin now looks for a standalone `.onnx` binary instead). To migrate, ensure that the file extension in Analytics Builder models matches the uploaded file.
+
 ## 27.160.0
 * The ONNX block has been moved out of `testframework/resources/analyticsbuilder-blocks.cdp` into its own CDP, `testframework/resources/analyticsbuilder-onnx-block.cdp` (amd64 only), so that the default product blocks remain usable on non-amd64 platforms. If your tests use the ONNX block, you must now also inject `analyticsbuilder-onnx-block.cdp`.
 
