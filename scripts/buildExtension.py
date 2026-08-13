@@ -5,7 +5,7 @@
 import shutil, json, os, subprocess, urllib
 import blockMetadataGenerator
 from pathlib import Path
-import ssl, urllib.parse, urllib.request, base64, sys
+import ssl, urllib.parse, urllib.request, base64, sys, uuid
 from checkApamaInstallation import confirmFullInstallation
 
 ENCODING = 'UTF8'
@@ -305,7 +305,9 @@ def upload_new_extension(connection, f, extension_name):
 	:param extension_name: Name of the extension to create.
 	:return: None
 	"""
-	formBoundary = '----PASExtension3XtDFfhJ8XLIrkPw'
+	# RFC 2046 requires a boundary that does not appear anywhere in the body parts, so generate a fresh random one per
+	# upload rather than risking a fixed string occurring in the bytes of the extension zip, which would corrupt it
+	formBoundary = f'----PASExtension{uuid.uuid4().hex}'
 	headers = {
 		'Accept': '*/*',
 		'Content-Type': f'multipart/form-data; boundary={formBoundary}',
