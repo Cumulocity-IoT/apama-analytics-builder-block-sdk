@@ -1,5 +1,8 @@
 # Change Log
 
+## 27.209.0
+* The Expression block now supports a ternary conditional operator: `<condition> ? <trueValue> : <falseValue>`. `<condition>` must be of type `boolean`, and `<trueValue>` and `<falseValue>` must be of the same type; only the branch selected by `<condition>` is evaluated.
+
 ## 27.180.0
 * The ONNX block's `ONNX model name` parameter now requires an explicit `.onnx` or `.zip` file extension; `<modelName>.onnx` looks for a standalone `<modelName>.onnx` file directly, while `<modelName>.zip` extracts the zip archive and looks for `<modelName>.onnx` inside. Previously, `<modelName>`, `<modelName>.onnx` and `<modelName>.zip` were always resolved by extracting a `<modelName>.zip` archive and looking for `<modelName>.onnx` inside. This is a **breaking change** for existing models that omit the file extension, or that use a `.onnx` extension but have only a `.zip` binary uploaded to the Cumulocity Files repository (the plugin now looks for a standalone `.onnx` binary instead). To migrate, ensure that the file extension in Analytics Builder models matches the uploaded file.
 
