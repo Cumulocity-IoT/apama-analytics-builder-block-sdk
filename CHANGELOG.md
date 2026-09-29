@@ -1,5 +1,9 @@
 # Change Log
 
+## 27.239.0
+* `TimerHandle.id` is now an `integer` rather than a `string`, and is private. Use `TimerHandle.hasTimer()` to test whether a handle refers to a timer. This is a **breaking change** for any block that reads `id` directly.
+* `BlockBase.cancelTimer()` no longer throws `IllegalArgumentException` when the handle does not refer to a pending timer, because it was already cancelled or triggered, or because it is empty. The request is ignored instead. A block which relied on catching that exception must be updated.
+
 ## 27.209.0
 * The Expression block now supports a ternary conditional operator: `<condition> ? <trueValue> : <falseValue>`. `<condition>` must be of type `boolean`, and `<trueValue>` and `<falseValue>` must be of the same type; only the branch selected by `<condition>` is evaluated.
 
