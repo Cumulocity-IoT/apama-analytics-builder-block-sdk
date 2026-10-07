@@ -277,6 +277,72 @@ headerFieldTags = [('displayHeaderName', 'name'), ('displayHeaderValue', 'value'
 validFieldTags = vanillaFieldTags + [x[0] for x in headerFieldTags]
 PAB_CODE_EDITOR = 'pab_codeEditor_'
 
+# Elements that cannot be nested in a <p>: those whose start tag closes an open <p> in HTML, plus <li>.
+# Keep in sync with BLOCK_LEVEL_TAG in paragraphs.pipe.ts.
+BLOCK_LEVEL_TAGS = frozenset(['address', 'article', 'aside', 'blockquote', 'details', 'dialog', 'div', 'dl',
+	'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr',
+	'li', 'main', 'menu', 'nav', 'ol', 'p', 'pre', 'search', 'section', 'table', 'ul'])
+# block-level elements with no end tag
+VOID_BLOCK_LEVEL_TAGS = frozenset(['hr'])
+BLOCK_LEVEL_TAG = re.compile(r'<(/?)(' + '|'.join(BLOCK_LEVEL_TAGS) + r')(?=[\s/>])[^>]*>', re.IGNORECASE)
+
+
+def closeOmittedParagraphEnd(openTags):
+	"""Close an innermost open <p>, as HTML does for an omitted </p> when a block-level element starts."""
+	if openTags and openTags[-1] == 'p':
+		openTags.pop()
+
+
+def wrapText(text):
+	"""Wrap text in a <p>, unless it is only whitespace."""
+	return f'<p>{text.strip()}</p>' if text.strip() else text
+
+
+def updateOpenTags(openTags, tag, paragraph):
+	"""Apply a block-level start or end tag to the stack of open elements."""
+	name = tag.group(2).lower()
+	if not tag.group(1):
+		closeOmittedParagraphEnd(openTags)
+		if name not in VOID_BLOCK_LEVEL_TAGS:
+			openTags.append(name)
+	elif name in openTags:
+		# closes everything back to its start tag, so an omitted end tag (e.g. </li>) is tolerated as in HTML
+		while openTags.pop() != name:
+			pass
+	else:
+		# doc comment authoring error: nothing is open for this tag to close
+		logging.warning('Doc comment has a stray closing tag: %s in "%s"', tag.group(), paragraph.strip())
+
+
+def wrapParagraphs(paragraphs):
+	"""Wrap each top-level run of plain text in its own <p>; block-level elements, and anything nested
+	inside them, are left unwrapped.
+
+	:param paragraphs: the paragraphs of the description, in order.
+	:return: the paragraphs, wrapped where that leaves the markup well formed.
+	"""
+	wrapped = []
+	openTags = []
+	for paragraph in paragraphs:
+		# a new paragraph ends a <p> left open, as its own start tag would
+		closeOmittedParagraphEnd(openTags)
+		pieces = []
+		pos = 0
+		for tag in BLOCK_LEVEL_TAG.finditer(paragraph):
+			if not openTags:
+				# top-level text up to this tag is a paragraph of its own
+				pieces.append(wrapText(paragraph[pos:tag.start()]))
+				pos = tag.start()
+			updateOpenTags(openTags, tag, paragraph)
+			if not openTags:
+				# copy the block-level element(s), and anything nested in them, unchanged
+				pieces.append(paragraph[pos:tag.end()])
+				pos = tag.end()
+		rest = paragraph[pos:]
+		pieces.append(rest if openTags else wrapText(rest))
+		wrapped.append(''.join(pieces))
+	return wrapped
+
 
 class BlockGenerator:
 	## Parse the Description field from XML into name, description and extended documentation
@@ -287,7 +353,7 @@ class BlockGenerator:
 			name = descriptionArray[0].strip('.')
 			descriptionArray = descriptionArray[1:]
 		description = descriptionArray[0] if len(descriptionArray) > 0 else None
-		extendDescription = '\n<p></p>\n'.join(descriptionArray[1:]) if len(descriptionArray) > 1 else None
+		extendDescription = '\n'.join(wrapParagraphs(descriptionArray[1:])) if len(descriptionArray) > 1 else None
 		return name, description, extendDescription
 
 	# Get default value from member type if any
