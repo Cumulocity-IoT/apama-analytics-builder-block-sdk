@@ -1,5 +1,8 @@
 # Change Log
 
+## 27.260.0
+* Log messages from custom blocks are shown on the **Logs** page of the Streaming Analytics application and in the logs pane of the model editor if they start with the prefix returned by `BlockBase.getLogPrefix()`. See [Logging from blocks](doc/045-Logging.md) for details.
+
 ## 27.239.0
 * `TimerHandle.id` is now an `integer` rather than a `string`, and is private. Use `TimerHandle.hasTimer()` to test whether a handle refers to a timer. This is a **breaking change** for any block that reads `id` directly.
 * `BlockBase.cancelTimer()` no longer throws `IllegalArgumentException` when the handle does not refer to a pending timer, because it was already cancelled or triggered, or because it is empty. The request is ignored instead. A block which relied on catching that exception must be updated.

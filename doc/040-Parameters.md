@@ -123,4 +123,4 @@ The `$validate`, `$preSpawnInit` and `$init` methods do not have any required pa
 
 These should be treated as read-only.
 
-[< Prev: Testing blocks](035-Testing.md) | [Contents](000-contents.md) | [Next: Blocks with state >](050-State.md) 
+[< Prev: Testing blocks](035-Testing.md) | [Contents](000-contents.md) | [Next: Logging from blocks >](045-Logging.md) 
