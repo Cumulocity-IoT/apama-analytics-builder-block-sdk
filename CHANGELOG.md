@@ -1,5 +1,8 @@
 # Change Log
 
+## TBC
+* `CumulocityInputHandler.measurementConsumed(Measurement)` has been added. Blocks that listen for `Measurement` events with their own listeners, rather than through `CumulocityInputHandler.createListeners`, should call it for each `Measurement` they use, otherwise the microservice's metrics report the `Measurement` as not used by any block.
+
 ## 27.260.0
 * Log messages from custom blocks are shown on the **Logs** page of the Streaming Analytics application and in the logs pane of the model editor if they start with the prefix returned by `BlockBase.getLogPrefix()`. See [Logging from blocks](doc/045-Logging.md) for details.
 
