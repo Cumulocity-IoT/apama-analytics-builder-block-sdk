@@ -204,6 +204,8 @@ event DualMeasurementIO{
 			} else {
 				inputHandler := denominatorInputHandler;
 			}
+			// Blocks with their own listeners report the Measurements they use, so the microservice's metrics do not count them as unused
+			inputHandler.measurementConsumed(measurement);
 			
 			optional<float> timeValue := measurement.time;
 			// Schedule the event to be processed at the timestamp of the event. This creates a timer which when triggered, 
